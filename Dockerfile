@@ -21,6 +21,8 @@ COPY start.sh /usr/local/bin/start.sh
 # Install dependencies
 RUN composer install
 
+RUN composer update --no-scripts
+
 EXPOSE 8080
 
 # Set up Laravel permissions
