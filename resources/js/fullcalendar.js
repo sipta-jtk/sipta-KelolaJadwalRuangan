@@ -30,16 +30,18 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             droppable: true,
             resourceAreaHeaderContent: "Ruangan",
+            slotMinTime: "06:00:00",
+            slotMaxTime: "19:00:00",
             resources: "/api/v1/ruangan/nama", // Ensure resources are loaded here
             events: {
-                url: "/api/v1/penjadwalan/event", // Events URL
+                url: "/api/v1/schedules", // Events URL
                 method: "GET",
                 failure: function () {
                     alert("Failed to get events");
                 },
             },
             selectable: true,
-            timezone: "UTC",
+            timeZone: "UTC",
             // eventResize: function (info) {
             //     // Ambil data yang sudah diubah
             //     var updatedStart = info.event.startStr;
