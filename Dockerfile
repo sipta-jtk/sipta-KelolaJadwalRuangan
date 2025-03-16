@@ -22,12 +22,12 @@ RUN chmod -R 775 storage bootstrap/cache
 RUN composer install --no-interaction --no-progress --optimize-autoloader
 
 # Install frontend dependencies
-RUN npm install && npm run build
+RUN npm install
 
 # Copy the start script
 COPY start.sh /usr/local/bin/start.sh
 
-EXPOSE 8080 5173
+EXPOSE 8080
 
 # Start the Laravel server using the start script
 CMD ["sh", "/usr/local/bin/start.sh"]

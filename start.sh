@@ -20,4 +20,4 @@ else
 fi
 
 # Use concurrently to run both Laravel server and Vite
-npx concurrently "php artisan serve --host=0.0.0.0 --port=8080" "npm run dev"
+php artisan serve --host=0.0.0.0 --port=8080
