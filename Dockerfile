@@ -27,6 +27,8 @@ EXPOSE 8080
 
 # Set up Laravel permissions
 RUN chmod -R 775 storage bootstrap/cache
+RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+RUN chown -R www-data:www-data /var/www
 
 # Start the Laravel server using the start script
 CMD ["sh", "/usr/local/bin/start.sh"]
