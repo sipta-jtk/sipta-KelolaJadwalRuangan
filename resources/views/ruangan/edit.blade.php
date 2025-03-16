@@ -345,13 +345,13 @@
                             <div class="facility-input-container">
                                 <div class="facility-input-group">
                                     <select class="form-select" id="facilityInput">
-                                        <!-- @foreach($fasilitas as $f)
-                                            @if(!isset($ruangan))
+                                        {{-- @foreach($fasilitas as $f)
+                                            @if(!isset($ruangan) || !$ruangan->fasilitas->contains('id_fasililtas', $f->id_fasililtas))
                                                 <option value="{{ $f->id_fasililtas }}" data-nama="{{ $f->nama_fasilitas }}">
                                                     {{ $f->nama_fasilitas }}
                                                 </option>
                                             @endif
-                                        @endforeach -->
+                                        @endforeach --}}
                                     </select>
                                     <input type="number" 
                                            class="form-control" 
