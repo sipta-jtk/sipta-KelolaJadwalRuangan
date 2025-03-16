@@ -16,8 +16,9 @@ class Fasilitas extends Model
         'nama_fasilitas',
     ];
 
-    public function ruangan()
-    {
-        return $this->belongsTo(Ruangan::class, 'id_fasilitas');
-    }
+    // public function ruangan()
+    // {
+    //     return $this->belongsToMany(Ruangan::class, 'ruang_fasilitas', 'id_fasilitas', 'id_ruangan')
+    //                 ->withPivot('jumlah_fasilitas');
+    // }
 }

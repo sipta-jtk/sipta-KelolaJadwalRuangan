@@ -345,13 +345,13 @@
                             <div class="facility-input-container">
                                 <div class="facility-input-group">
                                     <select class="form-select" id="facilityInput">
-                                        @foreach($fasilitas as $f)
-                                            @if(!isset($ruangan) || !$ruangan->fasilitas->contains('id_fasililtas', $f->id_fasililtas))
+                                        <!-- @foreach($fasilitas as $f)
+                                            @if(!isset($ruangan))
                                                 <option value="{{ $f->id_fasililtas }}" data-nama="{{ $f->nama_fasilitas }}">
                                                     {{ $f->nama_fasilitas }}
                                                 </option>
                                             @endif
-                                        @endforeach
+                                        @endforeach -->
                                     </select>
                                     <input type="number" 
                                            class="form-control" 
@@ -366,7 +366,7 @@
                             </div>
                             
                             <div id="facilityList" class="facility-list mt-3">
-                                @foreach($ruangan->fasilitas as $f)
+                                {{-- @foreach($ruangan->fasilitas as $f)
                                     <div class="facility-item">
                                         <div class="facility-info">
                                             <strong>{{ $f->nama_fasilitas }}</strong>
@@ -382,7 +382,7 @@
                                             </button>
                                         </div>
                                     </div>
-                                @endforeach
+                                @endforeach --}}
                             </div>
                         </div>
                     </div>
@@ -483,12 +483,12 @@
         const originalOptions = Array.from(document.querySelectorAll('#facilityInput option'));
         
         // Tambahkan opsi untuk fasilitas yang sudah ada
-        @foreach($ruangan->fasilitas as $f)
-        originalOptions.push({
-            value: "{{ $f->id_fasililtas }}",
-            text: "{{ $f->nama_fasilitas }}"
-        });
-        @endforeach
+        {{-- @foreach($ruangan->fasilitas as $f)
+        // originalOptions.push({
+        //     value: "{{ $f->id_fasililtas }}",
+        //     text: "{{ $f->nama_fasilitas }}"
+        // });
+        @endforeach --}}
         
         // Fungsi untuk memperbarui dropdown options
         function updateDropdownOptions() {
