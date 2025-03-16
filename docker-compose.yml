@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     working_dir: /var/www
     volumes:
-      - .:/var/www:cached
+      - .:/var/www
       - vendor:/var/www/vendor
       - node_modules:/var/www/node_modules
       - ./storage:/var/www/storage:delegated
@@ -32,7 +32,7 @@ services:
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "3306:3306"
+      - "3307:3306"
     networks:
       - app_network
     volumes:

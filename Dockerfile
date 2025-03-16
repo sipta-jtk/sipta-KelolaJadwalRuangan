@@ -3,7 +3,7 @@ FROM php:8.3-fpm
 
 # Install required system dependencies
 RUN apt-get update && apt-get install -y \
-    git unzip libpq-dev libpng-dev libjpeg-dev libfreetype6-dev nodejs npm\
+    git unzip libpq-dev libpng-dev libjpeg-dev libfreetype6-dev nodejs npm \
     && docker-php-ext-install pdo pdo_mysql
 
 # Install Composer
@@ -12,15 +12,16 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set the working directory
 WORKDIR /var/www
 
-# Copy project files
+# Copy the entire Laravel application first
 COPY . .
 
 RUN chmod -R 775 storage bootstrap/cache
 
-# Install dependencies
-RUN composer install
+# Install PHP dependencies
+RUN composer install --no-interaction --no-progress --optimize-autoloader
 
-RUN composer update --no-scripts
+# Install frontend dependencies
+RUN npm install && npm run build
 
 RUN npm install && npm run build
 
