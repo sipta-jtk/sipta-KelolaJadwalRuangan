@@ -11,6 +11,7 @@ class Ruangan extends Model
 
     protected $table = 'ruangan';
     protected $primaryKey = 'id_ruangan';
+    public $timestamps = false;
 
     protected $fillable = [
         'kode_ruangan',
@@ -23,5 +24,11 @@ class Ruangan extends Model
     public function gedung()
     {
         return $this->belongsTo(Gedung::class, 'kode_gedung');
+    }
+
+    public function fasilitas()
+    {
+        return $this->belongsToMany(Fasilitas::class, 'ruang_fasilitas', 'id_ruangan', 'id_fasilitas')
+                    ->withPivot('jumlah_fasilitas');
     }
 }
