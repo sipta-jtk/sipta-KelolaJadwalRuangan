@@ -13,15 +13,10 @@ class GedungSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create();
 
-        $kodeGedungValues = range('A', 'E'); // Limiting to 5 entries
-
-        foreach ($kodeGedungValues as $kodeGedung) {
-            DB::table('gedung')->insert([
-                'kode_gedung' => $kodeGedung,
-                'nama_gedung' => $faker->unique()->word,
-            ]);
-        }
+        DB::table('gedung')->insert([
+            'kode_gedung' => 'D',
+            'nama_gedung' => 'Teknik Komputer dan Informatika',
+        ]);
     }
 }
