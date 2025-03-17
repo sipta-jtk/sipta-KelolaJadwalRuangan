@@ -10,7 +10,7 @@ class Penjadwalan extends Model
     use HasFactory;
 
     protected $table = 'penjadwalan';
-
+    protected $primaryKey = 'id_penjadwalan';
     protected $fillable = [
         'sesi',
         'agenda',

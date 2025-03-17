@@ -10,7 +10,7 @@ class Fasilitas extends Model
     use HasFactory;
 
     protected $table = 'fasilitas';
-
+    protected $primaryKey = 'id_fasililtas';
     protected $fillable = [
         'id_fasilitas',
         'nama_fasilitas',
