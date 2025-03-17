@@ -10,7 +10,10 @@ services:
       - .:/var/www
       - vendor:/var/www/vendor
       - node_modules:/var/www/node_modules
+<<<<<<< HEAD
       - ./storage:/var/www/storage:delegated
+=======
+>>>>>>> c291b08ce0ef496562cdcfafe9c4276631718f64
     ports:
       - "8080:8080"
     networks:

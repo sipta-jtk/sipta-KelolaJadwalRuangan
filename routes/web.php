@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RuanganController;
 use Illuminate\Support\Facades\File;
+use App\Http\Controllers\PenjadwalanController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,3 +30,7 @@ Route::get('admin/ruangan/{filename}', function ($filename) {
     
     return response()->file($path);
 })->where('filename', '.*');
+
+Route::group(['prefix' => ''], function () {
+    Route::get('penjadwalan-ruangan', [PenjadwalanController::class, 'index']); //bisa di postman
+});

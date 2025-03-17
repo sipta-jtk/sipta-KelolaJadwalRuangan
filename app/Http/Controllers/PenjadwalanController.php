@@ -5,62 +5,48 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePenjadwalanRequest;
 use App\Http\Requests\UpdatePenjadwalanRequest;
 use App\Models\Penjadwalan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class PenjadwalanController extends Controller
 {
+
     /**
-     * Display a listing of the resource.
+     * Menampilkan jadwal.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if ($request->ajax()) {
+            $data = Penjadwalan::whereDate('start', '>=', $request->start)
+                ->whereDate('end',   '<=', $request->end)
+                ->select(['id_penjadwalan as id' , 
+                        'agenda as title', 
+                        'start', 
+                        'end', 
+                        'id_ruangan'
+                        ])
+                        ->get();
+            return response()->json($data);
+        }
+        return view('fullcalendar');
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Menampilkan jadwal kegiatan pada waktu dan ruang tertentu.
      */
-    public function create()
+    public function getEvent()
     {
-        //
-    }
+        $events = DB::table('penjadwalan')
+            ->select('id_penjadwalan as id', 'agenda as title', 'start', 'end', 'id_ruangan')
+            ->get()
+            ->map(function ($event) {
+                // Convert start and end to ISO8601 format with the timezone offset (e.g., UTC or your desired time zone)
+                $event->start = \Carbon\Carbon::parse($event->start)->toIso8601String();  // Format to ISO8601
+                $event->end = \Carbon\Carbon::parse($event->end)->toIso8601String();      // Format to ISO8601
+                $event->resourceId = $event->id_ruangan;
+                return $event;
+            });
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorePenjadwalanRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Penjadwalan $penjadwalan)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Penjadwalan $penjadwalan)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePenjadwalanRequest $request, Penjadwalan $penjadwalan)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Penjadwalan $penjadwalan)
-    {
-        //
+        return response()->json($events);
     }
 }
