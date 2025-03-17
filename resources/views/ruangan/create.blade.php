@@ -48,24 +48,22 @@
     }
 
     .upload-area {
-        border: 2px dashed #dee2e6;
-        border-radius: 15px;
-        padding: 3rem 1rem;
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        padding: 30px;
         text-align: center;
         cursor: pointer;
-        transition: all 0.3s ease;
-        background: #ffffff;
-        min-height: 250px;
+        transition: all 0.3s;
+        background-color: #f8f9fa;
+        min-height: 200px;
         display: flex;
-        flex-direction: column;
-        justify-content: center;
         align-items: center;
-        position: relative;
+        justify-content: center;
     }
 
     .upload-area:hover {
-        border-color: #0d6efd;
-        background-color: #f8f9fa;
+        border-color: #6c757d;
+        background-color: #f1f3f5;
     }
 
     .facility-input-container {
@@ -138,6 +136,45 @@
         transform: scale(1.1);
         background-color: #dc3545 !important;
         color: white;
+    }
+
+    .drop-zone {
+        max-width: 100%;
+        height: 200px;
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border: 2px dashed #0d6efd;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        cursor: pointer;
+        transition: border 0.3s ease-in-out;
+    }
+
+    .drop-zone:hover {
+        border-color: #0b5ed7;
+        background-color: #e9ecef;
+    }
+
+    .drop-zone.dragover {
+        border-color: #0b5ed7;
+        background-color: #e9ecef;
+    }
+
+    .drop-zone__input {
+        display: none;
+    }
+
+    .image-preview-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    #imagePreview {
+        max-height: 300px;
+        object-fit: contain;
     }
 
     .facility-list {
@@ -228,7 +265,7 @@
         animation: fadeOut 0.3s ease-in-out;
     }
 </style>
-@stop
+@endsection
 
 @section('content')
 <div class="container-fluid">
@@ -284,7 +321,7 @@
                                 <select class="form-select @error('kode_gedung') is-invalid @enderror" 
                                         name="kode_gedung" 
                                         required>
-                                    <option value="">Pilih Code Gedung</option>
+                                    <option value="" selected disabled>Pilih Code Gedung</option>
                                     @foreach($gedung as $g)
                                         <option value="{{ $g->kode_gedung }}" 
                                             {{ old('kode_gedung', $ruangan->kode_gedung ?? '') == $g->kode_gedung ? 'selected' : '' }}>
@@ -302,7 +339,7 @@
                                 <select class="form-select @error('status_ruangan') is-invalid @enderror" 
                                         name="status_ruangan" 
                                         required>
-                                    <option value="">Pilih Status Ruangan</option>
+                                    <option value="" selected disabled>Pilih Status Ruangan</option>
                                     <option value="tersedia" {{ old('status_ruangan', $ruangan->status_ruangan ?? '') == 'tersedia' ? 'selected' : '' }}>
                                         Tersedia
                                     </option>
@@ -320,23 +357,24 @@
 
                 <div class="row">
                     <!-- Foto Ruangan Section -->
-                    <div class="col-md-6">
-                        <div class="form-section h-100">
+                    <div class="col-md-6 h-200">
+                        <div class="form-section">
                             <h5 class="section-title">Foto Ruangan</h5>
                             <div class="upload-area" id="uploadArea">
-                                <div id="uploadPrompt" class="{{ isset($ruangan) && $ruangan->foto ? 'd-none' : '' }}">
+                                <div id="uploadPrompt">
                                     <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
                                     <p class="mb-0">Klik untuk upload foto</p>
                                     <small class="text-muted">atau drag and drop file di sini</small>
                                 </div>
-                                <div id="imageContainer" class="position-relative {{ isset($ruangan) && $ruangan->foto ? '' : 'd-none' }}">
+                                <div id="imageContainer" class="position-relative d-none">
                                     <button type="button" class="btn-close position-absolute top-0 end-0 m-2" id="removeImage" style="background-color: #fff; padding: 8px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                        <i class="fas fa-times"></i>
                                     </button>
-                                    <img id="imagePreview" 
-                                        class="img-fluid" 
-                                        src="{{ isset($ruangan) && $ruangan->foto ? asset('storage/'.$ruangan->foto) : '' }}"
-                                        style="max-height: 200px; width: auto; border-radius: 8px;">
+                                    <div class="ratio ratio-1x1" style="max-width: 200px; margin: 0 auto;">
+                                        <img id="imagePreview" 
+                                            class="img-fluid rounded object-fit-cover" 
+                                            src="#"
+                                            style="border-radius: 8px;">
+                                    </div>
                                 </div>
                                 <input type="file" 
                                     class="d-none" 
@@ -352,24 +390,24 @@
 
                     <!-- Fasilitas Ruangan Section -->
                     <div class="col-md-6">
-                        <div class="form-section h-100">
+                        <div class="form-section h-200">
                             <h5 class="section-title">Fasilitas Ruangan</h5>
                             <div class="facility-input-container">
                                 <div class="facility-input-group">
                                     <select class="form-select" id="facilityInput">
                                         <option value="" selected disabled>Pilih Fasilitas</option>
                                         @foreach($fasilitas as $f)
-                                            <option value="{{ $f->id_fasililtas }}" 
+                                            <option value="{{ $f->id_fasilitas }}" 
                                                     data-nama="{{ $f->nama_fasilitas }}">
                                                 {{ $f->nama_fasilitas }}
                                             </option>
                                         @endforeach
                                     </select>
                                     <input type="number" 
-                                           class="form-control" 
-                                           id="facilityQuantity" 
-                                           placeholder="Jumlah" 
-                                           min="1">
+                                        class="form-control" 
+                                        id="facilityQuantity" 
+                                        placeholder="Jumlah" 
+                                        min="1">
                                     <button class="btn btn-add" type="button" id="addFacility">
                                         <i class="fas fa-plus"></i>
                                     </button>
@@ -411,254 +449,266 @@
         </div>
     </div>
 </div>
-@stop
+@endsection
 
-@section('js')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Script untuk upload foto dan preview -->
+@section('scripts')
     <script>
-    document.getElementById('uploadArea').addEventListener('click', function(e) {
-        if (e.target.id !== 'removeImage' && !e.target.closest('#removeImage')) {
-            document.getElementById('photoInput').click();
-        }
-    });
-
-    document.getElementById('photoInput').addEventListener('change', handleFileSelect);
-
-    // Tambahkan event listener untuk tombol close
-    document.getElementById('removeImage')?.addEventListener('click', function(e) {
-        e.stopPropagation(); // Mencegah event click uploadArea
-        removeImage();
-    });
-
-    function handleFileSelect(e) {
-        const file = e.target.files[0];
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const uploadPrompt = document.getElementById('uploadPrompt');
-                const imageContainer = document.getElementById('imageContainer');
-                const imagePreview = document.getElementById('imagePreview');
-                
-                uploadPrompt.classList.add('d-none');
-                imageContainer.classList.remove('d-none');
-                imagePreview.src = e.target.result;
-                document.getElementById('removeFoto').value = '0';
-            }
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function removeImage() {
-        const uploadPrompt = document.getElementById('uploadPrompt');
-        const imageContainer = document.getElementById('imageContainer');
-        const imagePreview = document.getElementById('imagePreview');
-        const photoInput = document.getElementById('photoInput');
-        
-        uploadPrompt.classList.remove('d-none');
-        imageContainer.classList.add('d-none');
-        imagePreview.src = '';
-        photoInput.value = '';
-        document.getElementById('removeFoto').value = '1';
-    }
-
-    // Update script drag and drop
-    uploadArea.addEventListener('drop', handleDrop, false);
-
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const file = dt.files[0];
-        
-        if (file && file.type.startsWith('image/')) {
-            document.getElementById('photoInput').files = dt.files;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const uploadPrompt = document.getElementById('uploadPrompt');
-                const imageContainer = document.getElementById('imageContainer');
-                const imagePreview = document.getElementById('imagePreview');
-                
-                uploadPrompt.classList.add('d-none');
-                imageContainer.classList.remove('d-none');
-                imagePreview.src = e.target.result;
-                document.getElementById('removeFoto').value = '0';
-            }
-            reader.readAsDataURL(file);
-        }
-    }
-
-    // Script untuk mengelola fasilitas
-    document.addEventListener('DOMContentLoaded', function() {
-        const facilityInput = document.getElementById('facilityInput');
-        const quantityInput = document.getElementById('facilityQuantity');
-        const addButton = document.getElementById('addFacility');
-        const facilityList = document.getElementById('facilityList');
-        
-        // Simpan semua opsi original untuk digunakan nanti
-        const originalOptions = Array.from(facilityInput.options);
-        
-        // Fungsi untuk memperbarui dropdown options
-        function updateDropdownOptions() {
-            const usedFacilities = Array.from(document.querySelectorAll('input[name^="fasilitas["]'))
-                .map(input => input.name.match(/\[(\d+)\]/)[1]);
-
-            facilityInput.innerHTML = ''; // Kosongkan dropdown
-
-            originalOptions.forEach(option => {
-                const optionClone = option.cloneNode(true);
-                if (option.value === '' || !usedFacilities.includes(option.value)) {
-                    facilityInput.appendChild(optionClone);
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            const photoInput = document.getElementById('photoInput');
+            const uploadPrompt = document.getElementById('uploadPrompt');
+            const imageContainer = document.getElementById('imageContainer');
+            const imagePreview = document.getElementById('imagePreview');
+            const removeImage = document.getElementById('removeImage');
+            
+            // Click on upload area to trigger file input
+            uploadArea.addEventListener('click', function(e) {
+                if (e.target !== removeImage && !removeImage.contains(e.target)) {
+                    photoInput.click();
                 }
             });
-        }
-
-        // Fungsi untuk mengecek duplikasi
-        function isFacilityDuplicate(facilityId) {
-            // Tambahkan logging untuk debug
-            console.log('Checking duplicate for facility ID:', facilityId);
-            console.log('Existing facilities:', document.querySelectorAll('input[name^="fasilitas["]'));
             
-            const selector = `input[name="fasilitas[${facilityId}]"]`;
-            console.log('Looking for:', selector);
-            
-            const existingFacility = document.querySelector(selector);
-            console.log('Found:', existingFacility);
-            
-            return existingFacility !== null;
-        }
-        
-        // Fungsi untuk menampilkan error
-        function showError(message) {
-            const errorContainer = document.getElementById('facilityError');
-            
-            // Hapus error yang ada dengan animasi
-            const existingError = errorContainer.querySelector('.facility-error');
-            if (existingError) {
-                existingError.classList.add('removing');
-                setTimeout(() => {
-                    existingError.remove();
-                }, 300);
-            }
-            
-            // Buat element error baru
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'facility-error';
-            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i>${message}`;
-            
-            // Tunggu animasi penghapusan selesai sebelum menambahkan pesan baru
-            setTimeout(() => {
-                errorContainer.appendChild(errorDiv);
-                
-                // Hapus pesan error setelah 3 detik
-                setTimeout(() => {
-                    errorDiv.classList.add('removing');
-                    setTimeout(() => {
-                        errorDiv.remove();
-                    }, 300);
-                }, 3000);
-            }, existingError ? 300 : 0);
-        }
-        
-        // Event listener untuk tombol tambah
-        addButton.addEventListener('click', function() {
-            const selectedOption = facilityInput.options[facilityInput.selectedIndex];
-            
-            // Validasi pilihan fasilitas
-            if (facilityInput.selectedIndex === 0) {
-                showError('Silakan pilih fasilitas terlebih dahulu');
-                return;
-            }
-
-            // Validasi jumlah
-            const quantity = parseInt(quantityInput.value);
-            if (!quantity || quantity < 1) {
-                showError('Jumlah fasilitas minimal 1');
-                return;
-            }
-
-            const facilityId = selectedOption.value;
-            const facilityName = selectedOption.text;
-
-            // Debug
-            console.log('Adding facility:', {
-                id: facilityId,
-                name: facilityName,
-                quantity: quantity
+            // Handle drag and drop
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#007bff';
+                uploadArea.style.backgroundColor = '#e9f5ff';
             });
             
-            // Cek duplikasi dengan logging
-            const isDuplicate = isFacilityDuplicate(facilityId);
-            console.log('Is duplicate:', isDuplicate);
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.style.borderColor = '#ddd';
+                uploadArea.style.backgroundColor = '#f8f9fa';
+            });
             
-            if (isDuplicate) {
-                showError('Fasilitas ini sudah ditambahkan');
-                return;
-            }
-
-            // Buat dan tambahkan item fasilitas
-            const facilityItem = document.createElement('div');
-            facilityItem.className = 'facility-item';
-            facilityItem.innerHTML = `
-                <div class="facility-info">
-                    <strong>${facilityName}</strong>
-                    <div class="text-muted">Jumlah: ${quantity}</div>
-                </div>
-                <input type="hidden" name="fasilitas[${facilityId}]" value="${quantity}">
-                <div class="facility-controls">
-                    <button type="button" class="btn btn-sm btn-outline-primary edit-facility">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-facility">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            `;
-
-            facilityList.appendChild(facilityItem);
-            
-            // Update dropdown options
-            updateDropdownOptions();
-            
-            // Reset input
-            facilityInput.selectedIndex = 0;
-            quantityInput.value = '';
-        });
-        
-        // Event delegation untuk tombol edit dan hapus
-        facilityList.addEventListener('click', function(e) {
-            const button = e.target.closest('button');
-            if (!button) return;
-            
-            const facilityItem = button.closest('.facility-item');
-            
-            if (button.classList.contains('remove-facility')) {
-                facilityItem.remove();
-                updateDropdownOptions(); // Perbarui dropdown setelah fasilitas dihapus
-            }
-            
-            if (button.classList.contains('edit-facility')) {
-                const facilityId = facilityItem.querySelector('input[type="hidden"]').name.match(/\[(\d+)\]/)[1];
-                const quantity = facilityItem.querySelector('input[type="hidden"]').value;
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#ddd';
+                uploadArea.style.backgroundColor = '#f8f9fa';
                 
-                facilityItem.remove();
-                updateDropdownOptions(); // Perbarui dropdown setelah fasilitas dihapus
-                
-                facilityInput.value = facilityId;
-                quantityInput.value = quantity;
+                if (e.dataTransfer.files.length) {
+                    photoInput.files = e.dataTransfer.files;
+                    handleFileSelect(e.dataTransfer.files[0]);
+                }
+            });
+            
+            // Handle file selection
+            photoInput.addEventListener('change', function() {
+                if (this.files.length) {
+                    handleFileSelect(this.files[0]);
+                }
+            });
+            
+            // Remove image button
+            removeImage.addEventListener('click', function(e) {
+                e.stopPropagation();
+                photoInput.value = '';
+                imagePreview.src = '#';
+                uploadPrompt.classList.remove('d-none');
+                imageContainer.classList.add('d-none');
+            });
+            
+            function handleFileSelect(file) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        uploadPrompt.classList.add('d-none');
+                        imageContainer.classList.remove('d-none');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Mohon pilih file gambar (JPG, PNG, GIF, dll)');
+                }
             }
-        });
 
-        
-        // Event listener untuk menghapus class invalid saat input berubah
-        facilityInput.addEventListener('change', function() {
-            this.classList.remove('is-invalid');
-        });
+            const facilityInput = document.getElementById('facilityInput');
+            const facilityQuantity = document.getElementById('facilityQuantity');
+            const addFacilityButton = document.getElementById('addFacility');
+            const facilityList = document.getElementById('facilityList');
+            const facilityError = document.getElementById('facilityError');
 
-        quantityInput.addEventListener('input', function() {
-            this.classList.remove('is-invalid');
-        });
+            let editingFacility = null; // Untuk menyimpan fasilitas yang sedang diedit
+            let originalOptions = []; // Untuk menyimpan semua opsi fasilitas asli
 
-        // Jalankan updateDropdownOptions saat halaman dimuat
-        updateDropdownOptions();
-    });
+            // Simpan semua opsi fasilitas asli
+            Array.from(facilityInput.options).forEach(option => {
+                if (option.value) { // Skip opsi default "Pilih Fasilitas"
+                    originalOptions.push({
+                        value: option.value,
+                        text: option.text,
+                        dataNama: option.dataset.nama
+                    });
+                }
+            });
+
+            // Inisialisasi - hapus fasilitas yang sudah ada dari dropdown
+            initializeExistingFacilities();
+
+            function initializeExistingFacilities() {
+                const existingFacilities = document.querySelectorAll('.facility-item');
+                existingFacilities.forEach(facility => {
+                    const facilityId = facility.getAttribute('data-id');
+                    removeOptionFromDropdown(facilityId);
+                });
+            }
+
+            // Fungsi untuk menambahkan fasilitas
+            addFacilityButton.addEventListener('click', function() {
+                const selectedFacilityId = facilityInput.value;
+                const selectedFacilityName = facilityInput.options[facilityInput.selectedIndex]?.dataset.nama;
+                const quantity = facilityQuantity.value;
+
+                // Validasi input
+                if (!selectedFacilityId || !quantity) {
+                    showError('Silakan pilih fasilitas dan masukkan jumlah.');
+                    return;
+                }
+
+                clearError(); // Reset error
+
+                // Jika sedang dalam mode edit
+                if (editingFacility) {
+                    const existingItem = document.querySelector(`.facility-item[data-id="${editingFacility.id}"]`);
+                    
+                    // Jika fasilitas yang diedit berbeda dengan yang dipilih sekarang
+                    if (editingFacility.id !== selectedFacilityId) {
+                        // Tambahkan kembali fasilitas lama ke dropdown
+                        addOptionToDropdown(editingFacility.id, editingFacility.name);
+                        // Hapus fasilitas baru dari dropdown
+                        removeOptionFromDropdown(selectedFacilityId);
+                    }
+                    
+                    existingItem.querySelector('.facility-info strong').textContent = selectedFacilityName;
+                    existingItem.querySelector('.facility-info .text-muted').textContent = `Jumlah: ${quantity}`;
+                    existingItem.querySelector('input[type="hidden"]').value = quantity;
+                    existingItem.setAttribute('data-id', selectedFacilityId);
+                    existingItem.querySelector('input[type="hidden"]').name = `fasilitas[${selectedFacilityId}]`;
+
+                    // Reset editing
+                    editingFacility = null;
+                    addFacilityButton.innerHTML = '<i class="fas fa-plus"></i>';
+                } else {
+                    // Tambah fasilitas baru
+                    const facilityItem = document.createElement('div');
+                    facilityItem.className = 'facility-item';
+                    facilityItem.setAttribute('data-id', selectedFacilityId);
+
+                    facilityItem.innerHTML = `
+                        <div class="facility-info">
+                            <strong>${selectedFacilityName}</strong>
+                            <div class="text-muted">Jumlah: ${quantity}</div>
+                        </div>
+                        <input type="hidden" name="fasilitas[${selectedFacilityId}]" value="${quantity}">
+                        <div class="facility-controls">
+                            <button type="button" class="btn btn-sm btn-outline-primary edit-facility">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-facility">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+
+                    facilityList.appendChild(facilityItem);
+                    
+                    // Hapus fasilitas dari dropdown
+                    removeOptionFromDropdown(selectedFacilityId);
+                }
+
+                // Reset input
+                facilityInput.value = '';
+                facilityQuantity.value = '';
+            });
+
+            // Fungsi untuk menampilkan error
+            function showError(message) {
+                facilityError.textContent = message;
+                facilityError.classList.add('facility-error');
+            }
+
+            // Fungsi untuk menghapus error
+            function clearError() {
+                facilityError.textContent = '';
+                facilityError.classList.remove('facility-error');
+            }
+
+            // Fungsi untuk menghapus opsi dari dropdown
+            function removeOptionFromDropdown(facilityId) {
+                for (let i = 0; i < facilityInput.options.length; i++) {
+                    if (facilityInput.options[i].value === facilityId) {
+                        facilityInput.remove(i);
+                        break;
+                    }
+                }
+            }
+
+            // Fungsi untuk menambahkan opsi ke dropdown
+            function addOptionToDropdown(facilityId, facilityName) {
+                // Cari data fasilitas dari originalOptions
+                const originalOption = originalOptions.find(opt => opt.value === facilityId);
+                if (originalOption) {
+                    const option = document.createElement('option');
+                    option.value = originalOption.value;
+                    option.text = originalOption.text;
+                    option.dataset.nama = originalOption.dataNama;
+                    
+                    // Tambahkan opsi ke dropdown dengan urutan yang benar (abjad)
+                    let inserted = false;
+                    for (let i = 1; i < facilityInput.options.length; i++) { // Mulai dari 1 untuk melewati opsi default
+                        if (facilityInput.options[i].text > originalOption.text) {
+                            facilityInput.add(option, facilityInput.options[i]);
+                            inserted = true;
+                            break;
+                        }
+                    }
+                    
+                    // Jika belum dimasukkan (karena harus di akhir)
+                    if (!inserted) {
+                        facilityInput.add(option);
+                    }
+                }
+            }
+
+            // Event delegation untuk edit dan hapus fasilitas
+            facilityList.addEventListener('click', function(event) {
+                if (event.target.closest('.edit-facility')) {
+                    const facilityItem = event.target.closest('.facility-item');
+                    const facilityId = facilityItem.getAttribute('data-id');
+                    const facilityName = facilityItem.querySelector('.facility-info strong').textContent;
+                    const quantity = facilityItem.querySelector('input[type="hidden"]').value;
+
+                    // Tambahkan kembali fasilitas yang sedang diedit ke dropdown
+                    addOptionToDropdown(facilityId, facilityName);
+                    
+                    // Set input untuk edit
+                    facilityInput.value = facilityId;
+                    facilityQuantity.value = quantity;
+
+                    // Set mode edit
+                    editingFacility = { id: facilityId, name: facilityName };
+                    addFacilityButton.innerHTML = '<i class="fas fa-save"></i>';
+                }
+
+                if (event.target.closest('.remove-facility')) {
+                    const facilityItem = event.target.closest('.facility-item');
+                    const facilityId = facilityItem.getAttribute('data-id');
+                    const facilityName = facilityItem.querySelector('.facility-info strong').textContent;
+                    
+                    // Tambahkan kembali fasilitas ke dropdown
+                    addOptionToDropdown(facilityId, facilityName);
+                    
+                    // Hapus item dari daftar
+                    facilityList.removeChild(facilityItem);
+                    
+                    // Jika sedang dalam mode edit fasilitas yang dihapus, reset mode edit
+                    if (editingFacility && editingFacility.id === facilityId) {
+                        editingFacility = null;
+                        addFacilityButton.innerHTML = '<i class="fas fa-plus"></i>';
+                        facilityInput.value = '';
+                        facilityQuantity.value = '';
+                    }
+                }
+            });
+        });
     </script>
-@stop
+@endsection

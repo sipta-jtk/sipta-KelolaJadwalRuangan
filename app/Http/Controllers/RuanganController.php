@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class RuanganController extends Controller
 {
-    private $uploadPath = 'image/ruangan';  // Folder untuk menyimpan foto
+    private $uploadPath = 'image/ruangan';
 
     /**
      * Menyimpan foto dan mengembalikan path relatifnya
@@ -81,6 +81,7 @@ class RuanganController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
             'nama_ruangan' => 'required|string|max:127|unique:ruangan,nama_ruangan',
             'kode_ruangan' => 'required|string|max:6',
@@ -101,20 +102,21 @@ class RuanganController extends Controller
             if (!File::exists($path)) {
                 File::makeDirectory($path, 0777, true);
             }
-
+            
             // Upload file
             $request->foto->move($path, $imageName);
-            
             try {
                 // Buat ruangan baru dan simpan ID-nya
-                $ruangan = Ruangan::create([
+                $ruanganData = [
                     'nama_ruangan' => $request->nama_ruangan,
                     'kode_ruangan' => $request->kode_ruangan,
                     'status_ruangan' => $request->status_ruangan,
                     'kode_gedung' => $request->kode_gedung,
                     'link_ruangan' => $imageName
-                ]);
+                ];
 
+                $ruangan = Ruangan::create($ruanganData);
+                
                 // Tambahkan fasilitas ke ruangan
                 if ($request->has('fasilitas')) {
                     foreach ($request->fasilitas as $idFasilitas => $jumlah) {
@@ -155,8 +157,10 @@ class RuanganController extends Controller
     {
         try {
             // Ambil data ruangan beserta relasinya
-            $ruangan = Ruangan::with(['gedung', 'fasilitas'])->findOrFail($id);
+            // $ruangan = Ruangan::with(['gedung', 'fasilitas'])->findOrFail($id);
             
+            $ruangan = Ruangan::findOrFail($id);
+
             // Ambil data gedung dan fasilitas untuk dropdown
             $gedung = Gedung::all();
             $fasilitas = Fasilitas::all();
@@ -185,9 +189,12 @@ class RuanganController extends Controller
                 'kode_ruangan' => 'required|string|max:6',
                 'status_ruangan' => 'required|in:tersedia,tidak_tersedia',
                 'kode_gedung' => 'required|exists:gedung,kode_gedung',
-                'fasilitas' => 'array',
+                'fasilitas' => 'nullable|array', // Ubah menjadi nullable karena mungkin tidak ada fasilitas
                 'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
+
+            \Log::info('Updating ruangan: ' . $ruangan->nama_ruangan);
+            \Log::info('Request data: ', $request->all());
 
             try {
                 // Handle foto
@@ -196,6 +203,7 @@ class RuanganController extends Controller
                     $oldImagePath = public_path('image/ruangan/' . $ruangan->link_ruangan);
                     if (File::exists($oldImagePath)) {
                         File::delete($oldImagePath);
+                        \Log::info('Foto lama dihapus: ' . $oldImagePath);
                     }
                     $ruangan->link_ruangan = null;
                 } 
@@ -214,12 +222,14 @@ class RuanganController extends Controller
                         $oldImagePath = $path . '/' . $ruangan->link_ruangan;
                         if (File::exists($oldImagePath)) {
                             File::delete($oldImagePath);
+                            \Log::info('Foto lama diganti: ' . $oldImagePath);
                         }
                     }
 
                     // Upload foto baru
                     $request->foto->move($path, $imageName);
                     $ruangan->link_ruangan = $imageName;
+                    \Log::info('Foto baru diupload: ' . $imageName);
                 }
 
                 // Update data ruangan
@@ -230,10 +240,12 @@ class RuanganController extends Controller
                     'kode_gedung' => $request->kode_gedung,
                     'link_ruangan' => $ruangan->link_ruangan
                 ]);
+                \Log::info('Data ruangan diupdate');
 
                 // Update fasilitas
                 // Hapus semua fasilitas yang ada
                 RuangFasilitas::where('id_ruangan', $ruangan->id_ruangan)->delete();
+                \Log::info('Fasilitas lama dihapus');
 
                 // Tambahkan fasilitas baru
                 if ($request->has('fasilitas')) {
@@ -244,11 +256,13 @@ class RuanganController extends Controller
                                 'id_fasilitas' => $idFasilitas,
                                 'jumlah_fasilitas' => $jumlah
                             ]);
+                            \Log::info('Fasilitas ditambahkan: ' . $idFasilitas . ' dengan jumlah ' . $jumlah);
                         }
                     }
                 }
 
                 DB::commit();
+                \Log::info('Update ruangan berhasil');
                 return redirect()->route('ruangan.index')
                     ->with('success', 'Ruangan berhasil diperbarui!');
 
@@ -258,10 +272,13 @@ class RuanganController extends Controller
                     File::delete($path . '/' . $imageName);
                 }
                 DB::rollback();
+                \Log::error('Error saat update ruangan: ' . $e->getMessage());
+                \Log::error($e->getTraceAsString());
                 throw $e;
             }
 
         } catch (\Exception $e) {
+            \Log::error('Error saat update ruangan: ' . $e->getMessage());
             return redirect()->back()
                 ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])
                 ->withInput();
