@@ -1,8 +1,12 @@
 #!/bin/sh
 
+# Export environment variables from .env file
 export $(grep -v '^#' .env | xargs)
 
-php artisan key:generate
+# Generate application key if not already set
+if [ -z "$APP_KEY" ]; then
+    php artisan key:generate
+fi
 
 # Run migrations
 php artisan migrate:fresh
@@ -15,5 +19,5 @@ else
     echo "Skipping seeders..."
 fi
 
-# Start the Laravel server
+# Use concurrently to run both Laravel server and Vite
 php artisan serve --host=0.0.0.0 --port=8080
