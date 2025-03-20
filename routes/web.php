@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\GedungController;
 use Illuminate\Support\Facades\File;
+use App\Http\Middleware\VerifySiptaToken; 
 
 Route::get('/', function () {
     return view('welcome');
@@ -15,13 +16,14 @@ Route::get('/', function () {
 // Route::resource('admin/ruangan', RuanganController::class);
 
 // Pendekatan 2: Manual Routes
-Route::get('/admin/ruangan', [RuanganController::class, 'index'])->name('ruangan.index');
-Route::get('/admin/ruangan/create', [RuanganController::class, 'create'])->name('ruangan.create');
-Route::post('/admin/ruangan', [RuanganController::class, 'store'])->name('ruangan.store');
-Route::get('/admin/ruangan/{id}/edit', [RuanganController::class, 'edit'])->name('ruangan.edit');
-Route::put('/admin/ruangan/{id}', [RuanganController::class, 'update'])->name('ruangan.update');
-Route::delete('/admin/ruangan/{id}', [RuanganController::class, 'destroy'])->name('ruangan.destroy');
-
+Route::middleware(\App\Http\Middleware\VerifySiptaToken::class.':dosen')->group(function () {
+    Route::get('/admin/ruangan', [RuanganController::class, 'index'])->name('ruangan.index');
+    Route::get('/admin/ruangan/create', [RuanganController::class, 'create'])->name('ruangan.create');
+    Route::post('/admin/ruangan', [RuanganController::class, 'store'])->name('ruangan.store');
+    Route::get('/admin/ruangan/{id}/edit', [RuanganController::class, 'edit'])->name('ruangan.edit');
+    Route::put('/admin/ruangan/{id}', [RuanganController::class, 'update'])->name('ruangan.update');
+    Route::delete('/admin/ruangan/{id}', [RuanganController::class, 'destroy'])->name('ruangan.destroy');
+});
 // Route untuk manajemen gedung
 Route::resource('gedung', GedungController::class);
 
