@@ -8,7 +8,18 @@ use Illuminate\Http\Request;
 
 class RuanganController extends Controller
 {
-    public function allruanganname()
+    /**
+     * Constructor untuk menambahkan middleware.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth'); // Middleware untuk memastikan pengguna sudah login
+    }
+    
+    /**
+     * Menampilkan nama ruangan yang tersedia.
+     */
+    public function namaRuanganTersedia()
     {
         $ruangan = DB::table('ruangan')
             ->select('id_ruangan', 'nama_ruangan')
@@ -17,12 +28,11 @@ class RuanganController extends Controller
         return response()->json($ruangan);
     }
 
+    /**
+     * Menampilkan ruangan yang tersedia untuk pada tanggal dan sesi tertentu.
+     */
     public function ruanganUntukPenjadwalan(Request $request)
     {
-        // mengambil data ruangan yang belum terjadwal pada tanggal tertentu
-        // baca tanggal yang terpilih
-        // baca sesi yang terpilih
-        // ambil ruangan yang kosong pada tanggal dan sesi tersebut
         $tanggal = date('Y-m-d', strtotime($request->tanggal));
         $sesi = $request->sesi;
 

@@ -10,6 +10,13 @@ use Illuminate\Http\Request;
 
 class PenjadwalanController extends Controller
 {
+    /**
+     * Constructor untuk menambahkan middleware.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     /**
      * Menampilkan jadwal.
@@ -35,7 +42,7 @@ class PenjadwalanController extends Controller
     /**
      * Menampilkan jadwal kegiatan pada waktu dan ruang tertentu.
      */
-    public function getEvent()
+    public function agenda()
     {
         $events = DB::table('penjadwalan')
             ->join('ruangan', 'penjadwalan.id_ruangan', '=', 'ruangan.id_ruangan') // JOIN tabel ruangan
@@ -60,12 +67,11 @@ class PenjadwalanController extends Controller
     }
 
 
+    /**
+     * Mengambil sesi yang tersedia pada tanggal tertentu.
+     */
     public function sesiUntukPenjadwalan($tanggal)
     {
-        // mengambil data sesi yang belum terjadwal pada tanggal tertentu
-        // baca tanggal yang terpilih
-        // ambil sesi yang kosong pada tanggal tersebut
-
         $sessions = [1, 2, 3, 4]; 
 
         $scheduledSessions = DB::table('penjadwalan')

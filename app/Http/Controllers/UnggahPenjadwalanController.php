@@ -12,8 +12,18 @@ use Illuminate\Support\Facades\Log;
 
 class UnggahPenjadwalanController extends Controller
 {
-    
-    public function action(Request $request)
+    /**
+     * Constructor untuk menambahkan middleware.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth'); // Middleware untuk memastikan pengguna sudah login
+    }
+
+    /**
+     * Melakukan add, update, dan delete terhadap penjadwalan.
+     */
+    public function aksiKalender(Request $request)
     {
         $sessions = [
             1 => '07:00:00',
@@ -39,11 +49,17 @@ class UnggahPenjadwalanController extends Controller
                 $today = date('Y-m-d');
 
                 if($tanggal <= $today){
-                    return response()->json(['error' => 'Tanggal penjadwalan tidak valid.'], 400);                    
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Tanggal penjadwalan tidak valid.'
+                    ], 400);                   
                 }
                 
                 if ($latestScheduleDate &&  $tanggal > $latestScheduleDate && $latestScheduleDate >= $today) {
-                    return response()->json(['error' => 'Kelompok TA telah membuat penjadwalan.'], 400);
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Kelompok TA telah membuat penjadwalan.'
+                    ], 400);
                 }
 
                 // gaboleh ada yang bikin penjadwalan di tanggal, sesi, dan ruangan yg sama
@@ -53,11 +69,14 @@ class UnggahPenjadwalanController extends Controller
                     ->exists();
 
                 if ($duplicateScheduleExists) {
-                    return response()->json(['error' => 'Tidak bisa membuat penjadwalan! Sudah ada penjadwalan di tanggal, sesi, dan ruangan tersebut.'], 400);
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Tidak bisa membuat penjadwalan! Sudah ada penjadwalan di tanggal, sesi, dan ruangan tersebut.'
+                    ], 400);
                 }
 
                 $event = Penjadwalan::create([
-                    'agenda'     => $request->title,
+                    'agenda'     => $request->agenda,
                     'start'     => date('Y-m-d H:i:s', strtotime($request->start)), // Konversi format
                     'end'       => date('Y-m-d H:i:s', strtotime($request->end)),   // Konversi format
                     'tanggal'   => $tanggal,
@@ -67,7 +86,11 @@ class UnggahPenjadwalanController extends Controller
                     'nip'       => $request->nip ?? null
                 ]);
 
-                return response()->json($event);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Schedule created successfully',
+                    'data' => $event
+                ]);
             }
 
             if ($request->type == 'update') {
@@ -76,29 +99,39 @@ class UnggahPenjadwalanController extends Controller
                     $today = date('Y-m-d');
 
                     if($tanggal <= $today){
-                        return response()->json(['error' => 'Tanggal penjadwalan tidak valid.'], 400);                    
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Tanggal penjadwalan tidak valid.'
+                        ], 400);                    
                     }
                     // gaboleh ada yang bikin penjadwalan di tanggal, sesi, dan ruangan yg sama
                     $duplicateScheduleExists = Penjadwalan::where('tanggal', $tanggal)
                         ->where('sesi', $sesi)
-                        ->where('id_ruangan', $request->resourceId ?? $event->id_ruangan)
+                        ->where('id_ruangan', $request->id_ruangan)
                         ->where('id_penjadwalan', '!=', $event->id_penjadwalan)
                         ->exists();
     
                     if ($duplicateScheduleExists) {
-                        return response()->json(['error' => 'Tidak bisa membuat penjadwalan! Sudah ada penjadwalan di tanggal, sesi, dan ruangan tersebut.'], 400);
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Tidak bisa membuat penjadwalan! Sudah ada penjadwalan di tanggal, sesi, dan ruangan tersebut.'
+                        ], 400);
                     }
 
                     $event->update([
-                        'agenda'     => $request->title,
+                        'agenda'     => $request->agenda,
                         'start'     => date('Y-m-d H:i:s', strtotime($request->start)), // Konversi format
                         'end'       => date('Y-m-d H:i:s', strtotime($request->end)),   // Konversi format
                         'tanggal'   => $tanggal,
-                        'id_ruangan' => $request->resourceId ?? $event->id_ruangan,
+                        'id_ruangan' => $request->id_ruangan,
                         'sesi'      => $sesi,
                     ]);
     
-                    return response()->json($event);
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Schedule updated successfully',
+                        'data' => $event
+                    ]);
                 }
             }
 
@@ -106,11 +139,23 @@ class UnggahPenjadwalanController extends Controller
                 $event = Penjadwalan::where('id_penjadwalan', $request->id)->first();
                 if ($event) {
                     $event->delete();
-                    return response()->json(['message' => 'Event deleted successfully']);
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Event deleted successfully',
+                        'data' => $event
+                    ]);
+                }else{
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Schedule not found'
+                    ], 404);
                 }
             }
         }
 
-        return response()->json(['error' => 'Invalid request'], 400);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Invalid request'
+        ], 400);
     }
 }

@@ -1,6 +1,6 @@
 $(document).ready(function() {
     function fetchSchedules(selectedDate) {  
-        $.getJSON("/api/v1/ruangan/nama", function(roomsData) {
+        $.getJSON("/api/v1/rooms/names", function(roomsData) {
             let rooms = {};
             roomsData.forEach(room => {
                 rooms[room.nama_ruangan] = {}; // Menyimpan berdasarkan nama ruangan
