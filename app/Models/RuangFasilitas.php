@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class RuangFasilitas extends Model
@@ -9,6 +10,8 @@ class RuangFasilitas extends Model
     use HasFactory;
 
     protected $table = 'ruang_fasilitas';
+    protected $primaryKey = 'id';
+    public $timestamps = false;
 
     protected $fillable = [
         'id_fasilitas',

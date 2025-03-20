@@ -26,9 +26,9 @@ class Ruangan extends Model
         return $this->belongsTo(Gedung::class, 'kode_gedung');
     }
 
-    // public function fasilitas()
-    // {
-    //     return $this->belongsToMany(Fasilitas::class, 'ruang_fasilitas', 'id_ruangan', 'id_fasilitas')
-    //                 ->withPivot('jumlah_fasilitas');
-    // }
+    public function fasilitas()
+    {
+        return $this->belongsToMany(Fasilitas::class, 'ruang_fasilitas', 'id_ruangan', 'id_fasilitas')
+                    ->withPivot('jumlah_fasilitas');
+    }
 }

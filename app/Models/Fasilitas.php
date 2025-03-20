@@ -10,15 +10,16 @@ class Fasilitas extends Model
     use HasFactory;
 
     protected $table = 'fasilitas';
-
+    protected $primaryKey = 'id_fasilitas';
+    public $timestamps = false;
     protected $fillable = [
-        'id_fasilitas',
         'nama_fasilitas',
+        // tambahkan kolom lain yang diperlukan
     ];
 
-    // public function ruangan()
-    // {
-    //     return $this->belongsToMany(Ruangan::class, 'ruang_fasilitas', 'id_fasilitas', 'id_ruangan')
-    //                 ->withPivot('jumlah_fasilitas');
-    // }
+    public function ruangan()
+    {
+        return $this->belongsToMany(Ruangan::class, 'ruang_fasilitas', 'id_fasilitas', 'id_ruangan')
+                    ->withPivot('jumlah_fasilitas');
+    }
 }

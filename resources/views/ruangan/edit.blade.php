@@ -3,6 +3,7 @@
 @section('title', 'Edit Ruangan')
 
 @section('css')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
     .content-wrapper {
         background-color: #ffffff !important;
@@ -47,24 +48,22 @@
     }
 
     .upload-area {
-        border: 2px dashed #dee2e6;
-        border-radius: 15px;
-        padding: 3rem 1rem;
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        padding: 30px;
         text-align: center;
         cursor: pointer;
-        transition: all 0.3s ease;
-        background: #ffffff;
-        min-height: 250px;
+        transition: all 0.3s;
+        background-color: #f8f9fa;
+        min-height: 200px;
         display: flex;
-        flex-direction: column;
-        justify-content: center;
         align-items: center;
-        position: relative;
+        justify-content: center;
     }
 
     .upload-area:hover {
-        border-color: #0d6efd;
-        background-color: #f8f9fa;
+        border-color: #6c757d;
+        background-color: #f1f3f5;
     }
 
     .facility-input-container {
@@ -139,6 +138,45 @@
         color: white;
     }
 
+    .drop-zone {
+        max-width: 100%;
+        height: 200px;
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border: 2px dashed #0d6efd;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        cursor: pointer;
+        transition: border 0.3s ease-in-out;
+    }
+
+    .drop-zone:hover {
+        border-color: #0b5ed7;
+        background-color: #e9ecef;
+    }
+
+    .drop-zone.dragover {
+        border-color: #0b5ed7;
+        background-color: #e9ecef;
+    }
+
+    .drop-zone__input {
+        display: none;
+    }
+
+    .image-preview-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    #imagePreview {
+        max-height: 300px;
+        object-fit: contain;
+    }
+
     .facility-list {
         max-height: 300px;
         overflow-y: auto;
@@ -195,18 +233,13 @@
     }
 
     .facility-error {
-        opacity: 0;
-        transform: translateY(-10px);
-        animation: fadeInDown 0.3s ease forwards;
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        animation: fadeIn 0.3s ease-in-out;
     }
 
-    .facility-error.removing {
-        opacity: 0;
-        transform: translateY(-10px);
-        transition: all 0.3s ease;
-    }
-
-    @keyframes fadeInDown {
+    @keyframes fadeIn {
         from {
             opacity: 0;
             transform: translateY(-10px);
@@ -215,6 +248,21 @@
             opacity: 1;
             transform: translateY(0);
         }
+    }
+
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+    }
+
+    .facility-error.removing {
+        animation: fadeOut 0.3s ease-in-out;
     }
 </style>
 @stop
@@ -271,7 +319,7 @@
                                 <select class="form-select @error('kode_gedung') is-invalid @enderror" 
                                         name="kode_gedung" 
                                         required>
-                                    <option value="">Pilih Code Gedung</option>
+                                    <option value="" selected disabled>Pilih Code Gedung</option>
                                     @foreach($gedung as $g)
                                         <option value="{{ $g->kode_gedung }}" 
                                             {{ old('kode_gedung', $ruangan->kode_gedung) == $g->kode_gedung ? 'selected' : '' }}>
@@ -289,7 +337,7 @@
                                 <select class="form-select @error('status_ruangan') is-invalid @enderror" 
                                         name="status_ruangan" 
                                         required>
-                                    <option value="">Pilih Status Ruangan</option>
+                                    <option value="" selected disabled>Pilih Status Ruangan</option>
                                     <option value="tersedia" {{ old('status_ruangan', $ruangan->status_ruangan) == 'tersedia' ? 'selected' : '' }}>
                                         Tersedia
                                     </option>
@@ -307,8 +355,8 @@
 
                 <div class="row">
                     <!-- Foto Ruangan Section -->
-                    <div class="col-md-6">
-                        <div class="form-section h-100">
+                    <div class="col-md-6 h-200">
+                        <div class="form-section">
                             <h5 class="section-title">Foto Ruangan</h5>
                             <div class="upload-area" id="uploadArea">
                                 <div id="uploadPrompt" class="{{ $ruangan->link_ruangan ? 'd-none' : '' }}">
@@ -317,13 +365,14 @@
                                     <small class="text-muted">atau drag and drop file di sini</small>
                                 </div>
                                 <div id="imageContainer" class="position-relative {{ $ruangan->link_ruangan ? '' : 'd-none' }}">
-                                    <button type="button" class="btn-close position-absolute top-0 end-0 m-2" id="removeImage">
-                                        <i class="fas fa-times"></i>
+                                    <button type="button" class="btn-close position-absolute top-0 end-0 m-2" id="removeImage" style="background-color: #fff; padding: 8px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                     </button>
-                                    <img id="imagePreview" 
-                                        class="img-fluid" 
-                                        src="{{ $ruangan->link_ruangan ? asset('image/ruangan/'.$ruangan->link_ruangan) : '' }}"
-                                        style="max-height: 200px; width: auto; border-radius: 8px;">
+                                    <div class="ratio ratio-1x1" style="max-width: 200px; margin: 0 auto;">
+                                        <img id="imagePreview" 
+                                            class="img-fluid rounded object-fit-cover" 
+                                            src="{{ $ruangan->link_ruangan ? asset('image/ruangan/' . $ruangan->link_ruangan) : '#' }}"
+                                            style="border-radius: 8px;">
+                                    </div>
                                 </div>
                                 <input type="file" 
                                     class="d-none" 
@@ -340,24 +389,24 @@
 
                     <!-- Fasilitas Ruangan Section -->
                     <div class="col-md-6">
-                        <div class="form-section h-100">
+                        <div class="form-section h-200">
                             <h5 class="section-title">Fasilitas Ruangan</h5>
                             <div class="facility-input-container">
                                 <div class="facility-input-group">
                                     <select class="form-select" id="facilityInput">
-                                        {{-- @foreach($fasilitas as $f)
-                                            @if(!isset($ruangan) || !$ruangan->fasilitas->contains('id_fasililtas', $f->id_fasililtas))
-                                                <option value="{{ $f->id_fasililtas }}" data-nama="{{ $f->nama_fasilitas }}">
-                                                    {{ $f->nama_fasilitas }}
-                                                </option>
-                                            @endif
-                                        @endforeach --}}
+                                        <option value="" selected disabled>Pilih Fasilitas</option>
+                                        @foreach($fasilitas as $f)
+                                            <option value="{{ $f->id_fasilitas }}" 
+                                                    data-nama="{{ $f->nama_fasilitas }}">
+                                                {{ $f->nama_fasilitas }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                     <input type="number" 
-                                           class="form-control" 
-                                           id="facilityQuantity" 
-                                           placeholder="Jumlah" 
-                                           min="1">
+                                        class="form-control" 
+                                        id="facilityQuantity" 
+                                        placeholder="Jumlah" 
+                                        min="1">
                                     <button class="btn btn-add" type="button" id="addFacility">
                                         <i class="fas fa-plus"></i>
                                     </button>
@@ -366,23 +415,25 @@
                             </div>
                             
                             <div id="facilityList" class="facility-list mt-3">
-                                {{-- @foreach($ruangan->fasilitas as $f)
-                                    <div class="facility-item">
-                                        <div class="facility-info">
-                                            <strong>{{ $f->nama_fasilitas }}</strong>
-                                            <div class="text-muted">Jumlah: {{ $f->pivot->jumlah_fasilitas }}</div>
+                                @if($ruangan->fasilitas)
+                                    @foreach($ruangan->fasilitas as $f)
+                                        <div class="facility-item" data-id="{{ $f->id_fasilitas }}">
+                                            <div class="facility-info">
+                                                <strong>{{ $f->nama_fasilitas }}</strong>
+                                                <div class="text-muted">Jumlah: {{ $f->pivot->jumlah_fasilitas }}</div>
+                                            </div>
+                                            <input type="hidden" name="fasilitas[{{ $f->id_fasilitas }}]" value="{{ $f->pivot->jumlah_fasilitas }}">
+                                            <div class="facility-controls">
+                                                <button type="button" class="btn btn-sm btn-outline-primary edit-facility">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger remove-facility">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <input type="hidden" name="fasilitas[{{ $f->id_fasililtas }}]" value="{{ $f->pivot->jumlah_fasilitas }}">
-                                        <div class="facility-controls">
-                                            <button type="button" class="btn btn-sm btn-outline-primary edit-facility">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-outline-danger remove-facility">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                @endforeach --}}
+                                    @endforeach
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -397,312 +448,269 @@
         </div>
     </div>
 </div>
-@stop
+@endsection
 
-@section('js')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Script untuk upload foto dan preview -->
+@section('scripts')
     <script>
-    document.getElementById('uploadArea').addEventListener('click', function(e) {
-        if (e.target.id !== 'removeImage' && !e.target.closest('#removeImage')) {
-            document.getElementById('photoInput').click();
-        }
-    });
-
-    document.getElementById('photoInput').addEventListener('change', handleFileSelect);
-
-    // Tambahkan event listener untuk tombol close
-    document.getElementById('removeImage')?.addEventListener('click', function(e) {
-        e.stopPropagation(); // Mencegah event click uploadArea
-        removeImage();
-    });
-
-    function handleFileSelect(e) {
-        const file = e.target.files[0];
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const uploadPrompt = document.getElementById('uploadPrompt');
-                const imageContainer = document.getElementById('imageContainer');
-                const imagePreview = document.getElementById('imagePreview');
-                
-                uploadPrompt.classList.add('d-none');
-                imageContainer.classList.remove('d-none');
-                imagePreview.src = e.target.result;
-                document.getElementById('removeFoto').value = '0';
-            }
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function removeImage() {
-        const uploadPrompt = document.getElementById('uploadPrompt');
-        const imageContainer = document.getElementById('imageContainer');
-        const imagePreview = document.getElementById('imagePreview');
-        const photoInput = document.getElementById('photoInput');
-        
-        uploadPrompt.classList.remove('d-none');
-        imageContainer.classList.add('d-none');
-        imagePreview.src = '';
-        photoInput.value = '';
-        document.getElementById('removeFoto').value = '1';
-    }
-
-    // Update script drag and drop
-    uploadArea.addEventListener('drop', handleDrop, false);
-
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const file = dt.files[0];
-        
-        if (file && file.type.startsWith('image/')) {
-            document.getElementById('photoInput').files = dt.files;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const uploadPrompt = document.getElementById('uploadPrompt');
-                const imageContainer = document.getElementById('imageContainer');
-                const imagePreview = document.getElementById('imagePreview');
-                
-                uploadPrompt.classList.add('d-none');
-                imageContainer.classList.remove('d-none');
-                imagePreview.src = e.target.result;
-                document.getElementById('removeFoto').value = '0';
-            }
-            reader.readAsDataURL(file);
-        }
-    }
-
-    // Script untuk mengelola fasilitas
-    document.addEventListener('DOMContentLoaded', function() {
-        const facilityInput = document.getElementById('facilityInput');
-        const quantityInput = document.getElementById('facilityQuantity');
-        const addButton = document.getElementById('addFacility');
-        const facilityList = document.getElementById('facilityList');
-        
-        // Simpan semua opsi original untuk digunakan nanti
-        const originalOptions = Array.from(document.querySelectorAll('#facilityInput option'));
-        
-        // Tambahkan opsi untuk fasilitas yang sudah ada
-        {{-- @foreach($ruangan->fasilitas as $f)
-        // originalOptions.push({
-        //     value: "{{ $f->id_fasililtas }}",
-        //     text: "{{ $f->nama_fasilitas }}"
-        // });
-        @endforeach --}}
-        
-        // Fungsi untuk memperbarui dropdown options
-        function updateDropdownOptions() {
-            const usedFacilities = Array.from(document.querySelectorAll('input[name^="fasilitas["]'))
-                .map(input => input.name.match(/\[(\d+)\]/)[1]);
-
-            facilityInput.innerHTML = ''; // Kosongkan dropdown
-
-            // Tambahkan opsi default
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.text = 'Pilih Fasilitas';
-            defaultOption.selected = true;
-            defaultOption.disabled = true;
-            facilityInput.appendChild(defaultOption);
-
-            // Tambahkan opsi-opsi lainnya
-            originalOptions.forEach(option => {
-                // Jika option adalah DOM element
-                if (option instanceof HTMLOptionElement) {
-                    const optionClone = option.cloneNode(true);
-                    if (option.value === '' || !usedFacilities.includes(option.value)) {
-                        facilityInput.appendChild(optionClone);
-                    }
-                } 
-                // Jika option adalah object dari data yang sudah ada
-                else {
-                    if (!usedFacilities.includes(option.value)) {
-                        const newOption = document.createElement('option');
-                        newOption.value = option.value;
-                        newOption.text = option.text;
-                        facilityInput.appendChild(newOption);
-                    }
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            const photoInput = document.getElementById('photoInput');
+            const uploadPrompt = document.getElementById('uploadPrompt');
+            const imageContainer = document.getElementById('imageContainer');
+            const imagePreview = document.getElementById('imagePreview');
+            const removeImage = document.getElementById('removeImage');
+            const removeFoto = document.getElementById('removeFoto');
+            
+            // Click on upload area to trigger file input
+            uploadArea.addEventListener('click', function(e) {
+                if (e.target !== removeImage && !removeImage.contains(e.target)) {
+                    photoInput.click();
                 }
             });
-        }
-
-        // Fungsi untuk mengecek duplikasi
-        function isFacilityDuplicate(facilityId) {
-            const selector = `input[name="fasilitas[${facilityId}]"]`;
-            const existingFacility = document.querySelector(selector);
-            return existingFacility !== null;
-        }
-        
-        // Fungsi untuk menampilkan error
-        function showError(message) {
-            const errorContainer = document.getElementById('facilityError');
             
-            // Hapus error yang ada dengan animasi
-            const existingError = errorContainer.querySelector('.facility-error');
-            if (existingError) {
-                existingError.classList.add('removing');
-                setTimeout(() => {
-                    existingError.remove();
-                }, 300);
-            }
+            // Handle drag and drop
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#007bff';
+                uploadArea.style.backgroundColor = '#e9f5ff';
+            });
             
-            // Buat element error baru
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'facility-error';
-            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i>${message}`;
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.style.borderColor = '#ddd';
+                uploadArea.style.backgroundColor = '#f8f9fa';
+            });
             
-            // Tunggu animasi penghapusan selesai sebelum menambahkan pesan baru
-            setTimeout(() => {
-                errorContainer.appendChild(errorDiv);
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#ddd';
+                uploadArea.style.backgroundColor = '#f8f9fa';
                 
-                // Hapus pesan error setelah 3 detik
-                setTimeout(() => {
-                    errorDiv.classList.add('removing');
-                    setTimeout(() => {
-                        errorDiv.remove();
-                    }, 300);
-                }, 3000);
-            }, existingError ? 300 : 0);
-        }
-        
-        // Event listener untuk tombol tambah
-        addButton.addEventListener('click', function() {
-            const selectedOption = facilityInput.options[facilityInput.selectedIndex];
+                if (e.dataTransfer.files.length) {
+                    photoInput.files = e.dataTransfer.files;
+                    handleFileSelect(e.dataTransfer.files[0]);
+                }
+            });
             
-            // Validasi pilihan fasilitas
-            if (facilityInput.selectedIndex === 0) {
-                showError('Silakan pilih fasilitas terlebih dahulu');
-                return;
+            // Handle file selection
+            photoInput.addEventListener('change', function() {
+                if (this.files.length) {
+                    handleFileSelect(this.files[0]);
+                    removeFoto.value = '0'; // Reset remove flag when new photo is selected
+                }
+            });
+            
+            // Remove image button
+            removeImage.addEventListener('click', function(e) {
+                e.stopPropagation();
+                photoInput.value = '';
+                imagePreview.src = '#';
+                uploadPrompt.classList.remove('d-none');
+                imageContainer.classList.add('d-none');
+                removeFoto.value = '1'; // Set flag to remove photo
+            });
+            
+            function handleFileSelect(file) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        uploadPrompt.classList.add('d-none');
+                        imageContainer.classList.remove('d-none');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Mohon pilih file gambar (JPG, PNG, GIF, dll)');
+                }
             }
 
-            // Validasi jumlah
-            const quantity = parseInt(quantityInput.value);
-            if (!quantity || quantity < 1) {
-                showError('Jumlah fasilitas minimal 1');
-                return;
+            const facilityInput = document.getElementById('facilityInput');
+            const facilityQuantity = document.getElementById('facilityQuantity');
+            const addFacilityButton = document.getElementById('addFacility');
+            const facilityList = document.getElementById('facilityList');
+            const facilityError = document.getElementById('facilityError');
+
+            let editingFacility = null; // Untuk menyimpan fasilitas yang sedang diedit
+            let originalOptions = []; // Untuk menyimpan semua opsi fasilitas asli
+
+            // Simpan semua opsi fasilitas asli
+            Array.from(facilityInput.options).forEach(option => {
+                if (option.value) { // Skip opsi default "Pilih Fasilitas"
+                    originalOptions.push({
+                        value: option.value,
+                        text: option.text,
+                        dataNama: option.dataset.nama
+                    });
+                }
+            });
+
+            // Inisialisasi - hapus fasilitas yang sudah ada dari dropdown
+            initializeExistingFacilities();
+
+            function initializeExistingFacilities() {
+                const existingFacilities = document.querySelectorAll('.facility-item');
+                existingFacilities.forEach(facility => {
+                    const facilityId = facility.getAttribute('data-id');
+                    removeOptionFromDropdown(facilityId);
+                });
             }
 
-            const facilityId = selectedOption.value;
-            const facilityName = selectedOption.text;
-            
-            if (isFacilityDuplicate(facilityId)) {
-                showError('Fasilitas ini sudah ditambahkan');
-                return;
-            }
+            // Fungsi untuk menambahkan fasilitas
+            addFacilityButton.addEventListener('click', function() {
+                const selectedFacilityId = facilityInput.value;
+                const selectedFacilityName = facilityInput.options[facilityInput.selectedIndex]?.dataset.nama;
+                const quantity = facilityQuantity.value;
 
-            // Buat dan tambahkan item fasilitas
-            const facilityItem = document.createElement('div');
-            facilityItem.className = 'facility-item';
-            facilityItem.innerHTML = `
-                <div class="facility-info">
-                    <strong>${facilityName}</strong>
-                    <div class="text-muted">Jumlah: ${quantity}</div>
-                </div>
-                <input type="hidden" name="fasilitas[${facilityId}]" value="${quantity}">
-                <div class="facility-controls">
-                    <button type="button" class="btn btn-sm btn-outline-primary edit-facility">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-facility">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            `;
-
-            facilityList.appendChild(facilityItem);
-            
-            // Update dropdown options
-            updateDropdownOptions();
-            
-            // Reset input
-            facilityInput.selectedIndex = 0;
-            quantityInput.value = '';
-        });
-        
-        // Event delegation untuk tombol edit dan hapus
-        facilityList.addEventListener('click', function(e) {
-            const button = e.target.closest('button');
-            if (!button) return;
-            
-            const facilityItem = button.closest('.facility-item');
-            console.log('Clicked facility item:', facilityItem);
-            
-            if (button.classList.contains('remove-facility')) {
-                console.log('Removing facility item');
-                facilityItem.remove();
-                updateDropdownOptions(); // Perbarui dropdown setelah fasilitas dihapus
-            }
-            
-            if (button.classList.contains('edit-facility')) {
-                console.log('Editing facility item');
-                const facilityInputHidden = facilityItem.querySelector('input[type="hidden"]');
-                console.log('Hidden input:', facilityInputHidden);
-                
-                if (!facilityInputHidden) {
-                    console.error('Hidden input not found!');
+                // Validasi input
+                if (!selectedFacilityId || !quantity) {
+                    showError('Silakan pilih fasilitas dan masukkan jumlah.');
                     return;
                 }
-                
-                const facilityId = facilityInputHidden.name.match(/\[(\d+)\]/)?.[1];
-                console.log('Facility ID:', facilityId);
-                
-                if (!facilityId) {
-                    console.error('Could not extract facility ID from:', facilityInputHidden.name);
-                    return;
-                }
-                
-                const quantity = facilityInputHidden.value;
-                console.log('Quantity:', quantity);
-                
-                // Cari nama fasilitas dari data asli atau dari DOM
-                let facilityName = facilityItem.querySelector('.facility-info strong').textContent;
-                console.log('Facility name:', facilityName);
-                
-                facilityItem.remove();
-                updateDropdownOptions(); // Perbarui dropdown setelah fasilitas dihapus
-                
-                // Tunggu dropdown diperbarui
-                setTimeout(() => {
-                    console.log('Dropdown options after update:', facilityInput.options);
+
+                clearError(); // Reset error
+
+                // Jika sedang dalam mode edit
+                if (editingFacility) {
+                    const existingItem = document.querySelector(`.facility-item[data-id="${editingFacility.id}"]`);
                     
-                    // Cari opsi yang sesuai di dropdown
-                    let optionFound = false;
-                    for (let i = 0; i < facilityInput.options.length; i++) {
-                        console.log(`Checking option ${i}:`, facilityInput.options[i].value, 'against', facilityId);
-                        if (facilityInput.options[i].value === facilityId) {
-                            facilityInput.selectedIndex = i;
-                            optionFound = true;
-                            console.log('Option found at index:', i);
+                    // Jika fasilitas yang diedit berbeda dengan yang dipilih sekarang
+                    if (editingFacility.id !== selectedFacilityId) {
+                        // Tambahkan kembali fasilitas lama ke dropdown
+                        addOptionToDropdown(editingFacility.id, editingFacility.name);
+                        // Hapus fasilitas baru dari dropdown
+                        removeOptionFromDropdown(selectedFacilityId);
+                    }
+                    
+                    existingItem.querySelector('.facility-info strong').textContent = selectedFacilityName;
+                    existingItem.querySelector('.facility-info .text-muted').textContent = `Jumlah: ${quantity}`;
+                    existingItem.querySelector('input[type="hidden"]').value = quantity;
+                    existingItem.setAttribute('data-id', selectedFacilityId);
+                    existingItem.querySelector('input[type="hidden"]').name = `fasilitas[${selectedFacilityId}]`;
+
+                    // Reset editing
+                    editingFacility = null;
+                    addFacilityButton.innerHTML = '<i class="fas fa-plus"></i>';
+                } else {
+                    // Tambah fasilitas baru
+                    const facilityItem = document.createElement('div');
+                    facilityItem.className = 'facility-item';
+                    facilityItem.setAttribute('data-id', selectedFacilityId);
+
+                    facilityItem.innerHTML = `
+                        <div class="facility-info">
+                            <strong>${selectedFacilityName}</strong>
+                            <div class="text-muted">Jumlah: ${quantity}</div>
+                        </div>
+                        <input type="hidden" name="fasilitas[${selectedFacilityId}]" value="${quantity}">
+                        <div class="facility-controls">
+                            <button type="button" class="btn btn-sm btn-outline-primary edit-facility">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-facility">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+
+                    facilityList.appendChild(facilityItem);
+                    
+                    // Hapus fasilitas dari dropdown
+                    removeOptionFromDropdown(selectedFacilityId);
+                }
+
+                // Reset input
+                facilityInput.value = '';
+                facilityQuantity.value = '';
+            });
+
+            // Fungsi untuk menampilkan error
+            function showError(message) {
+                facilityError.textContent = message;
+                facilityError.classList.add('facility-error');
+            }
+
+            // Fungsi untuk menghapus error
+            function clearError() {
+                facilityError.textContent = '';
+                facilityError.classList.remove('facility-error');
+            }
+
+            // Fungsi untuk menghapus opsi dari dropdown
+            function removeOptionFromDropdown(facilityId) {
+                for (let i = 0; i < facilityInput.options.length; i++) {
+                    if (facilityInput.options[i].value === facilityId) {
+                        facilityInput.remove(i);
+                        break;
+                    }
+                }
+            }
+
+            // Fungsi untuk menambahkan opsi ke dropdown
+            function addOptionToDropdown(facilityId, facilityName) {
+                // Cari data fasilitas dari originalOptions
+                const originalOption = originalOptions.find(opt => opt.value === facilityId);
+                if (originalOption) {
+                    const option = document.createElement('option');
+                    option.value = originalOption.value;
+                    option.text = originalOption.text;
+                    option.dataset.nama = originalOption.dataNama;
+                    
+                    // Tambahkan opsi ke dropdown dengan urutan yang benar (abjad)
+                    let inserted = false;
+                    for (let i = 1; i < facilityInput.options.length; i++) { // Mulai dari 1 untuk melewati opsi default
+                        if (facilityInput.options[i].text > originalOption.text) {
+                            facilityInput.add(option, facilityInput.options[i]);
+                            inserted = true;
                             break;
                         }
                     }
                     
-                    // Jika opsi tidak ditemukan, tambahkan opsi baru
-                    if (!optionFound) {
-                        console.log('Option not found, creating new option');
-                        const newOption = document.createElement('option');
-                        newOption.value = facilityId;
-                        newOption.text = facilityName;
-                        facilityInput.add(newOption);
-                        facilityInput.value = facilityId;
+                    // Jika belum dimasukkan (karena harus di akhir)
+                    if (!inserted) {
+                        facilityInput.add(option);
                     }
-                    
-                    quantityInput.value = quantity;
-                }, 0);
+                }
             }
-        });
 
-        // Event listener untuk menghapus class invalid saat input berubah
-        facilityInput.addEventListener('change', function() {
-            this.classList.remove('is-invalid');
-        });
+            // Event delegation untuk edit dan hapus fasilitas
+            facilityList.addEventListener('click', function(event) {
+                if (event.target.closest('.edit-facility')) {
+                    const facilityItem = event.target.closest('.facility-item');
+                    const facilityId = facilityItem.getAttribute('data-id');
+                    const facilityName = facilityItem.querySelector('.facility-info strong').textContent;
+                    const quantity = facilityItem.querySelector('input[type="hidden"]').value;
 
-        quantityInput.addEventListener('input', function() {
-            this.classList.remove('is-invalid');
-        });
+                    // Tambahkan kembali fasilitas yang sedang diedit ke dropdown
+                    addOptionToDropdown(facilityId, facilityName);
+                    
+                    // Set input untuk edit
+                    facilityInput.value = facilityId;
+                    facilityQuantity.value = quantity;
 
-        // Jalankan updateDropdownOptions saat halaman dimuat
-        updateDropdownOptions();
-    });
+                    // Set mode edit
+                    editingFacility = { id: facilityId, name: facilityName };
+                    addFacilityButton.innerHTML = '<i class="fas fa-save"></i>';
+                }
+
+                if (event.target.closest('.remove-facility')) {
+                    const facilityItem = event.target.closest('.facility-item');
+                    const facilityId = facilityItem.getAttribute('data-id');
+                    const facilityName = facilityItem.querySelector('.facility-info strong').textContent;
+                    
+                    // Tambahkan kembali fasilitas ke dropdown
+                    addOptionToDropdown(facilityId, facilityName);
+                    
+                    // Hapus item dari daftar
+                    facilityList.removeChild(facilityItem);
+                    
+                    // Jika sedang dalam mode edit fasilitas yang dihapus, reset mode edit
+                    if (editingFacility && editingFacility.id === facilityId) {
+                        editingFacility = null;
+                        addFacilityButton.innerHTML = '<i class="fas fa-plus"></i>';
+                        facilityInput.value = '';
+                        facilityQuantity.value = '';
+                    }
+                }
+            });
+        });
     </script>
-@stop
+@endsection
