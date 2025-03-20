@@ -19,16 +19,17 @@ class PenjadwalanController extends Controller
         if ($request->ajax()) {
             $data = Penjadwalan::whereDate('start', '>=', $request->start)
                 ->whereDate('end',   '<=', $request->end)
-                ->select(['id_penjadwalan as id' , 
-                        'agenda as title', 
+                ->select(['id_penjadwalan' , 
+                        'agenda', 
                         'start', 
                         'end', 
-                        'id_ruangan'
+                        'id_ruangan',
+                        'id_kota'
                         ])
                         ->get();
             return response()->json($data);
         }
-        return view('fullcalendar');
+        return view('calendar');
     }
 
     /**
@@ -37,16 +38,43 @@ class PenjadwalanController extends Controller
     public function getEvent()
     {
         $events = DB::table('penjadwalan')
-            ->select('id_penjadwalan as id', 'agenda as title', 'start', 'end', 'id_ruangan')
+            ->join('ruangan', 'penjadwalan.id_ruangan', '=', 'ruangan.id_ruangan') // JOIN tabel ruangan
+            ->select(
+                'penjadwalan.id_penjadwalan', 
+                'penjadwalan.agenda', 
+                'penjadwalan.start', 
+                'penjadwalan.end', 
+                'penjadwalan.tanggal',
+                'penjadwalan.id_ruangan',
+                'ruangan.nama_ruangan',
+                'penjadwalan.id_kota'
+            )
             ->get()
             ->map(function ($event) {
-                // Convert start and end to ISO8601 format with the timezone offset (e.g., UTC or your desired time zone)
-                $event->start = \Carbon\Carbon::parse($event->start)->toIso8601String();  // Format to ISO8601
-                $event->end = \Carbon\Carbon::parse($event->end)->toIso8601String();      // Format to ISO8601
-                $event->resourceId = $event->id_ruangan;
+                $event->start = \Carbon\Carbon::parse($event->start)->toIso8601String();
+                $event->end = \Carbon\Carbon::parse($event->end)->toIso8601String();
                 return $event;
             });
 
         return response()->json($events);
+    }
+
+
+    public function sesiUntukPenjadwalan($tanggal)
+    {
+        // mengambil data sesi yang belum terjadwal pada tanggal tertentu
+        // baca tanggal yang terpilih
+        // ambil sesi yang kosong pada tanggal tersebut
+
+        $sessions = [1, 2, 3, 4]; 
+
+        $scheduledSessions = DB::table('penjadwalan')
+            ->where('tanggal', $tanggal)
+            ->pluck('sesi')
+            ->toArray();
+
+        $availableSessions = array_diff($sessions, $scheduledSessions);
+
+        return response()->json(array_values($availableSessions));
     }
 }

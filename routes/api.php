@@ -11,7 +11,9 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::prefix('v1')->group(function () {
+    Route::get('ruangan/penjadwalan', [RuanganController::class, 'ruanganUntukPenjadwalan']); //bisa di postman
     Route::get('ruangan/nama', [RuanganController::class, 'allruanganname']); //bisa di postman
+    Route::get('schedule/sessions/{tanggal}', [PenjadwalanController::class, 'sesiUntukPenjadwalan']); //bisa di postman
     Route::get("schedules", [PenjadwalanController::class, "getEvent"]); //bisa di postman
     Route::post('schedule/action', [UnggahPenjadwalanController::class, 'action']); //bisa di postman
 });
