@@ -3,6 +3,13 @@
 # Export environment variables from .env file
 export $(grep -v '^#' .env | xargs)
 
+# Fungsi untuk menunggu database siap
+echo "Menunggu database siap..."
+until php -r "try { new PDO('mysql:host=${DB_HOST};dbname=${DB_DATABASE}', '${DB_USERNAME}', '${DB_PASSWORD}'); echo 'Database siap.'; } catch (PDOException \$e) { exit(1); }"; do
+    sleep 3
+    echo "Menunggu database..."
+done || { echo "Gagal terhubung ke database."; exit 1; }
+
 # Generate application key if not already set
 if [ -z "$APP_KEY" ]; then
     php artisan key:generate
@@ -19,4 +26,4 @@ else
     echo "Skipping seeders..."
 fi
 
-php artisan serve --host=0.0.0.0 --port=8080
+php artisan serve --host=0.0.0.0 --port=9000

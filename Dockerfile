@@ -15,8 +15,10 @@ WORKDIR /var/www
 # Copy the entire Laravel application first
 COPY . .
 
-# Ensure correct permissions for Laravel
-RUN chmod -R 775 storage bootstrap/cache
+# Create necessary directories and set permissions
+RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views \
+    && chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
 
 # Install PHP dependencies
 RUN composer install --no-interaction --no-progress --optimize-autoloader
@@ -24,10 +26,10 @@ RUN composer install --no-interaction --no-progress --optimize-autoloader
 # Install frontend dependencies
 RUN npm install
 
-# Copy the start script
+# Ensure start script is executable
 COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
 EXPOSE 9000
 
-# Start the Laravel server using the start script
-CMD ["sh", "/usr/local/bin/start.sh"]
+CMD ["/usr/local/bin/start.sh"]
