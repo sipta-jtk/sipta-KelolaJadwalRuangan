@@ -3,12 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Jadwal Ruangan</title>
-
-    <!-- FullCalendar CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/core/main.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/resource-timeline/main.min.css">
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -19,13 +14,13 @@
 <body>
 
 <div class="container mt-4">
-    <h1>Pengelolaan dan Penjadwalan Ruangan</h1>
+    <h1 class="mb-5">Pengelolaan dan Penjadwalan Ruangan</h1>
 
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Kalender</h3>
+                <div class="card-header bg-dark text-white text-center">
+                    <h3 class="card-title ">Kalender</h3>
                 </div>
 
                 <div class="card-body">
@@ -33,7 +28,37 @@
                         <label for="calendarDate" class="form-label">Pilih Tanggal:</label>
                         <input type="date" id="calendarDate" class="form-control">
                     </div>
-                    <div id="calendar"></div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div>
+                            <button id="prev-date" class="btn btn-secondary me-2">&lt;</button>
+                            <button id="next-date" class="btn btn-secondary">&gt;</button>
+                        </div>
+                        <h4 id="current-date" class="mb-0 flex-grow-1 text-center"></h4>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center mt-4">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Ruangan</th>
+                                    <th>06:00</th>
+                                    <th>07:00</th>
+                                    <th>08:00</th>
+                                    <th>09:00</th>
+                                    <th>10:00</th>
+                                    <th>11:00</th>
+                                    <th>12:00</th>
+                                    <th>13:00</th>
+                                    <th>14:00</th>
+                                    <th>15:00</th>
+                                    <th>16:00</th>
+                                    <th>17:00</th>
+                                    <th>18:00</th>
+                                </tr>
+                            </thead>
+                            <tbody id="schedule-body">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- Modal untuk memilih event -->
@@ -76,8 +101,8 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- FullCalendar JS -->
-@vite('resources/js/app.js')
+<!-- Calendar JS -->
+<script src="{{ asset('js/calendar.js') }}"></script>
 
 </body>
 </html>
