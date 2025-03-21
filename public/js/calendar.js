@@ -5,7 +5,7 @@ $(document).ready(function() {
             roomsData.forEach(room => {
                 rooms[room.nama_ruangan] = {}; // Menyimpan berdasarkan nama ruangan
                 for (let hour = 6; hour <= 18; hour++) {
-                    rooms[room.nama_ruangan.trim().toLowerCase()][hour] = "<td></td>";
+                    rooms[room.nama_ruangan][hour] = "<td></td>";
                 }
             });
     
@@ -24,7 +24,7 @@ $(document).ready(function() {
                     .forEach(event => {
                     let startHour = new Date(Date.parse(event.start)).getUTCHours();
                     let endHour = new Date(Date.parse(event.end)).getUTCHours();
-                    let roomName = event.nama_ruangan.trim().toLowerCase();
+                    let roomName = event.nama_ruangan;
                     let duration = endHour - startHour;
                     let agenda = agendaMapping[event.agenda] || event.agenda;
                     
