@@ -11,10 +11,10 @@ class RuanganController extends Controller
     /**
      * Constructor untuk menambahkan middleware.
      */
-    public function __construct()
-    {
-        $this->middleware('auth'); // Middleware untuk memastikan pengguna sudah login
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth'); // Middleware untuk memastikan pengguna sudah login
+    // }
     
     /**
      * Menampilkan nama ruangan yang tersedia.

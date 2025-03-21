@@ -15,10 +15,10 @@ class UnggahPenjadwalanController extends Controller
     /**
      * Constructor untuk menambahkan middleware.
      */
-    public function __construct()
-    {
-        $this->middleware('auth'); // Middleware untuk memastikan pengguna sudah login
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth'); // Middleware untuk memastikan pengguna sudah login
+    // }
 
     /**
      * Melakukan add, update, dan delete terhadap penjadwalan.

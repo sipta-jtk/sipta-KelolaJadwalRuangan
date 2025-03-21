@@ -13,10 +13,10 @@ class PenjadwalanController extends Controller
     /**
      * Constructor untuk menambahkan middleware.
      */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    // }
 
     /**
      * Menampilkan jadwal.
