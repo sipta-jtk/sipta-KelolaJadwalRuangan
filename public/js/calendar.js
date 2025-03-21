@@ -98,4 +98,31 @@ $(document).ready(function() {
         updateDate(currentDate);
     });
 
+    // Listen for clicks on the download PDF button
+    $('#downloadPdfBtn').click(function() {
+        // Get the currently selected date
+        const date = $('#calendarDate').val();
+        
+        if (!date) {
+            alert('Silakan pilih tanggal terlebih dahulu');
+            return;
+        }
+        
+        // Create agenda mapping object to send with the request
+        const agendaMapping = {
+            seminar_1: "Seminar 1",
+            seminar_2: "Seminar 2",
+            seminar_3: "Seminar 3",
+            sidang: "Sidang"
+        };
+    
+        // Redirect to the PDF download route with mapping as query parameters
+        const queryParams = new URLSearchParams({
+            date: date,
+            ...agendaMapping
+        });
+    
+        window.location.href = `/download-schedule-pdf?${queryParams.toString()}`;
+    });
+
 });

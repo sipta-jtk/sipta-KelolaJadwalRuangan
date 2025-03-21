@@ -114,23 +114,5 @@
 <!-- Calendar JS -->
 <script src="{{ asset('js/calendar.js') }}"></script>
 
-<!-- PDF Download Script -->
-<script>
-    $(document).ready(function() {
-        $('#downloadPdfBtn').click(function() {
-            // Get the currently selected date
-            const date = $('#calendarDate').val();
-            
-            if (!date) {
-                alert('Silakan pilih tanggal terlebih dahulu');
-                return;
-            }
-            
-            // Redirect to the PDF download route
-            window.location.href = `/download-schedule-pdf?date=${date}`;
-        });
-    });
-</script>
-
 </body>
 </html>

@@ -35,8 +35,14 @@ class PdfController extends Controller
             ->where('tanggal', $formattedDate)
             ->get();
 
-        
-        
+        // Define agenda mapping from request parameters
+        $agendaMapping = [
+            'seminar_1' => $request->input('seminar_1', 'Seminar 1'),
+            'seminar_2' => $request->input('seminar_2', 'Seminar 2'),
+            'seminar_3' => $request->input('seminar_3', 'Seminar 3'),
+            'sidang' => $request->input('sidang', 'Sidang'),
+        ];
+
         // Define time slots (hours) for the schedule
         $timeSlots = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', 
                       '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
@@ -49,7 +55,7 @@ class PdfController extends Controller
             4 => '15:00'
         ];
         
-        // Duration of each session in hours (assuming 2 hours based on your code)
+        // Duration of each session in hours
         $sessionDuration = 2;
         
         // Prepare data for PDF
@@ -59,7 +65,8 @@ class PdfController extends Controller
             'schedules' => $schedules,
             'timeSlots' => $timeSlots,
             'sessionMapping' => $sessionMapping,
-            'sessionDuration' => $sessionDuration
+            'sessionDuration' => $sessionDuration,
+            'agendaMapping' => $agendaMapping // Add agenda mapping to view data
         ];
         
         // Generate PDF

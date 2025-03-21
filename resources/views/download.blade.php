@@ -79,7 +79,8 @@
                                     
                                     if ($startTime == $time) {
                                         $reserved = true;
-                                        $agenda = $schedule->agenda . ' KoTA ' . $schedule->id_kota; 
+                                        $mappedAgenda = $agendaMapping[$schedule->agenda] ?? $schedule->agenda;
+                                        $agenda = $mappedAgenda . ' KoTA ' . $schedule->id_kota; 
                                         $colspan = $sessionDuration;
                                         break;
                                     }
@@ -101,5 +102,9 @@
             @endforeach
         </tbody>
     </table>
+
+    <script src="{{ asset('js/calendar.js') }}"></script>
+
+
 </body>
 </html>
