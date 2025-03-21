@@ -18,8 +18,10 @@ class VerifySiptaToken
         }
         
         try {
+            $siptaPort = env('SIPTA_SERVICE_PORT', '8000');
+
             // Verify token with your SIPTA service
-            $response = Http::get('http://host.docker.internal:8000/usermanagement/v1/role', [
+            $response = Http::get("http://host.docker.internal:{$siptaPort}/usermanagement/v1/role", [
                 'token' => $token
             ]);
             
