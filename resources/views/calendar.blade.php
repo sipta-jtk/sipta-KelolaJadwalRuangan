@@ -10,6 +10,13 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -19,8 +26,13 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header bg-dark text-white text-center">
+                <div class="card-header bg-dark text-white text-center align-items-center">
                     <h3 class="card-title ">Kalender</h3>
+                </div>
+                <div>
+                    <button id="downloadPdfBtn" class="btn btn-light">
+                        <i class="bi bi-file-pdf"></i> Download PDF
+                    </button>
                 </div>
 
                 <div class="card-body">
@@ -91,8 +103,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                
             </div>
         </div>
     </div>
@@ -103,6 +113,24 @@
 
 <!-- Calendar JS -->
 <script src="{{ asset('js/calendar.js') }}"></script>
+
+<!-- PDF Download Script -->
+<script>
+    $(document).ready(function() {
+        $('#downloadPdfBtn').click(function() {
+            // Get the currently selected date
+            const date = $('#calendarDate').val();
+            
+            if (!date) {
+                alert('Silakan pilih tanggal terlebih dahulu');
+                return;
+            }
+            
+            // Redirect to the PDF download route
+            window.location.href = `/download-schedule-pdf?date=${date}`;
+        });
+    });
+</script>
 
 </body>
 </html>
