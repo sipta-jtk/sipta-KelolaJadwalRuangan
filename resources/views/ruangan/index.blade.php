@@ -255,7 +255,36 @@
         <!-- Main Content -->
         <div class="col-md-12">
             <div class="mb-4">
-                <h2 class="page-title">Ruangan</h2>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="page-title">Ruangan</h2>
+                    <div class="d-flex justify-content-end mb-4">
+                        @if(Auth::check() || Session::get('token_authenticated'))
+                            <div class="d-flex align-items-center">
+                                <span class="me-3 text-muted">Hi, {{ Auth::check() ? Auth::user()->name : Session::get('token_user_name') }}</span>
+                                
+                                @if(Auth::check())
+                                <a href="{{ route('penjadwalan.index') }}" class="btn btn-success btn-lg me-2">
+                                    <i class="fas fa-tools me-2"></i>Kalender Penjadwalan
+                                </a>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger btn-lg px-4">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-primary btn-lg px-4">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </a>
+                            <a href="{{ route('register') }}" class="btn btn-outline-primary btn-lg ms-2 px-4">
+                                <i class="fas fa-user-plus me-2"></i>Register
+                            </a>
+                        @endif
+                    </div>
+                </div>
+
                 <div class="d-flex justify-content-end align-items-center mb-4">
                     <div class="d-flex gap-3">
                         <a href="{{ route('ruangan.create') }}" class="btn btn-primary btn-action">

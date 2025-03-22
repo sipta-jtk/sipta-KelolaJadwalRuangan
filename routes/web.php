@@ -5,13 +5,25 @@ use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\GedungController;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\PenjadwalanController;
-use App\Http\Middleware\VerifySiptaToken; 
+use App\Http\Middleware\VerifySiptaToken;
+use App\Http\Controllers\AuthController;
 
 // Redirect root to penjadwalan-ruangan
 Route::get('/', function () {
     return redirect('penjadwalan-ruangan');
 });
 
+// Authentication routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
 
 // ==================== Route untuk manajemen ruangan ====================
 // Gunakan salah satu pendekatan saja, jangan keduanya
@@ -43,5 +55,5 @@ Route::get('admin/ruangan/file/{filename}', function ($filename) {
 })->where('filename', '.*');
 
 Route::group(['prefix' => ''], function () {
-    Route::get('penjadwalan-ruangan', [PenjadwalanController::class, 'index']); //bisa di postman
+    Route::get('penjadwalan-ruangan', [PenjadwalanController::class, 'index'])->name('penjadwalan.index'); //bisa di postman
 });
