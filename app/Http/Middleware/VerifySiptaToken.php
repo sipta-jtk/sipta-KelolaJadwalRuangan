@@ -12,21 +12,25 @@ class VerifySiptaToken
     {
         // Get token from the query parameter
         $token = $request->query('token');
+        $siptaPort = env('SIPTA_SERVICE_PORT', '8000');
         
         if (!$token) {
             return response()->json(['message' => 'Unauthorized - Token not provided'], 401);
         }
         
         try {
-            $siptaPort = env('SIPTA_SERVICE_PORT', '8000');
+            // check if siptaPort is set
+            if (!$siptaPort) {
+                return response()->json(['message' => 'Service unavailable - SIPTA service port not set'], 503);
+            }
 
             // Verify token with your SIPTA service
-            $response = Http::get("http://host.docker.internal:{$siptaPort}/usermanagement/v1/role", [
+            $response = Http::get("http://host.docker.internal:{$siptaPort}/sipta/usermanagement/v1/role", [
                 'token' => $token
             ]);
             
             if (!$response->successful()) {
-                return response()->json(['message' => 'Unauthorized - Invalid token'], 401);
+                return response()->json(['message' => 'Unauthorized - Invalid token from KelolaJadwal'], 401);
             }
             
             // Get user role
@@ -43,7 +47,7 @@ class VerifySiptaToken
             
             return $next($request);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Service unavailable - ' . $e->getMessage()], 503);
+            return response()->json(['message' => 'Service unavailable - at port ' . $siptaPort . $e->getMessage()], 503);
         }
     }
 }

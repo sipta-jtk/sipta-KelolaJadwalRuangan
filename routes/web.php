@@ -7,9 +7,11 @@ use Illuminate\Support\Facades\File;
 use App\Http\Controllers\PenjadwalanController;
 use App\Http\Middleware\VerifySiptaToken; 
 
+// Redirect root to penjadwalan-ruangan
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('penjadwalan.index');
 });
+
 
 // ==================== Route untuk manajemen ruangan ====================
 // Gunakan salah satu pendekatan saja, jangan keduanya
