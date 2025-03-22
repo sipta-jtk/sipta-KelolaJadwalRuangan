@@ -9,7 +9,7 @@ use App\Http\Middleware\VerifySiptaToken;
 
 // Redirect root to penjadwalan-ruangan
 Route::get('/', function () {
-    return redirect()->route('penjadwalan.index');
+    return redirect('penjadwalan-ruangan');
 });
 
 
