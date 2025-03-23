@@ -58,11 +58,15 @@
                 <div class="card-header bg-dark text-white text-center align-items-center">
                     <h3 class="card-title ">Kalender</h3>
                 </div>
-                <div>
-                    <button id="downloadPdfBtn" class="btn btn-light">
-                        <i class="bi bi-file-pdf"></i> Download PDF
-                    </button>
-                </div>
+                
+                <!-- Only show download button for admin users -->
+                @if(Auth::check() && Auth::user()->role === 'admin' || Session::get('token_authenticated') && Session::get('token_user_role') === 'admin')
+                    <div class="d-flex justify-content-end p-2">
+                        <button id="downloadPdfBtn" class="btn btn-danger">
+                            <i class="bi bi-file-pdf"></i> Download PDF
+                        </button>
+                    </div>
+                @endif
 
                 <div class="card-body">
                     <div class="col-3 mb-3">

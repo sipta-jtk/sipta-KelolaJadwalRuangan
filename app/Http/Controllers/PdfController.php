@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Penjadwalan;
 use App\Models\Ruangan;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
