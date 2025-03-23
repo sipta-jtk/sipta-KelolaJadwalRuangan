@@ -33,5 +33,6 @@ Route::prefix('v1')->group(function () {
     // untuk mendapatkan jadwal kegiatan pada waktu dan ruang tertentu
     Route::get("schedules", [PenjadwalanController::class, "agenda"]); //bisa di postman
     // untuk melakukan add, update, dan delete terhadap jadwal
-    Route::post('schedule/action', [UnggahPenjadwalanController::class, 'aksiKalender']); //bisa di postman
+    Route::post('schedule/action', [UnggahPenjadwalanController::class, 'aksiKalender'])
+        ->middleware(\App\Http\Middleware\VerifySiptaToken::class.':admin'); // Apply middleware here
 });
