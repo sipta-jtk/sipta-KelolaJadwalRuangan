@@ -8,7 +8,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
-        apiPrefix: 'penjadwalan-ruangan/api',
+        apiPrefix: '/api/penjadwalan-ruangan',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
