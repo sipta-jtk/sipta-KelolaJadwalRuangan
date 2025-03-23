@@ -16,12 +16,12 @@ if [ "$APP_ENV" = "local" ] && [ -z "$APP_KEY" ]; then
 fi
 
 # Run migrations
-php artisan migrate:fresh
+php artisan migrate:fresh --force
 
 # Check if seeders should be run
 if [ "$RUN_SEEDERS" = "true" ]; then
     echo "Running seeders..."
-    php artisan db:seed
+    php artisan db:seed --force
 else
     echo "Skipping seeders..."
 fi
