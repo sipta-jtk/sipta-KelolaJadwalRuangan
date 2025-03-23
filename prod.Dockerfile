@@ -30,8 +30,9 @@ RUN npm install
 # Stage 2: Setup Nginx with the built PHP application
 FROM nginx:alpine
 
-# Copy the public directory from the PHP build stage
+# Copy the public directory and PHP-FPM socket from the PHP build stage
 COPY --from=php-build /var/www/public /var/www/public
+COPY --from=php-build /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
 
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
@@ -44,7 +45,6 @@ RUN chmod +x /usr/local/bin/start.sh
 
 # Expose port 80
 EXPOSE 80
-
 
 CMD ["/usr/local/bin/start.sh"]
 
