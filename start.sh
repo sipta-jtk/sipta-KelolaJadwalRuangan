@@ -26,4 +26,8 @@ else
     echo "Skipping seeders..."
 fi
 
-php artisan serve --host=0.0.0.0 --port=9000
+if [ "$APP_ENV" = "local" ] then
+    php artisan serve --host=0.0.0.0 --port=9000
+else
+    exec "/usr/sbin/apache2ctl -D FOREGROUND"
+fi
