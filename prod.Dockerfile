@@ -12,7 +12,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Install apache
 RUN apt-get update && apt-get install -y apache2
 
-RUN a2enmod rewrite headers
+RUN a2enmod rewrite
 
 # Set the working directory
 WORKDIR /var/www
@@ -22,6 +22,7 @@ COPY . .
 
 
 # Create necessary directories and set permissions
+RUN chown -R www-data:www-data /var/www
 RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views \
     && chmod -R 775 storage bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
