@@ -14,6 +14,35 @@
 <body>
 
 <div class="container mt-4">
+    <!-- Improved Authentication Buttons -->
+    <div class="d-flex justify-content-end mb-4">
+        @auth
+            <div class="d-flex align-items-center">
+                <span class="me-3 text-muted">Hi, {{ Auth::user()->name }}</span>
+                
+                @if(Auth::user()->role === 'admin')
+                    <a href="{{ route('ruangan.index') }}" class="btn btn-success btn-lg me-2">
+                        <i class="fas fa-tools me-2"></i>Admin Panel
+                    </a>
+                @endif
+                
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-danger btn-lg px-4">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </button>
+                </form>
+            </div>
+        @else
+            <a href="{{ route('login') }}" class="btn btn-primary btn-lg px-4">
+                <i class="fas fa-sign-in-alt me-2"></i>Login
+            </a>
+            <a href="{{ route('register') }}" class="btn btn-outline-primary btn-lg ms-2 px-4">
+                <i class="fas fa-user-plus me-2"></i>Register
+            </a>
+        @endauth
+    </div>
+
     <h1 class="mb-5">Pengelolaan dan Penjadwalan Ruangan</h1>
 
     <div class="row">
