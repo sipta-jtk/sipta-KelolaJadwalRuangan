@@ -27,10 +27,6 @@ RUN composer install --no-interaction --no-progress --optimize-autoloader
 # Install frontend dependencies
 RUN npm install
 
-# Ensure start script is executable
-COPY start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
-
 # Stage 2: Setup Nginx with the built PHP application
 FROM nginx:alpine
 
@@ -42,8 +38,13 @@ COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 # Set the working directory
 WORKDIR /var/www
 
+# Ensure start script is executable
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
+
 # Expose port 80
 EXPOSE 80
+
 
 CMD ["/usr/local/bin/start.sh"]
 
