@@ -17,6 +17,12 @@ RUN a2enmod rewrite
 # Copy Apache virtual host configuration
 COPY apache/apache.conf /etc/apache2/sites-available/000-default.conf
 
+# Install PHP dependencies
+RUN composer install --no-interaction --no-progress --optimize-autoloader
+
+# Install frontend dependencies
+RUN npm install
+
 # Set the working directory
 WORKDIR /var/www
 
@@ -41,12 +47,6 @@ ENV APACHE_RUN_USER=www-data \
     APACHE_PID_FILE=/var/run/apache2/apache2.pid \
     APACHE_RUN_DIR=/var/run/apache2 \
     APACHE_LOCK_DIR=/var/lock/apache2
-
-# Install PHP dependencies
-RUN composer install --no-interaction --no-progress --optimize-autoloader
-
-# Install frontend dependencies
-RUN npm install
 
 # Ensure start script is executable
 COPY start.sh /usr/local/bin/start.sh
