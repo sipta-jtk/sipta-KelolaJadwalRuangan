@@ -12,7 +12,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Install apache
 RUN apt-get update && apt-get install -y apache2
 
-RUN a2enmod rewrite headers
+RUN a2enmod rewrite
 
 # Set the working directory
 WORKDIR /var/www
