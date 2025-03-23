@@ -30,6 +30,8 @@ RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framewor
     && chmod -R 775 storage bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
 
+RUN chown -R www-data:www-data /var/www/vendor && chmod -R 775 /var/www/vendor
+
 # Ensure required directories exist and are owned by www-data
 RUN mkdir -p /var/run/apache2 /var/lock/apache2 /var/log/apache2 && \
     chown -R www-data:www-data /var/run/apache2 /var/lock/apache2 /var/log/apache2
