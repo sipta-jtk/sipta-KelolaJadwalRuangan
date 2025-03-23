@@ -1,8 +1,6 @@
-# Use official PHP image with CLI and FPM
-FROM php:8.3-apache
-
-# Set the working directory
-WORKDIR /var/www
+# Use multi-stage builds to combine PHP and Nginx
+# Stage 1: Build the PHP application
+FROM php:8.3-fpm AS php-build
 
 # Install required system dependencies
 RUN apt-get update && apt-get install -y \
@@ -12,33 +10,16 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Install apache
-RUN apt-get update && apt-get install -y apache2
-
-# Set environment variables for Apache
-ENV APACHE_RUN_USER=www-data \
-    APACHE_RUN_GROUP=www-data \
-    APACHE_LOG_DIR=/var/log/apache2 \
-    APACHE_PID_FILE=/var/run/apache2/apache2.pid \
-    APACHE_RUN_DIR=/var/run/apache2 \
-    APACHE_LOCK_DIR=/var/lock/apache2
-
-RUN a2enmod rewrite 
-
-# Copy Apache virtual host configuration
-COPY apache/apache.conf /etc/apache2/sites-available/000-default.conf
+# Set the working directory
+WORKDIR /var/www
 
 # Copy the entire Laravel application first
-COPY --chown=www-data:www-data . /var/www/
+COPY . .
 
 # Create necessary directories and set permissions
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 775 /var/www/storage \
-    && chmod -R 775 /var/www/bootstrap/cache
-
-# Ensure required directories exist and are owned by www-data
-RUN mkdir -p /var/run/apache2 /var/lock/apache2 /var/log/apache2 && \
-    chown -R www-data:www-data /var/run/apache2 /var/lock/apache2 /var/log/apache2
+RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views \
+    && chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
 
 # Install PHP dependencies
 RUN composer install --no-interaction --no-progress --optimize-autoloader
@@ -50,4 +31,56 @@ RUN npm install
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
+# Stage 2: Setup Nginx with the built PHP application
+FROM nginx:alpine
+
+# Copy the public directory from the PHP build stage
+COPY --from=php-build /var/www/public /var/www/public
+
+# Copy the Nginx configuration file
+ADD nginx/prod-default.conf /etc/nginx/conf.d/default.conf
+
+# Set the working directory
+WORKDIR /var/www
+
+# Expose port 80
+EXPOSE 80
+
 CMD ["/usr/local/bin/start.sh"]
+
+# services:
+#     app:
+#       image: bujank/sipta-kelolajadwalruangan:latest
+#       container_name: kelola_ruangan_app
+#       restart: unless-stopped
+#       tty: true
+#       env_file:
+#         - .env
+#       ports:
+#         - "8005:80"
+#       networks:
+#         - app_network
+#       depends_on:
+#         - db
+  
+#     db:
+#       image: mysql:8.0
+#       container_name: kelola_ruangan_db
+#       restart: unless-stopped
+#       environment:
+#         MYSQL_DATABASE: ${DB_DATABASE}
+#         MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+#         MYSQL_USER: ${DB_USERNAME}
+#         MYSQL_PASSWORD: ${DB_PASSWORD}
+#       ports:
+#         - "3310:3306"
+#       networks:
+#         - app_network
+#       volumes:
+#         - db_data:/var/lib/mysql
+  
+#   networks:
+#     app_network:
+  
+#   volumes:
+#     db_data:
