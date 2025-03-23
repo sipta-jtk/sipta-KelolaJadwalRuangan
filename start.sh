@@ -10,8 +10,8 @@ until php -r "try { new PDO('mysql:host=${DB_HOST};dbname=${DB_DATABASE}', '${DB
     echo "Menunggu database..."
 done || { echo "Gagal terhubung ke database."; exit 1; }
 
-# Generate application key if not already set
-if [ -z "$APP_KEY" ]; then
+# Generate application key if not already set and APP_ENV is local
+if [ "$APP_ENV" = "local" ] && [ -z "$APP_KEY" ]; then
     php artisan key:generate
 fi
 
