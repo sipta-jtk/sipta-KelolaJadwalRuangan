@@ -37,7 +37,6 @@ FROM nginx:alpine
 # Copy the public directory from the PHP build stage
 COPY --from=php-build /var/www/public /var/www/public
 
-# Copy the Nginx configuration file
 COPY ./nginx/prod-default.conf /etc/nginx/conf.d/default.conf
 
 # Set the working directory
