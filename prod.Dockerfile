@@ -1,5 +1,5 @@
 # Use official PHP image with CLI and FPM
-FROM php:8.3-fpm
+FROM php:8.3-apache
 
 # Install required system dependencies
 RUN apt-get update && apt-get install -y \
