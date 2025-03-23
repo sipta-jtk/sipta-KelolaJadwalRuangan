@@ -34,5 +34,5 @@ fi
 if [ "$APP_ENV" = "local" ]; then
     php artisan serve --host=0.0.0.0 --port=9000
 else
-    exec service nginx start && php-fpm
+    exec php-fpm
 fi

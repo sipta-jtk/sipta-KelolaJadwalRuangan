@@ -1,6 +1,5 @@
-# Use multi-stage builds to combine PHP and Nginx
-# Stage 1: Build the PHP application
-FROM php:8.3-fpm AS php-build
+# Use official PHP image with CLI and FPM
+FROM php:8.3-fpm
 
 # Install required system dependencies
 RUN apt-get update && apt-get install -y \
@@ -27,24 +26,11 @@ RUN composer install --no-interaction --no-progress --optimize-autoloader
 # Install frontend dependencies
 RUN npm install
 
-# Stage 2: Setup Nginx with the built PHP application
-FROM nginx:alpine
-
-# Copy the public directory and PHP-FPM socket from the PHP build stage
-COPY --from=php-build /var/www/public /var/www/public
-COPY --from=php-build /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
-
-COPY nginx/default.conf /etc/nginx/conf.d/default.conf
-
-# Set the working directory
-WORKDIR /var/www
-
 # Ensure start script is executable
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
-# Expose port 80
-EXPOSE 80
+EXPOSE 9000
 
 CMD ["/usr/local/bin/start.sh"]
 
