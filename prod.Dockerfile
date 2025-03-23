@@ -23,7 +23,7 @@ ENV APACHE_RUN_USER=www-data \
     APACHE_RUN_DIR=/var/run/apache2 \
     APACHE_LOCK_DIR=/var/lock/apache2
 
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers
 
 # Copy Apache virtual host configuration
 COPY apache/apache.conf /etc/apache2/sites-available/000-default.conf
