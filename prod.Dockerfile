@@ -33,8 +33,8 @@ COPY --chown=www-data:www-data . /var/www/
 
 # Create necessary directories and set permissions
 RUN chown -R www-data:www-data /var/www \
-    && chmod -R 775 /var/www/html/storage \
-    && chmod -R 775 /var/www/html/bootstrap/cache
+    && chmod -R 775 /var/www/storage \
+    && chmod -R 775 /var/www/bootstrap/cache
 
 # Ensure required directories exist and are owned by www-data
 RUN mkdir -p /var/run/apache2 /var/lock/apache2 /var/log/apache2 && \
