@@ -16,7 +16,8 @@ class DatabaseSeeder extends Seeder
             RuanganSeeder::class,
             PenjadwalanSeeder::class,
             FasilitasSeeder::class,
-            RuangFasilitasSeeder::class
+            RuangFasilitasSeeder::class,
+            UserSeeder::class,
         ]);
     }
 }
