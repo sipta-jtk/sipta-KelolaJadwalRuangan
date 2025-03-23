@@ -32,13 +32,9 @@ COPY apache/apache.conf /etc/apache2/sites-available/000-default.conf
 COPY --chown=www-data:www-data . /var/www/
 
 # Create necessary directories and set permissions
-RUN chown -R www-data:www-data /var/www
-
-RUN chmod -R 755 /var/www
-
-RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views \
-    && chmod -R 775 storage bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache
 
 # Ensure required directories exist and are owned by www-data
 RUN mkdir -p /var/run/apache2 /var/lock/apache2 /var/log/apache2 && \
