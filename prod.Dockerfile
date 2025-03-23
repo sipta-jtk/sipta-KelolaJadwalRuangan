@@ -33,6 +33,10 @@ COPY --chown=www-data:www-data . /var/www/
 
 # Create necessary directories and set permissions
 RUN chown -R www-data:www-data /var/www
+
+RUN chmod -R 755 /var/www
+
+RUN ls -la /var/www
 # RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views \
 #     && chmod -R 775 storage bootstrap/cache \
 #     && chown -R www-data:www-data storage bootstrap/cache
