@@ -23,7 +23,7 @@ Route::get('/user', function (Request $request) {
 //     Route::post('schedule/action', [UnggahPenjadwalanController::class, 'aksiKalender']); //bisa di postman
 // });
 
-Route::prefix('penjadwalan-ruangan/v1')->group(function () {
+Route::prefix('v1')->group(function () {
     // untuk mendapatkan nama ruangan dengan status_ruangan tersedia
     Route::get('rooms/names', [RuanganController::class, 'namaRuanganTersedia']); //bisa di postman
     // untuk mendapatkan ruangan yang dapat dipilih berdasarkan tanggal dan sesi
