@@ -5,7 +5,7 @@ $(document).ready(function() {
             roomsData.forEach(room => {
                 rooms[room.nama_ruangan] = {}; // Menyimpan berdasarkan nama ruangan
                 for (let hour = 6; hour <= 18; hour++) {
-                    rooms[room.nama_ruangan][hour] = "<td></td>";
+                    rooms[room.nama_ruangan.trim()][hour] = "<td></td>";
                 }
             });
     
@@ -24,7 +24,7 @@ $(document).ready(function() {
                     .forEach(event => {
                     let startHour = new Date(Date.parse(event.start)).getUTCHours();
                     let endHour = new Date(Date.parse(event.end)).getUTCHours();
-                    let roomName = event.nama_ruangan;
+                    let roomName = event.nama_ruangan.trim();
                     let duration = endHour - startHour;
                     let agenda = agendaMapping[event.agenda] || event.agenda;
                     
@@ -96,6 +96,33 @@ $(document).ready(function() {
         const currentDate = new Date($("#calendarDate").val());
         currentDate.setDate(currentDate.getDate() + 1); // Add 1 day
         updateDate(currentDate);
+    });
+
+    // Listen for clicks on the download PDF button
+    $('#downloadPdfBtn').click(function() {
+        // Get the currently selected date
+        const date = $('#calendarDate').val();
+        
+        if (!date) {
+            alert('Silakan pilih tanggal terlebih dahulu');
+            return;
+        }
+        
+        // Create agenda mapping object to send with the request
+        const agendaMapping = {
+            seminar_1: "Seminar 1",
+            seminar_2: "Seminar 2",
+            seminar_3: "Seminar 3",
+            sidang: "Sidang"
+        };
+    
+        // Redirect to the PDF download route with mapping as query parameters
+        const queryParams = new URLSearchParams({
+            date: date,
+            ...agendaMapping
+        });
+    
+        window.location.href = `/download-schedule-pdf?${queryParams.toString()}`;
     });
 
 });

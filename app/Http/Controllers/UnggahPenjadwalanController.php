@@ -32,7 +32,7 @@ class UnggahPenjadwalanController extends Controller
             4 => '15:00:00'
         ]; 
         
-        $startTime = date('H:i:s', strtotime($request->start));
+        $startTime = date('H:i:s', strtotime($request->start)); 
         $tanggal   = date('Y-m-d', strtotime($request->start));
         
         // konversi sesi

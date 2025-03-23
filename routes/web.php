@@ -5,7 +5,8 @@ use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\GedungController;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\PenjadwalanController;
-use App\Http\Middleware\VerifySiptaToken;
+use App\Http\Middleware\VerifySiptaToken; 
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\AuthController;
 
 // Redirect root to penjadwalan-ruangan
@@ -57,3 +58,5 @@ Route::get('admin/ruangan/file/{filename}', function ($filename) {
 Route::group(['prefix' => ''], function () {
     Route::get('penjadwalan-ruangan', [PenjadwalanController::class, 'index'])->name('penjadwalan.index'); //bisa di postman
 });
+
+Route::get('/download-schedule-pdf', [PdfController::class, 'downloadSchedulePdf'])->name('schedule.pdf.download');
