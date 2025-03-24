@@ -40,18 +40,17 @@ Route::middleware(\App\Http\Middleware\VerifySiptaToken::class.':admin')
         Route::get('/admin/ruangan/{id}/edit', [RuanganController::class, 'edit'])->name('ruangan.edit');
         Route::put('/admin/ruangan/{id}', [RuanganController::class, 'update'])->name('ruangan.update');
         Route::delete('/admin/ruangan/{id}', [RuanganController::class, 'destroy'])->name('ruangan.destroy');
+        Route::get('admin/ruangan/file/{filename}', function ($filename) {
+            $path = base_path('admin/ruangan/' . $filename);
+            
+            if (!File::exists($path)) {
+                abort(404);
+            }
+            
+            return response()->file($path);
+        })->where('filename', '.*');
         Route::get('/download-schedule-pdf', [PdfController::class, 'downloadSchedulePdf'])->name('schedule.pdf.download');
 });
-
-Route::get('admin/ruangan/file/{filename}', function ($filename) {
-    $path = base_path('admin/ruangan/' . $filename);
-    
-    if (!File::exists($path)) {
-        abort(404);
-    }
-    
-    return response()->file($path);
-})->where('filename', '.*');
 
 // Route untuk manajemen gedung
 Route::resource('gedung', GedungController::class);

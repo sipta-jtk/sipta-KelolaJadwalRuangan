@@ -135,6 +135,7 @@ class RuanganController extends Controller
                     ->with('success', 'Ruangan berhasil ditambahkan!');
 
             } catch (\Exception $e) {
+                dd($e);
                 // Jika terjadi error saat menyimpan data, hapus file yang sudah diupload
                 if (File::exists($path . '/' . $imageName)) {
                     File::delete($path . '/' . $imageName);
@@ -144,6 +145,7 @@ class RuanganController extends Controller
             }
 
         } catch (\Exception $e) {
+            dd($e);
             return redirect()->back()
                 ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])
                 ->withInput();
