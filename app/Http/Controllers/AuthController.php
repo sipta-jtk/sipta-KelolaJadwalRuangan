@@ -55,7 +55,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect('/admin/ruangan');
+        return redirect('penjadwalan-ruangan/admin/ruangan');
     }
 
     public function logout(Request $request)
