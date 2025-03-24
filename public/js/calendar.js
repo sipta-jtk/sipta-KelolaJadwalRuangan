@@ -122,7 +122,7 @@ $(document).ready(function() {
             ...agendaMapping
         });
     
-        window.location.href = `/download-schedule-pdf?${queryParams.toString()}`;
+        window.location.href = `/penjadwalan-ruangan/download-schedule-pdf?${queryParams.toString()}`;
     });
 
 });
