@@ -12,7 +12,7 @@
             <!-- Form Input Card with Soft Shadow -->
             <div class="card shadow-sm mb-4 border-0 rounded-3">
                 <div class="card-header bg-white py-3">
-                    <h5 class="card-title mb-0 text-primary">
+                    <h5 class="card-title mb-0 text-success">
                         <i class="fas fa-plus-circle me-2"></i>Tambah Fasilitas
                     </h5>
                 </div>
@@ -26,7 +26,7 @@
                                     placeholder="Masukkan nama fasilitas" required>
                             </div>
                             <div class="col-md-3">
-                                <button type="submit" class="btn btn-primary w-100 btn-lg">
+                                <button type="submit" class="btn btn-success w-100 btn-lg">
                                     <i class="fas fa-plus me-2"></i>Tambah
                                 </button>
                             </div>
@@ -41,7 +41,7 @@
                     <form action="{{ route('fasilitas.index') }}" method="GET">
                         <div class="input-group">
                             <span class="input-group-text bg-white border-end-0">
-                                <i class="fas fa-search text-primary"></i>
+                                <i class="fas fa-search text-success"></i>
                             </span>
                             <input type="text" class="form-control border-start-0 ps-0" 
                                    placeholder="Cari fasilitas..." name="search" 
