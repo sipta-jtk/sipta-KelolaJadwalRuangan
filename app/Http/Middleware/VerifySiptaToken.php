@@ -45,7 +45,7 @@ class VerifySiptaToken
             }
 
             // Verify token with your SIPTA service
-            $response = Http::get("http://host.docker.internal:{$siptaPort}/sipta/usermanagement/v1/role", [
+            $response = Http::get("https://polban-space.cloudias79.com/sipta-dev/usermanagement/v1/role", [
                 'token' => $token
             ]);
             
