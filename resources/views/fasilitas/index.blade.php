@@ -6,7 +6,11 @@
         <div class="col-md-10">
             <!-- Header Section with Shadow -->
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="mb-0"><i class="fas fa-cogs me-2"></i>Manajemen Fasilitas</h2>
+                <a href="{{ route('ruangan.index') }}" class="btn btn-outline-success">
+                    <i class="fas fa-arrow-left me-2"></i>Kembali
+                </a>
+                <h2 class="mb-0 text-center flex-grow-1"><i class="fas fa-building me-2"></i>Manajemen Gedung</h2>
+                <div style="width: 85px;"></div><!-- Spacer untuk menyeimbangkan layout -->
             </div>
 
             <!-- Form Input Card with Soft Shadow -->
