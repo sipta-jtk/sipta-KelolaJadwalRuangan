@@ -14,6 +14,7 @@ class Gedung extends Model
     protected $primaryKey = 'kode_gedung';
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false;
 
     protected $fillable = [
         'kode_gedung',
