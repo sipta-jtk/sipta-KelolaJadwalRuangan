@@ -22,7 +22,7 @@ Route::middleware('guest')->prefix('penjadwalan-ruangan')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->prefix('penjadwalan-ruangan')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
@@ -49,6 +49,7 @@ Route::middleware(\App\Http\Middleware\VerifySiptaToken::class.':admin')
             
             return response()->file($path);
         })->where('filename', '.*');
+        Route::get('/download-schedule-pdf', [PdfController::class, 'downloadSchedulePdf'])->name('schedule.pdf.download');
 });
 
 // Route untuk manajemen gedung
@@ -58,4 +59,3 @@ Route::group(['prefix' => ''], function () {
     Route::get('penjadwalan-ruangan', [PenjadwalanController::class, 'index'])->name('penjadwalan.index'); //bisa di postman
 });
 
-Route::get('/download-schedule-pdf', [PdfController::class, 'downloadSchedulePdf'])->name('schedule.pdf.download');
