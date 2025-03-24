@@ -287,6 +287,9 @@
 
                 <div class="d-flex justify-content-end align-items-center mb-4">
                     <div class="d-flex gap-3">
+                        <a href="{{ route('gedung.index') }}" class="btn btn-warning btn-action">
+                            <i class="fas fa-plus me-2"></i> Gedung
+                        </a>
                         <a href="{{ route('ruangan.create') }}" class="btn btn-primary btn-action">
                             <i class="fas fa-plus me-2"></i> Ruangan
                         </a>

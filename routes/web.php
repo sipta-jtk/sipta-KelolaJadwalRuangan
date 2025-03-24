@@ -50,10 +50,13 @@ Route::middleware(\App\Http\Middleware\VerifySiptaToken::class.':admin')
             return response()->file($path);
         })->where('filename', '.*');
         Route::get('/download-schedule-pdf', [PdfController::class, 'downloadSchedulePdf'])->name('schedule.pdf.download');
-});
 
-// Route untuk manajemen gedung
-Route::resource('gedung', GedungController::class);
+        // Route untuk gedung
+        Route::get('/admin/gedung', [GedungController::class, 'index'])->name('gedung.index');
+        Route::post('/admin/gedung', [GedungController::class, 'store'])->name('gedung.store');
+        Route::put('/admin/gedung/{kode_gedung}', [GedungController::class, 'update'])->name('gedung.update');
+        Route::delete('/admin/gedung/{kode_gedung}', [GedungController::class, 'destroy'])->name('gedung.destroy');
+});
 
 Route::group(['prefix' => ''], function () {
     Route::get('penjadwalan-ruangan', [PenjadwalanController::class, 'index'])->name('penjadwalan.index'); //bisa di postman
