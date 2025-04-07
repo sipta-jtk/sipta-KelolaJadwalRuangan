@@ -50,7 +50,7 @@ class VerifySiptaToken
                 return response()->json(['message' => 'Service unavailable - SIPTA service port not set'], 503);
             }
 
-            $url = "https://polban-space.cloudias79.com/sipta-dev/usermanagement/v1/role?token=" . ($token);
+            $url = "https://polban-space.cloudias79.com/sipta-dev/usermanagement/v1/role?token=" . urlencode($token);
             $response = file_get_contents($url);
             $data = json_decode($response, true);
             $userRole = $data['role'] ?? null;
