@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UnggahPenjadwalanController;
+use App\Http\Controllers\PenjadwalanController;
 use App\Http\Controllers\RuanganController;
 
 Route::get('/user', function (Request $request) {
