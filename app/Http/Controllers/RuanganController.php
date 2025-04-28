@@ -135,6 +135,7 @@ class RuanganController extends Controller
                     ->with('success', 'Ruangan berhasil ditambahkan!');
 
             } catch (\Exception $e) {
+                dd($e);
                 // Jika terjadi error saat menyimpan data, hapus file yang sudah diupload
                 if (File::exists($path . '/' . $imageName)) {
                     File::delete($path . '/' . $imageName);
@@ -144,6 +145,7 @@ class RuanganController extends Controller
             }
 
         } catch (\Exception $e) {
+            dd($e);
             return redirect()->back()
                 ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])
                 ->withInput();
@@ -324,5 +326,36 @@ class RuanganController extends Controller
             return redirect()->back()
                 ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
+    }
+
+    public function namaRuanganTersedia()
+    {
+        $ruangan = DB::table('ruangan')
+            ->select('id_ruangan', 'nama_ruangan')
+            ->where('status_ruangan', 'Tersedia')
+            ->get();
+        return response()->json($ruangan);
+    }
+
+    /**
+     * Menampilkan ruangan yang tersedia untuk pada tanggal dan sesi tertentu.
+     */
+    public function ruanganUntukPenjadwalan(Request $request)
+    {
+        $tanggal = date('Y-m-d', strtotime($request->tanggal));
+        $sesi = $request->sesi;
+
+        $availableRooms = DB::table('ruangan')
+        ->leftJoin('penjadwalan', function ($join) use ($tanggal, $sesi) {
+            $join->on('ruangan.id_ruangan', '=', 'penjadwalan.id_ruangan')
+                ->where('penjadwalan.tanggal', '=', $tanggal)
+                ->where('penjadwalan.sesi', '=', $sesi);
+        })
+        ->whereNull('penjadwalan.id_ruangan')
+        ->where('ruangan.status_ruangan', '=', 'tersedia')
+        ->select('ruangan.id_ruangan', 'ruangan.nama_ruangan')
+        ->get();
+
+        return response()->json($availableRooms);
     }
 }

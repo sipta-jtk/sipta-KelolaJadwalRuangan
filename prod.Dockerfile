@@ -15,6 +15,7 @@ WORKDIR /var/www
 # Copy the entire Laravel application first
 COPY . .
 
+RUN chown -R www-data:www-data /var/www
 # Create necessary directories and set permissions
 RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views \
     && chmod -R 775 storage bootstrap/cache \
@@ -33,3 +34,40 @@ RUN chmod +x /usr/local/bin/start.sh
 EXPOSE 9000
 
 CMD ["/usr/local/bin/start.sh"]
+
+# services:
+#     app:
+#       image: bujank/sipta-kelolajadwalruangan:latest
+#       container_name: kelola_ruangan_app
+#       restart: unless-stopped
+#       tty: true
+#       env_file:
+#         - .env
+#       ports:
+#         - "8005:80"
+#       networks:
+#         - app_network
+#       depends_on:
+#         - db
+  
+#     db:
+#       image: mysql:8.0
+#       container_name: kelola_ruangan_db
+#       restart: unless-stopped
+#       environment:
+#         MYSQL_DATABASE: ${DB_DATABASE}
+#         MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+#         MYSQL_USER: ${DB_USERNAME}
+#         MYSQL_PASSWORD: ${DB_PASSWORD}
+#       ports:
+#         - "3310:3306"
+#       networks:
+#         - app_network
+#       volumes:
+#         - db_data:/var/lib/mysql
+  
+#   networks:
+#     app_network:
+  
+#   volumes:
+#     db_data:

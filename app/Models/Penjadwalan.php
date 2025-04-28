@@ -11,6 +11,9 @@ class Penjadwalan extends Model
 
     protected $table = 'penjadwalan';
     protected $primaryKey = 'id_penjadwalan';
+
+    public $timestamps = false;
+
     protected $fillable = [
         'sesi',
         'agenda',

@@ -11,7 +11,7 @@ services:
       - vendor:/var/www/vendor
       - node_modules:/var/www/node_modules
     ports:
-      - "8080:8080"
+      - "8005:9000"
     networks:
       - app_network
     depends_on:
@@ -31,16 +31,16 @@ services:
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "3307:3306"
+      - "3309:3306"
     networks:
       - app_network
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data_ruangan:/var/lib/mysql
 
 networks:
   app_network:
 
 volumes:
-  db_data:
+  db_data_ruangan:
   vendor:
   node_modules:
