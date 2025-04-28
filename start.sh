@@ -3,8 +3,8 @@
 # Export environment variables from .env file
 export $(grep -v '^#' .env | xargs)
 
-echo "Linking storage..."
-php artisan storage:link
+# echo "Linking storage..."
+# php artisan storage:link
 
 # Fungsi untuk menunggu database siap
 echo "Menunggu database siap..."
