@@ -6,6 +6,7 @@ use App\Models\Ruangan;
 use App\Models\Gedung;
 use App\Models\Fasilitas;
 use App\Models\RuangFasilitas;
+use App\Models\Penjadwalan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\FileHelper;
@@ -22,14 +23,32 @@ class RuanganController extends Controller
      */
     private function uploadFoto($foto)
     {
-        // Generate nama file yang unik
-        $fileName = time() . '_' . Str::random(10) . '.' . $foto->getClientOriginalExtension();
-        
-        // Pindahkan file ke folder public/ruangan
-        $foto->move(public_path('ruangan'), $fileName);
-        
-        // Return hanya nama filenya saja
-        return $fileName; // Ini akan menyimpan hanya nama file di database
+        try {
+            // Generate nama file yang unik
+            $fileName = time() . '_' . Str::random(10) . '.' . $foto->getClientOriginalExtension();
+            
+            // Pindahkan file ke folder public/ruangan
+            $foto->move(public_path('ruangan'), $fileName);
+            
+            // Log to file
+            \Log::info('File successfully uploaded: ' . $fileName);
+            
+            // Log to browser console
+            $message = 'File successfully uploaded: ' . $fileName;
+            session()->flash('console-log', $message);
+            
+            return $fileName;
+            
+        } catch (\Exception $e) {
+            // Log error to file
+            \Log::error('Failed to upload file: ' . $e->getMessage());
+            
+            // Log error to browser console
+            $errorMessage = 'Failed to upload file: ' . $e->getMessage();
+            session()->flash('console-error', $errorMessage);
+            
+            throw new \Exception('Failed to upload file: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -50,18 +69,24 @@ class RuanganController extends Controller
         $query = Ruangan::query();
         
         // Pencarian berdasarkan tipe
-        if ($request->filled('search_type') && $request->filled('keyword')) {
-            $searchType = $request->search_type;
-            $keyword = $request->keyword;
+        // if ($request->filled('search_type') && $request->filled('keyword')) {
+        //     $searchType = $request->search_type;
+        //     $keyword = $request->keyword;
             
-            if ($searchType === 'nama_ruangan') {
-                $query->where('nama_ruangan', 'like', "%{$keyword}%");
-            } elseif ($searchType === 'kode_ruangan') {
-                $query->where('kode_ruangan', 'like', "%{$keyword}%");
-            }
-        }
+        //     if ($searchType === 'nama_ruangan') {
+        //         $query->where('nama_ruangan', 'like', "%{$keyword}%");
+        //     } elseif ($searchType === 'kode_ruangan') {
+        //         $query->where('kode_ruangan', 'like', "%{$keyword}%");
+        //     }
+        // }
         
-        $ruangan = $query->with('gedung')->get();
+        // Get rooms with their gedung and check if they are used in penjadwalan
+        $ruangan = $query->with('gedung')
+            ->select('ruangan.*')
+            ->leftJoin('penjadwalan', 'ruangan.id_ruangan', '=', 'penjadwalan.id_ruangan')
+            ->selectRaw('CASE WHEN COUNT(penjadwalan.id_ruangan) > 0 THEN true ELSE false END as is_used')
+            ->groupBy('ruangan.id_ruangan')
+            ->get();
         
         return view('ruangan.index', compact('ruangan'));
     }
@@ -296,6 +321,14 @@ class RuanganController extends Controller
             DB::beginTransaction();
             
             $ruangan = Ruangan::findOrFail($id);
+            
+            // check ruangan jika ada dalam 
+            $isUsedInSchedule = Penjadwalan::where('id_ruangan', $id)->exists();
+            if ($isUsedInSchedule) {
+                return redirect()->route('ruangan.index')
+                    ->with('error', 'Ruangan tidak dapat dihapus karena sedang digunakan dalam penjadwalan.');
+            }
+            
             $path = public_path('image/ruangan');
             
             // Hapus foto jika ada
