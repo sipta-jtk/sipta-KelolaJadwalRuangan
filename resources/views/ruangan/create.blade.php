@@ -293,6 +293,7 @@
                                     name="kode_ruangan"
                                     value="{{ old('kode_ruangan', $ruangan->kode_ruangan ?? '') }}"
                                     placeholder="Masukan Code Ruangan Anda"
+                                    minlength="3"
                                     maxlength="6"
                                     required>
                                 @error('kode_ruangan')
@@ -307,6 +308,7 @@
                                     name="nama_ruangan"
                                     value="{{ old('nama_ruangan', $ruangan->nama_ruangan ?? '') }}"
                                     placeholder="Masukan Nama Ruangan Anda"
+                                    minlength="3"
                                     maxlength="127"
                                     required>
                                 @error('nama_ruangan')
