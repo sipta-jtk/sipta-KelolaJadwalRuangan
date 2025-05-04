@@ -9,7 +9,7 @@
                 <a href="{{ route('ruangan.index') }}" class="btn btn-outline-success">
                     <i class="fas fa-arrow-left me-2"></i>Kembali
                 </a>
-                <h2 class="mb-0 text-center flex-grow-1"><i class="fas fa-building me-2"></i>Manajemen Gedung</h2>
+                <h2 class="mb-0 text-center flex-grow-1">Tambah Fasilitas</h2>
                 <div style="width: 85px;"></div><!-- Spacer untuk menyeimbangkan layout -->
             </div>
 
