@@ -1,0 +1,800 @@
+<html>
+   <head>
+      <title>Psalm Report</title>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.16.0/themes/prism.css"
+            rel="stylesheet"/>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.16.0/plugins/line-numbers/prism-line-numbers.min.css"
+            rel="stylesheet"/>
+      <style>
+                    html {
+                        font-family: sans-serif;
+                    }
+                    pre &gt; code.language-php {
+                      font-size: 1em;
+                    }
+                    code[class*="language-"] .psalm-errored-code {
+                        background-color: #ce5353;
+                        color: white;
+                        text-shadow: none;
+                    }
+                    ul.tags {
+                        padding: 0;
+                        margin: 0;
+                        font-size: 0.9em;
+                    }
+                    ul.tags li {
+                        display: inline;
+                        background-color: #e5e6d9;
+                        padding: 3px 5px;
+                        border-radius: 5px;
+                        text-shadow: 0 1px white;
+                        margin-right: 10px;
+                    }
+                    .severity {
+                        text-transform: lowercase;
+                    }
+                    .severity.error {
+                        color: #ff0000;
+                    }
+                    .severity.warning {
+                        color: #ff6e00;
+                    }
+                    .severity.info {
+                        color: #0079ff;
+                    }
+                    ul#psalmErrors li.hidden {
+                        display: none;
+                    }
+                </style>
+   </head>
+   <body>
+      <section>
+         <h1>Total violations: 58</h1>
+      </section>
+      <form>
+         <label>
+            <select class="filterable" data-filter-type="severity">
+               <option value="">-- show all --</option>
+            </select>
+            <select class="filterable" data-filter-type="psalm-type">
+               <option value="">-- show all --</option>
+            </select>
+         </label>
+      </form>
+      <ul id="psalmErrors">
+         <li data-severity="error" data-psalm-type="UnusedClass">
+            <h3>app/Http/Controllers/AuthController.php:11</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnusedClass</li>
+            </ul>
+            <p>Class App\Http\Controllers\AuthController is never used</p>
+            <pre data-start="11" class="line-numbersx">
+               <code class="language-php">class /**##(##**/AuthController/**##)##**/ extends Controller</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnusedClass">
+            <h3>app/Http/Controllers/FasilitasController.php:10</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnusedClass</li>
+            </ul>
+            <p>Class App\Http\Controllers\FasilitasController is never used</p>
+            <pre data-start="10" class="line-numbersx">
+               <code class="language-php">class /**##(##**/FasilitasController/**##)##**/ extends Controller</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedParam">
+            <h3>app/Http/Controllers/FasilitasController.php:61</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedParam</li>
+            </ul>
+            <p>Param #1 is never referenced in this method</p>
+            <pre data-start="61" class="line-numbersx">
+               <code class="language-php">    public function show(string /**##(##**/$id/**##)##**/)</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedParam">
+            <h3>app/Http/Controllers/FasilitasController.php:69</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedParam</li>
+            </ul>
+            <p>Param #1 is never referenced in this method</p>
+            <pre data-start="69" class="line-numbersx">
+               <code class="language-php">    public function edit(string /**##(##**/$id/**##)##**/)</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnusedClass">
+            <h3>app/Http/Controllers/PdfController.php:12</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnusedClass</li>
+            </ul>
+            <p>Class App\Http\Controllers\PdfController is never used</p>
+            <pre data-start="12" class="line-numbersx">
+               <code class="language-php">class /**##(##**/PdfController/**##)##**/ extends Controller</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnusedClass">
+            <h3>app/Http/Controllers/PenjadwalanController.php:11</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnusedClass</li>
+            </ul>
+            <p>Class App\Http\Controllers\PenjadwalanController is never used</p>
+            <pre data-start="11" class="line-numbersx">
+               <code class="language-php">class /**##(##**/PenjadwalanController/**##)##**/ extends Controller</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnusedClass">
+            <h3>app/Http/Controllers/RuanganController.php:16</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnusedClass</li>
+            </ul>
+            <p>Class App\Http\Controllers\RuanganController is never used</p>
+            <pre data-start="16" class="line-numbersx">
+               <code class="language-php">class /**##(##**/RuanganController/**##)##**/ extends Controller</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnevaluatedCode">
+            <h3>app/Http/Controllers/RuanganController.php:140</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnevaluatedCode</li>
+            </ul>
+            <p>Expressions after return/throw/continue</p>
+            <pre data-start="140" class="line-numbersx">
+               <code class="language-php">                /**##(##**/if (File::exists($path . '/' . $imageName)) {
+                    File::delete($path . '/' . $imageName);
+                }/**##)##**/</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnevaluatedCode">
+            <h3>app/Http/Controllers/RuanganController.php:143</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnevaluatedCode</li>
+            </ul>
+            <p>Expressions after return/throw/continue</p>
+            <pre data-start="143" class="line-numbersx">
+               <code class="language-php">                /**##(##**/DB::rollback();/**##)##**/</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnevaluatedCode">
+            <h3>app/Http/Controllers/RuanganController.php:144</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnevaluatedCode</li>
+            </ul>
+            <p>Expressions after return/throw/continue</p>
+            <pre data-start="144" class="line-numbersx">
+               <code class="language-php">                /**##(##**/throw $e;/**##)##**/</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnevaluatedCode">
+            <h3>app/Http/Controllers/RuanganController.php:149</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnevaluatedCode</li>
+            </ul>
+            <p>Expressions after return/throw/continue</p>
+            <pre data-start="149" class="line-numbersx">
+               <code class="language-php">            /**##(##**/return redirect()-&gt;back()
+                -&gt;withErrors(['error' =&gt; 'Terjadi kesalahan: ' . $e-&gt;getMessage()])
+                -&gt;withInput();/**##)##**/</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UndefinedClass">
+            <h3>app/Http/Controllers/RuanganController.php:198</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UndefinedClass</li>
+            </ul>
+            <p>Class, interface or enum named Log does not exist</p>
+            <pre data-start="198" class="line-numbersx">
+               <code class="language-php">            /**##(##**/\Log/**##)##**/::info('Updating ruangan: ' . $ruangan-&gt;nama_ruangan);</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnusedClass">
+            <h3>app/Http/Controllers/UnggahPenjadwalanController.php:13</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnusedClass</li>
+            </ul>
+            <p>Class App\Http\Controllers\UnggahPenjadwalanController is never used</p>
+            <pre data-start="13" class="line-numbersx">
+               <code class="language-php">class /**##(##**/UnggahPenjadwalanController/**##)##**/ extends Controller</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnusedClass">
+            <h3>app/Http/Kernel.php:9</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnusedClass</li>
+            </ul>
+            <p>Class App\Http\Kernel is never used</p>
+            <pre data-start="9" class="line-numbersx">
+               <code class="language-php">class /**##(##**/Kernel/**##)##**/ extends HttpKernel</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UndefinedClass">
+            <h3>app/Http/Kernel.php:20</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UndefinedClass</li>
+            </ul>
+            <p>Class, interface or enum named App\Http\Middleware\TrustProxies does not exist</p>
+            <pre data-start="20" class="line-numbersx">
+               <code class="language-php">        /**##(##**/\App\Http\Middleware\TrustProxies/**##)##**/::class,</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UndefinedClass">
+            <h3>app/Http/Kernel.php:22</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UndefinedClass</li>
+            </ul>
+            <p>Class, interface or enum named App\Http\Middleware\PreventRequestsDuringMaintenance does not exist</p>
+            <pre data-start="22" class="line-numbersx">
+               <code class="language-php">        /**##(##**/\App\Http\Middleware\PreventRequestsDuringMaintenance/**##)##**/::class,</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UndefinedClass">
+            <h3>app/Http/Kernel.php:24</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UndefinedClass</li>
+            </ul>
+            <p>Class, interface or enum named App\Http\Middleware\TrimStrings does not exist</p>
+            <pre data-start="24" class="line-numbersx">
+               <code class="language-php">        /**##(##**/\App\Http\Middleware\TrimStrings/**##)##**/::class,</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UndefinedClass">
+            <h3>app/Http/Kernel.php:35</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UndefinedClass</li>
+            </ul>
+            <p>Class, interface or enum named App\Http\Middleware\EncryptCookies does not exist</p>
+            <pre data-start="35" class="line-numbersx">
+               <code class="language-php">            /**##(##**/\App\Http\Middleware\EncryptCookies/**##)##**/::class,</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UndefinedClass">
+            <h3>app/Http/Kernel.php:39</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UndefinedClass</li>
+            </ul>
+            <p>Class, interface or enum named App\Http\Middleware\VerifyCsrfToken does not exist</p>
+            <pre data-start="39" class="line-numbersx">
+               <code class="language-php">            /**##(##**/\App\Http\Middleware\VerifyCsrfToken/**##)##**/::class,</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UndefinedClass">
+            <h3>app/Http/Kernel.php:58</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UndefinedClass</li>
+            </ul>
+            <p>Class, interface or enum named App\Http\Middleware\Authenticate does not exist</p>
+            <pre data-start="58" class="line-numbersx">
+               <code class="language-php">        'auth' =&gt; /**##(##**/\App\Http\Middleware\Authenticate/**##)##**/::class,</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UndefinedClass">
+            <h3>app/Http/Kernel.php:63</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UndefinedClass</li>
+            </ul>
+            <p>Class, interface or enum named App\Http\Middleware\RedirectIfAuthenticated does not exist</p>
+            <pre data-start="63" class="line-numbersx">
+               <code class="language-php">        'guest' =&gt; /**##(##**/\App\Http\Middleware\RedirectIfAuthenticated/**##)##**/::class,</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UndefinedClass">
+            <h3>app/Http/Kernel.php:66</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UndefinedClass</li>
+            </ul>
+            <p>Class, interface or enum named App\Http\Middleware\ValidateSignature does not exist</p>
+            <pre data-start="66" class="line-numbersx">
+               <code class="language-php">        'signed' =&gt; /**##(##**/\App\Http\Middleware\ValidateSignature/**##)##**/::class,</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedMethod">
+            <h3>app/Http/Middleware/CheckRole.php:16</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedMethod</li>
+            </ul>
+            <p>Cannot find any calls to method App\Http\Middleware\CheckRole::handle</p>
+            <pre data-start="16" class="line-numbersx">
+               <code class="language-php">    public function /**##(##**/handle/**##)##**/(Request $request, Closure $next, string $role): Response</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedMethod">
+            <h3>app/Http/Middleware/VerifySiptaToken.php:14</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedMethod</li>
+            </ul>
+            <p>Cannot find any calls to method App\Http\Middleware\VerifySiptaToken::handle</p>
+            <pre data-start="14" class="line-numbersx">
+               <code class="language-php">    public function /**##(##**/handle/**##)##**/(Request $request, Closure $next, ...$allowedRoles)</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnusedVariable">
+            <h3>app/Http/Middleware/VerifySiptaToken.php:16</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnusedVariable</li>
+            </ul>
+            <p>$token is never referenced or the value is not used</p>
+            <pre data-start="16" class="line-numbersx">
+               <code class="language-php">        /**##(##**/$token/**##)##**/ = null;</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnevaluatedCode">
+            <h3>app/Http/Middleware/VerifySiptaToken.php:81</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnevaluatedCode</li>
+            </ul>
+            <p>Expressions after return/throw/continue</p>
+            <pre data-start="81" class="line-numbersx">
+               <code class="language-php">            /**##(##**/if ($request-&gt;expectsJson()) {
+                return response()-&gt;json(['message' =&gt; 'Service unavailable - ' . $e-&gt;getMessage()], 503);
+            }/**##)##**/</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnevaluatedCode">
+            <h3>app/Http/Middleware/VerifySiptaToken.php:84</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnevaluatedCode</li>
+            </ul>
+            <p>Expressions after return/throw/continue</p>
+            <pre data-start="84" class="line-numbersx">
+               <code class="language-php">            /**##(##**/return redirect()-&gt;route('login')-&gt;with('error', 'Unable to connect to authentication service. Please try logging in directly.');/**##)##**/</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnusedClass">
+            <h3>app/Http/Requests/StorePenjadwalanRequest.php:7</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnusedClass</li>
+            </ul>
+            <p>Class App\Http\Requests\StorePenjadwalanRequest is never used</p>
+            <pre data-start="7" class="line-numbersx">
+               <code class="language-php">class /**##(##**/StorePenjadwalanRequest/**##)##**/ extends FormRequest</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnusedClass">
+            <h3>app/Http/Requests/UpdatePenjadwalanRequest.php:7</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnusedClass</li>
+            </ul>
+            <p>Class App\Http\Requests\UpdatePenjadwalanRequest is never used</p>
+            <pre data-start="7" class="line-numbersx">
+               <code class="language-php">class /**##(##**/UpdatePenjadwalanRequest/**##)##**/ extends FormRequest</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="MissingTemplateParam">
+            <h3>app/Models/Fasilitas.php:10</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>MissingTemplateParam</li>
+            </ul>
+            <p>App\Models\Fasilitas has missing template params when extending Illuminate\Database\Eloquent\Factories\HasFactory, expecting 1</p>
+            <pre data-start="10" class="line-numbersx">
+               <code class="language-php">    use /**##(##**/HasFactory/**##)##**/;</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedMethod">
+            <h3>app/Models/Fasilitas.php:20</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedMethod</li>
+            </ul>
+            <p>Cannot find any calls to method App\Models\Fasilitas::ruangan</p>
+            <pre data-start="20" class="line-numbersx">
+               <code class="language-php">    public function /**##(##**/ruangan/**##)##**/()</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="MissingTemplateParam">
+            <h3>app/Models/Gedung.php:10</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>MissingTemplateParam</li>
+            </ul>
+            <p>App\Models\Gedung has missing template params when extending Illuminate\Database\Eloquent\Factories\HasFactory, expecting 1</p>
+            <pre data-start="10" class="line-numbersx">
+               <code class="language-php">    use /**##(##**/HasFactory/**##)##**/;</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="MissingTemplateParam">
+            <h3>app/Models/Penjadwalan.php:10</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>MissingTemplateParam</li>
+            </ul>
+            <p>App\Models\Penjadwalan has missing template params when extending Illuminate\Database\Eloquent\Factories\HasFactory, expecting 1</p>
+            <pre data-start="10" class="line-numbersx">
+               <code class="language-php">    use /**##(##**/HasFactory/**##)##**/;</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedMethod">
+            <h3>app/Models/Penjadwalan.php:28</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedMethod</li>
+            </ul>
+            <p>Cannot find any calls to method App\Models\Penjadwalan::ruangan</p>
+            <pre data-start="28" class="line-numbersx">
+               <code class="language-php">    public function /**##(##**/ruangan/**##)##**/()</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="MissingTemplateParam">
+            <h3>app/Models/RuangFasilitas.php:10</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>MissingTemplateParam</li>
+            </ul>
+            <p>App\Models\RuangFasilitas has missing template params when extending Illuminate\Database\Eloquent\Factories\HasFactory, expecting 1</p>
+            <pre data-start="10" class="line-numbersx">
+               <code class="language-php">    use /**##(##**/HasFactory/**##)##**/;</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedMethod">
+            <h3>app/Models/RuangFasilitas.php:22</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedMethod</li>
+            </ul>
+            <p>Cannot find explicit calls to method App\Models\RuangFasilitas::fasilitas (but did find some potential callers)</p>
+            <pre data-start="22" class="line-numbersx">
+               <code class="language-php">    public function /**##(##**/fasilitas/**##)##**/()</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedMethod">
+            <h3>app/Models/RuangFasilitas.php:27</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedMethod</li>
+            </ul>
+            <p>Cannot find any calls to method App\Models\RuangFasilitas::ruangan</p>
+            <pre data-start="27" class="line-numbersx">
+               <code class="language-php">    public function /**##(##**/ruangan/**##)##**/()</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="MissingTemplateParam">
+            <h3>app/Models/Ruangan.php:10</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>MissingTemplateParam</li>
+            </ul>
+            <p>App\Models\Ruangan has missing template params when extending Illuminate\Database\Eloquent\Factories\HasFactory, expecting 1</p>
+            <pre data-start="10" class="line-numbersx">
+               <code class="language-php">    use /**##(##**/HasFactory/**##)##**/;</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedMethod">
+            <h3>app/Models/Ruangan.php:24</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedMethod</li>
+            </ul>
+            <p>Cannot find any calls to method App\Models\Ruangan::gedung</p>
+            <pre data-start="24" class="line-numbersx">
+               <code class="language-php">    public function /**##(##**/gedung/**##)##**/()</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedMethod">
+            <h3>app/Models/Ruangan.php:29</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedMethod</li>
+            </ul>
+            <p>Cannot find explicit calls to method App\Models\Ruangan::fasilitas (but did find some potential callers)</p>
+            <pre data-start="29" class="line-numbersx">
+               <code class="language-php">    public function /**##(##**/fasilitas/**##)##**/()</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UndefinedThisPropertyFetch">
+            <h3>app/Models/User.php:39</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UndefinedThisPropertyFetch</li>
+            </ul>
+            <p>Instance property App\Models\User::$role is not defined</p>
+            <pre data-start="39" class="line-numbersx">
+               <code class="language-php">        return /**##(##**/$this-&gt;role/**##)##**/ === $role;</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedMethod">
+            <h3>app/Models/User.php:42</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedMethod</li>
+            </ul>
+            <p>Cannot find explicit calls to method App\Models\User::isAdmin (but did find some potential callers)</p>
+            <pre data-start="42" class="line-numbersx">
+               <code class="language-php">    public function /**##(##**/isAdmin/**##)##**/(): bool</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="MissingOverrideAttribute">
+            <h3>app/Models/User.php:52</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>MissingOverrideAttribute</li>
+            </ul>
+            <p>Method App\Models\User::casts should have the "Override" attribute</p>
+            <pre data-start="52" class="line-numbersx">
+               <code class="language-php">    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array&lt;string, string&gt;
+     */
+    /**##(##**/protected function casts(): array/**##)##**/</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnusedClass">
+            <h3>app/Policies/PenjadwalanPolicy.php:9</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnusedClass</li>
+            </ul>
+            <p>Class App\Policies\PenjadwalanPolicy is never used</p>
+            <pre data-start="9" class="line-numbersx">
+               <code class="language-php">class /**##(##**/PenjadwalanPolicy/**##)##**/</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedParam">
+            <h3>app/Policies/PenjadwalanPolicy.php:14</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedParam</li>
+            </ul>
+            <p>Param #1 is never referenced in this method</p>
+            <pre data-start="14" class="line-numbersx">
+               <code class="language-php">    public function viewAny(User /**##(##**/$user/**##)##**/): bool</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedParam">
+            <h3>app/Policies/PenjadwalanPolicy.php:22</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedParam</li>
+            </ul>
+            <p>Param #1 is never referenced in this method</p>
+            <pre data-start="22" class="line-numbersx">
+               <code class="language-php">    public function view(User /**##(##**/$user/**##)##**/, Penjadwalan $penjadwalan): bool</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedParam">
+            <h3>app/Policies/PenjadwalanPolicy.php:22</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedParam</li>
+            </ul>
+            <p>Param #2 is never referenced in this method</p>
+            <pre data-start="22" class="line-numbersx">
+               <code class="language-php">    public function view(User $user, Penjadwalan /**##(##**/$penjadwalan/**##)##**/): bool</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedParam">
+            <h3>app/Policies/PenjadwalanPolicy.php:30</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedParam</li>
+            </ul>
+            <p>Param #1 is never referenced in this method</p>
+            <pre data-start="30" class="line-numbersx">
+               <code class="language-php">    public function create(User /**##(##**/$user/**##)##**/): bool</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedParam">
+            <h3>app/Policies/PenjadwalanPolicy.php:38</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedParam</li>
+            </ul>
+            <p>Param #1 is never referenced in this method</p>
+            <pre data-start="38" class="line-numbersx">
+               <code class="language-php">    public function update(User /**##(##**/$user/**##)##**/, Penjadwalan $penjadwalan): bool</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedParam">
+            <h3>app/Policies/PenjadwalanPolicy.php:38</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedParam</li>
+            </ul>
+            <p>Param #2 is never referenced in this method</p>
+            <pre data-start="38" class="line-numbersx">
+               <code class="language-php">    public function update(User $user, Penjadwalan /**##(##**/$penjadwalan/**##)##**/): bool</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedParam">
+            <h3>app/Policies/PenjadwalanPolicy.php:46</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedParam</li>
+            </ul>
+            <p>Param #1 is never referenced in this method</p>
+            <pre data-start="46" class="line-numbersx">
+               <code class="language-php">    public function delete(User /**##(##**/$user/**##)##**/, Penjadwalan $penjadwalan): bool</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedParam">
+            <h3>app/Policies/PenjadwalanPolicy.php:46</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedParam</li>
+            </ul>
+            <p>Param #2 is never referenced in this method</p>
+            <pre data-start="46" class="line-numbersx">
+               <code class="language-php">    public function delete(User $user, Penjadwalan /**##(##**/$penjadwalan/**##)##**/): bool</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedParam">
+            <h3>app/Policies/PenjadwalanPolicy.php:54</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedParam</li>
+            </ul>
+            <p>Param #1 is never referenced in this method</p>
+            <pre data-start="54" class="line-numbersx">
+               <code class="language-php">    public function restore(User /**##(##**/$user/**##)##**/, Penjadwalan $penjadwalan): bool</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedParam">
+            <h3>app/Policies/PenjadwalanPolicy.php:54</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedParam</li>
+            </ul>
+            <p>Param #2 is never referenced in this method</p>
+            <pre data-start="54" class="line-numbersx">
+               <code class="language-php">    public function restore(User $user, Penjadwalan /**##(##**/$penjadwalan/**##)##**/): bool</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedParam">
+            <h3>app/Policies/PenjadwalanPolicy.php:62</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedParam</li>
+            </ul>
+            <p>Param #1 is never referenced in this method</p>
+            <pre data-start="62" class="line-numbersx">
+               <code class="language-php">    public function forceDelete(User /**##(##**/$user/**##)##**/, Penjadwalan $penjadwalan): bool</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="PossiblyUnusedParam">
+            <h3>app/Policies/PenjadwalanPolicy.php:62</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>PossiblyUnusedParam</li>
+            </ul>
+            <p>Param #2 is never referenced in this method</p>
+            <pre data-start="62" class="line-numbersx">
+               <code class="language-php">    public function forceDelete(User $user, Penjadwalan /**##(##**/$penjadwalan/**##)##**/): bool</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="UnusedClass">
+            <h3>app/Providers/AppServiceProvider.php:8</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>UnusedClass</li>
+            </ul>
+            <p>Class App\Providers\AppServiceProvider is never used</p>
+            <pre data-start="8" class="line-numbersx">
+               <code class="language-php">class /**##(##**/AppServiceProvider/**##)##**/ extends ServiceProvider</code>
+            </pre>
+         </li>
+         <li data-severity="error" data-psalm-type="MissingOverrideAttribute">
+            <h3>app/Providers/AppServiceProvider.php:13</h3>
+            <ul class="tags">
+               <li class="severity error">error</li>
+               <li>MissingOverrideAttribute</li>
+            </ul>
+            <p>Method App\Providers\AppServiceProvider::register should have the "Override" attribute</p>
+            <pre data-start="13" class="line-numbersx">
+               <code class="language-php">    /**
+     * Register any application services.
+     */
+    /**##(##**/public function register(): void/**##)##**/</code>
+            </pre>
+         </li>
+      </ul>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.16.0/prism.min.js"/>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.16.0/components/prism-markup-templating.min.js"/>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.16.0/components/prism-php.min.js"/>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.16.0/plugins/line-numbers/prism-line-numbers.min.js"/>
+      <script type="text/javascript">
+                
+                    Prism.hooks.add('before-highlight', function (env) {
+                        // Replace "//" temporarily inside strings as it seems to confuse Prism and causes some
+                        // /** comments later in the line to be treated as operators instead of comments
+                        env.code = env.code.replace(/('[^']*)\/\/([^']*')/gs, '$1/**/**/$2');
+                    })
+                    Prism.hooks.add('before-insert', function(env) {
+                        const magicTagMatch = /\/\*\*##\(##\*\*\/([\w\W]*)\/\*\*##\)##\*\*\//gs;
+                        const matchedCodeToBecomeRed = magicTagMatch.exec(env.highlightedCode);
+                        let codeToBecomeRed = matchedCodeToBecomeRed[1];
+
+                        // Fairly naive assumption that PrismJS only uses &lt;/span&gt; and &lt;span class="..."&gt; to highlight...
+                        codeToBecomeRed = codeToBecomeRed.replace(/(&lt;\/span&gt;)/g, '&lt;/span&gt;$1');
+                        codeToBecomeRed = codeToBecomeRed.replace(/(&lt;span class="[^"]*"&gt;)/g, '$1&lt;span class="psalm-errored-code"&gt;');
+
+                        codeToBecomeRed = '&lt;span class="psalm-errored-code"&gt;' + codeToBecomeRed + '&lt;/span&gt;';
+
+                        env.highlightedCode = env.highlightedCode
+                                .replace(magicTagMatch, codeToBecomeRed)
+                                .replace(/\/\*\*\/\*\*\//gs, '//');
+                    });
+                    function subtractUnmatchedItems(filterType, filterValue) {
+                        var items = document.querySelectorAll('#psalmErrors &gt; li');
+
+                        for (var i = 0; i &lt; items.length; i++) {
+                            var itemTag = items[i].getAttribute('data-' + filterType);
+
+                            if (filterValue !== '' &amp;&amp; itemTag !== filterValue) {
+                                items[i].setAttribute('class', 'hidden');
+                            }
+                        }
+                    }
+                    function showAllItems() {
+                        var items = document.querySelectorAll('#psalmErrors &gt; li');
+
+                        for (var i = 0; i &lt; items.length; i++) {
+                            items[i].setAttribute('class', '');
+                        }
+                    }
+                    document.querySelectorAll('.filterable').forEach(function (itemToApplyClickHandlerTo) {
+
+                        var foundItems = [];
+                        var filterType = itemToApplyClickHandlerTo.getAttribute('data-filter-type');
+                        var items = document.querySelectorAll('#psalmErrors &gt; li');
+                        var uniqueCounts = [];
+                        for (var i = 0; i &lt; items.length; i++) {
+                            var itemAttributeValue = items[i].getAttribute('data-' + filterType);
+                            if (itemAttributeValue in uniqueCounts) {
+                                uniqueCounts[itemAttributeValue]++;
+                            } else {
+                                uniqueCounts[itemAttributeValue] = 1;
+                            }
+                            foundItems.push(itemAttributeValue);
+                        }
+                        var uniqueFoundItems = foundItems.filter(function (value, index, self) {
+                            return self.indexOf(value) === index;
+                        });
+                        for (var i = 0; i &lt; uniqueFoundItems.length; i++) {
+                            var newOpt = document.createElement('option');
+                            newOpt.value = uniqueFoundItems[i];
+                            newOpt.innerHTML = uniqueFoundItems[i] + ' (' + uniqueCounts[uniqueFoundItems[i]] + ')';
+                            itemToApplyClickHandlerTo.appendChild(newOpt);
+                        }
+
+                        itemToApplyClickHandlerTo.onclick = function () {
+                            showAllItems();
+                            document.querySelectorAll('.filterable').forEach(function (filteringDropdown) {
+                                subtractUnmatchedItems(
+                                    filteringDropdown.getAttribute('data-filter-type'),
+                                    filteringDropdown.options[filteringDropdown.selectedIndex].value
+                                );
+                            });
+                        };
+                    });
+                
+                </script>
+   </body>
+</html>
