@@ -12,7 +12,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set the working directory
 WORKDIR /var/www
 
-# Copy the entire Laravel application first
 COPY . .
 
 RUN chown -R www-data:www-data /var/www
