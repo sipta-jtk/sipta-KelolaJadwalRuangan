@@ -360,7 +360,7 @@ class RuanganController extends Controller
     }
 
     /**
-     * Get room details including facilities and building.
+     * Get detail ruangan.
      */
     public function show($id)
     {

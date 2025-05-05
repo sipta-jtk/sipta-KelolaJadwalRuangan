@@ -2,10 +2,15 @@ $(document).ready(function() {
     function fetchSchedules(selectedDate) {  
         $.getJSON("penjadwalan-ruangan/api/v1/rooms/names", function(roomsData) {
             let rooms = {};
+            let roomIds = {}; // menyimpan ID ruangan map ke nama ruangan
+            
             roomsData.forEach(room => {
-                rooms[room.nama_ruangan] = {}; // Menyimpan berdasarkan nama ruangan
+                const roomName = room.nama_ruangan.trim();
+                rooms[roomName] = {};
+                roomIds[roomName] = room.id_ruangan; // simpan ID ruangan
+                
                 for (let hour = 6; hour <= 18; hour++) {
-                    rooms[room.nama_ruangan.trim()][hour] = "<td></td>";
+                    rooms[roomName][hour] = "<td></td>";
                 }
             });
     
@@ -22,28 +27,31 @@ $(document).ready(function() {
                 schedulesData
                     .filter(event => event.tanggal === selectedDate)
                     .forEach(event => {
-                    let startHour = new Date(Date.parse(event.start)).getUTCHours();
-                    let endHour = new Date(Date.parse(event.end)).getUTCHours();
-                    let roomName = event.nama_ruangan.trim();
-                    let duration = endHour - startHour;
-                    let agenda = agendaMapping[event.agenda] || event.agenda;
-                    
-                    if (rooms[roomName]) {
-                        let warnaLast = warnaAgenda[roomName] || "table-primary";
-                        let warnaNew = warnaLast === "table-primary" ? "table-secondary" : "table-primary";
-                        warnaAgenda[roomName] = warnaNew;
-    
-                        rooms[roomName][startHour] = `<td class='${warnaNew}' colspan='${duration}'>KoTA ${event.id_kota} | ${agenda}</td>`;
-                        for(let hour = startHour+1; hour < endHour; hour++) {
-                            rooms[roomName][hour] = "";
+                        let startHour = new Date(Date.parse(event.start)).getUTCHours();
+                        let endHour = new Date(Date.parse(event.end)).getUTCHours();
+                        let roomName = event.nama_ruangan.trim();
+                        let duration = endHour - startHour;
+                        let agenda = agendaMapping[event.agenda] || event.agenda;
+                        
+                        if (rooms[roomName]) {
+                            let warnaLast = warnaAgenda[roomName] || "table-primary";
+                            let warnaNew = warnaLast === "table-primary" ? "table-secondary" : "table-primary";
+                            warnaAgenda[roomName] = warnaNew;
+        
+                            rooms[roomName][startHour] = `<td class='${warnaNew}' colspan='${duration}'>KoTA ${event.id_kota} | ${agenda}</td>`;
+                            for(let hour = startHour+1; hour < endHour; hour++) {
+                                rooms[roomName][hour] = "";
+                            }
                         }
-                    }
-                });
+                    });
     
                 // Generate tabel
                 let tableBody = "";
                 Object.keys(rooms).forEach(roomName => {
-                    tableBody += `<tr><td>${roomName}</td>`;
+                    // membuat link untuk nama ruangan
+                    const roomId = roomIds[roomName];
+                    tableBody += `<tr><td><a href="#" class="room-name-link" data-id="${roomId}">${roomName}</a></td>`;
+                    
                     for (let hour = 6; hour <= 18; hour++) {
                         if(rooms[roomName][hour] !== "") {
                             tableBody += rooms[roomName][hour];
@@ -54,6 +62,11 @@ $(document).ready(function() {
     
                 // Masukkan hasil ke dalam tabel di halaman
                 $("#schedule-body").html(tableBody);
+                
+                // Initialize room detail links after rendering the table
+                if (window.setupRoomDetailLinks) {
+                    window.setupRoomDetailLinks();
+                }
             });
         });
     }
@@ -123,6 +136,14 @@ $(document).ready(function() {
         });
     
         window.location.href = `/penjadwalan-ruangan/download-schedule-pdf?${queryParams.toString()}`;
+    });
+
+    // Add this at the end of your calendar.js file
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize room detail links after calendar renders
+        if (window.setupRoomDetailLinks) {
+            window.setupRoomDetailLinks();
+        }
     });
 
 });
