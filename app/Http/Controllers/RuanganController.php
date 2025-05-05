@@ -112,7 +112,7 @@ class RuanganController extends Controller
             'kode_ruangan' => 'required|string|max:6',
             'status_ruangan' => 'required|in:tersedia,tidak_tersedia',
             'kode_gedung' => 'required|exists:gedung,kode_gedung',
-            'fasilitas' => 'required|array',
+            'fasilitas' => 'nullable|array',
             'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
@@ -120,18 +120,16 @@ class RuanganController extends Controller
             DB::beginTransaction();
             
             // Generate nama file dengan UUID
-            // $imageName = Str::uuid() . '.' . $request->foto->extension();
-            // $path = storage_path('app/public/image/ruangan');
+            $imageName = Str::uuid() . '.' . $request->foto->extension();
+            $path = storage_path('app/public/image/ruangan');
             
-            // // Pastikan direktori ada
-            // if (!File::exists($path)) {
-            //     File::makeDirectory($path, 0777, true);
-            // }
+            // Pastikan direktori ada
+            if (!File::exists($path)) {
+                File::makeDirectory($path, 0777, true);
+            }
             
-            // // Upload file
-            // $request->foto->move($path, $imageName);
-
-            $path = $request->file('foto')->storeAs('image/ruangan/' . Str::uuid() . '.' . $request->foto->extension(), 'public');
+            // Upload file
+            $request->foto->move($path, $imageName);
             try {
                 // Buat ruangan baru dan simpan ID-nya
                 $ruanganData = [
@@ -139,7 +137,7 @@ class RuanganController extends Controller
                     'kode_ruangan' => $request->kode_ruangan,
                     'status_ruangan' => $request->status_ruangan,
                     'kode_gedung' => $request->kode_gedung,
-                    'link_ruangan' => $path,
+                    'link_ruangan' => $imageName
                 ];
 
                 $ruangan = Ruangan::create($ruanganData);
@@ -229,7 +227,7 @@ class RuanganController extends Controller
                 // Handle foto
                 if ($request->remove_foto == '1' && $ruangan->link_ruangan) {
                     // Hapus foto lama jika diminta
-                    $oldImagePath = asset("storage/" . $ruangan->link_ruangan);
+                    $oldImagePath = storage_path('app/public/image/ruangan/' . $ruangan->link_ruangan);
                     if (File::exists($oldImagePath)) {
                         File::delete($oldImagePath);
                         \Log::info('Foto lama dihapus: ' . $oldImagePath);
@@ -238,19 +236,17 @@ class RuanganController extends Controller
                 } 
                 elseif ($request->hasFile('foto')) {
                     // Upload foto baru
-                    // $imageName = Str::uuid() . '.' . $request->foto->extension();
-                    // $path = public_path('image/ruangan');
+                    $imageName = Str::uuid() . '.' . $request->foto->extension();
+                    $path = storage_path('app/public/image/ruangan');
 
-                    $path = $request->file('foto')->storeAs('image/ruangan/' . Str::uuid() . '.' . $request->foto->extension(), 'public');
-
-                    // // Pastikan direktori ada
-                    // if (!File::exists($path)) {
-                    //     File::makeDirectory($path, 0777, true);
-                    // }
+                    // Pastikan direktori ada
+                    if (!File::exists($path)) {
+                        File::makeDirectory($path, 0777, true);
+                    }
 
                     // Hapus foto lama jika ada
                     if ($ruangan->link_ruangan) {
-                        $oldImagePath = asset("storage/" . $ruangan->link_ruangan);
+                        $oldImagePath = $path . '/' . $ruangan->link_ruangan;
                         if (File::exists($oldImagePath)) {
                             File::delete($oldImagePath);
                             \Log::info('Foto lama diganti: ' . $oldImagePath);
@@ -258,9 +254,8 @@ class RuanganController extends Controller
                     }
 
                     // Upload foto baru
-                    // $request->foto->move($path, $imageName);
-                    // $ruangan->link_ruangan = $imageName;
-                    $ruangan->link_ruangan = $path;
+                    $request->foto->move($path, $imageName);
+                    $ruangan->link_ruangan = $imageName;
                     \Log::info('Foto baru diupload: ' . $imageName);
                 }
 
@@ -300,11 +295,8 @@ class RuanganController extends Controller
 
             } catch (\Exception $e) {
                 // Jika ada foto yang baru diupload, hapus
-                if ($request->hasFile('foto') && $ruangan->link_ruangan) {
-                    $uploadedImagePath = public_path('storage/' . $ruangan->link_ruangan);
-                    if (File::exists($uploadedImagePath)) {
-                        File::delete($uploadedImagePath);
-                    }
+                if (isset($imageName) && isset($path) && File::exists($path . '/' . $imageName)) {
+                    File::delete($path . '/' . $imageName);
                 }
                 DB::rollback();
                 \Log::error('Error saat update ruangan: ' . $e->getMessage());
@@ -337,7 +329,7 @@ class RuanganController extends Controller
                     ->with('error', 'Ruangan tidak dapat dihapus karena sedang digunakan dalam penjadwalan.');
             }
             
-            $path = public_path('image/ruangan');
+            $path = storage_path('app/public/image/ruangan');
             
             // Hapus foto jika ada
             if ($ruangan->link_ruangan) {
@@ -398,14 +390,5 @@ class RuanganController extends Controller
         ->get();
 
         return response()->json($availableRooms);
-    }
-
-    /**
-     * Get room details including facilities and building.
-     */
-    public function show($id)
-    {
-        $ruangan = Ruangan::with(['fasilitas', 'gedung'])->findOrFail($id);
-        return response()->json($ruangan);
     }
 }
