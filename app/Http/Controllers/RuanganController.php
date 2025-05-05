@@ -120,16 +120,18 @@ class RuanganController extends Controller
             DB::beginTransaction();
             
             // Generate nama file dengan UUID
-            $imageName = Str::uuid() . '.' . $request->foto->extension();
-            $path = storage_path('app/public/image/ruangan');
+            // $imageName = Str::uuid() . '.' . $request->foto->extension();
+            // $path = storage_path('app/public/image/ruangan');
             
-            // Pastikan direktori ada
-            if (!File::exists($path)) {
-                File::makeDirectory($path, 0777, true);
-            }
+            // // Pastikan direktori ada
+            // if (!File::exists($path)) {
+            //     File::makeDirectory($path, 0777, true);
+            // }
             
-            // Upload file
-            $request->foto->move($path, $imageName);
+            // // Upload file
+            // $request->foto->move($path, $imageName);
+
+            $path = $request->file('foto')->storeAs('image/ruangan/' . Str::uuid() . '.' . $request->foto->extension(), 'public');
             try {
                 // Buat ruangan baru dan simpan ID-nya
                 $ruanganData = [
@@ -137,7 +139,7 @@ class RuanganController extends Controller
                     'kode_ruangan' => $request->kode_ruangan,
                     'status_ruangan' => $request->status_ruangan,
                     'kode_gedung' => $request->kode_gedung,
-                    'link_ruangan' => $imageName
+                    'link_ruangan' => $path,
                 ];
 
                 $ruangan = Ruangan::create($ruanganData);
@@ -227,7 +229,7 @@ class RuanganController extends Controller
                 // Handle foto
                 if ($request->remove_foto == '1' && $ruangan->link_ruangan) {
                     // Hapus foto lama jika diminta
-                    $oldImagePath = public_path('image/ruangan/' . $ruangan->link_ruangan);
+                    $oldImagePath = asset("storage/" . $ruangan->link_ruangan);
                     if (File::exists($oldImagePath)) {
                         File::delete($oldImagePath);
                         \Log::info('Foto lama dihapus: ' . $oldImagePath);
@@ -236,17 +238,19 @@ class RuanganController extends Controller
                 } 
                 elseif ($request->hasFile('foto')) {
                     // Upload foto baru
-                    $imageName = Str::uuid() . '.' . $request->foto->extension();
-                    $path = public_path('image/ruangan');
+                    // $imageName = Str::uuid() . '.' . $request->foto->extension();
+                    // $path = public_path('image/ruangan');
 
-                    // Pastikan direktori ada
-                    if (!File::exists($path)) {
-                        File::makeDirectory($path, 0777, true);
-                    }
+                    $path = $request->file('foto')->storeAs('image/ruangan/' . Str::uuid() . '.' . $request->foto->extension(), 'public');
+
+                    // // Pastikan direktori ada
+                    // if (!File::exists($path)) {
+                    //     File::makeDirectory($path, 0777, true);
+                    // }
 
                     // Hapus foto lama jika ada
                     if ($ruangan->link_ruangan) {
-                        $oldImagePath = $path . '/' . $ruangan->link_ruangan;
+                        $oldImagePath = asset("storage/" . $ruangan->link_ruangan);
                         if (File::exists($oldImagePath)) {
                             File::delete($oldImagePath);
                             \Log::info('Foto lama diganti: ' . $oldImagePath);
@@ -254,8 +258,9 @@ class RuanganController extends Controller
                     }
 
                     // Upload foto baru
-                    $request->foto->move($path, $imageName);
-                    $ruangan->link_ruangan = $imageName;
+                    // $request->foto->move($path, $imageName);
+                    // $ruangan->link_ruangan = $imageName;
+                    $ruangan->link_ruangan = $path;
                     \Log::info('Foto baru diupload: ' . $imageName);
                 }
 
@@ -295,8 +300,11 @@ class RuanganController extends Controller
 
             } catch (\Exception $e) {
                 // Jika ada foto yang baru diupload, hapus
-                if (isset($imageName) && isset($path) && File::exists($path . '/' . $imageName)) {
-                    File::delete($path . '/' . $imageName);
+                if ($request->hasFile('foto') && $ruangan->link_ruangan) {
+                    $uploadedImagePath = public_path('storage/' . $ruangan->link_ruangan);
+                    if (File::exists($uploadedImagePath)) {
+                        File::delete($uploadedImagePath);
+                    }
                 }
                 DB::rollback();
                 \Log::error('Error saat update ruangan: ' . $e->getMessage());
