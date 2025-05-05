@@ -391,4 +391,10 @@ class RuanganController extends Controller
 
         return response()->json($availableRooms);
     }
+
+    public function show($id)
+    {
+        $ruangan = Ruangan::with(['fasilitas', 'gedung'])->findOrFail($id);
+        return response()->json($ruangan);
+    }
 }
