@@ -397,10 +397,14 @@
                             <tbody>
                                 @foreach ($ruangan as $key => $room)
                                 <tr>
-                                    <td class="align-middle"></td>
-                                    <td class="align-middle">{{ $room->kode_ruangan }}</td>
-                                    <td class="align-middle">{{ $room->nama_ruangan }}</td>
-                                    <td class="align-middle">
+                                    <td class="px-4 py-3">{{ $key + 1 }}</td>
+                                    <td class="px-4 py-3">{{ $room->kode_ruangan }}</td>
+                                    <td class="px-4 py-3">
+                                        <a href="#" class="room-name-link" data-id="{{ $room->id_ruangan }}">
+                                            {{ $room->nama_ruangan }}
+                                        </a>
+                                    </td>
+                                    <td class="px-4 py-3">
                                         @if ($room->status_ruangan == 'tersedia')
                                             <span class="status-badge bg-success text-white rounded p-1">Tersedia</span>
                                         @else
@@ -440,6 +444,7 @@
         </div>
     </div>
 </div>
+@include('ruangan.detail')
 
 <script>
     $(document).ready(function () {
