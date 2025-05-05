@@ -444,9 +444,7 @@
         </div>
     </div>
 </div>
-<<<<<<< HEAD
 @include('ruangan.detail')
-=======
 
 <script>
     $(document).ready(function () {
@@ -505,5 +503,4 @@
     });
 </script>
 </div>
->>>>>>> 2cbca3488d870a601ddac3b2ba6a6e35efc751c3
 @endsection
