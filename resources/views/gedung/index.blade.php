@@ -5,78 +5,43 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
             <!-- Header Section with Shadow -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <a href="{{ route('ruangan.index') }}" class="btn btn-outline-warning">
-                    <i class="fas fa-arrow-left me-2"></i>Kembali
-                </a>
-                <h2 class="mb-0 text-center flex-grow-1"><i class="fas fa-building me-2"></i>Manajemen Gedung</h2>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h1 class="mb-0">Manajemen Gedung</h1>
                 <div style="width: 85px;"></div><!-- Spacer untuk menyeimbangkan layout -->
             </div>
 
-            <!-- Form Input Card with Soft Shadow -->
-            <div class="card shadow-sm mb-4 border-0 rounded-3">
-                <div class="card-header bg-white py-3">
-                    <h5 class="card-title mb-0 text-warning">
-                        <i class="fas fa-plus-circle me-2"></i>Tambah Gedung
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('gedung.store') }}" method="POST">
-                        @csrf
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="kode_gedung" class="form-label">Kode Gedung</label>
-                                <input type="text" class="form-control @error('kode_gedung') is-invalid @enderror" 
-                                    id="kode_gedung" 
-                                    name="kode_gedung" 
-                                    required 
-                                    maxlength="1"
-                                    pattern="[A-Za-z]{1}"
-                                    placeholder="Contoh: A"
-                                    style="text-transform: uppercase;"
-                                    value="{{ old('kode_gedung') }}">
-                                @error('kode_gedung')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            <div class="col-md-8 mb-3">
-                                <label for="nama_gedung" class="form-label">Nama Gedung</label>
-                                <input type="text" class="form-control" id="nama_gedung" 
-                                    name="nama_gedung" required
-                                    placeholder="Masukkan nama gedung">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-warning">
-                            <i class="fas fa-plus me-2"></i>Tambah
-                        </button>
-                    </form>
-                </div>
-            </div>
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('ruangan.index') }}" class="text-decoration-none text-primary">
+                            Ruangan
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Manajemen Gedung</li>
+                </ol>
+            </nav>
 
-            <!-- Search Card -->
-            <div class="card shadow-sm mb-4 border-0 rounded-3">
-                <div class="card-body">
+            <!-- Form Input Card with Soft Shadow -->
+            <div class="card shadow-sm mb-4 border-0 rounded-1">
+                <div class="card-header bg-white py-3 text-end">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahGedungModal">
+                        <i class="fas fa-plus me-1"></i>Tambah Gedung
+                    </button>
+                </div>
+                <div class="card-body d-flex justify-content-end align-items-center mb-3">
+                <label for="search" class="me-2">Cari:</label>
                     <form action="{{ route('gedung.index') }}" method="GET">
                         <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0">
-                                <i class="fas fa-search text-warning"></i>
-                            </span>
-                            <input type="text" class="form-control border-start-0 ps-0" 
-                                placeholder="Cari gedung..." name="search" 
+                            <input type="text" class="form-control"  name="search" 
                                 value="{{ request('search') }}">
                         </div>
                     </form>
                 </div>
-            </div>
-
-            <!-- Table Card -->
-            <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
-                            <thead class="table-light">
+                            <thead class="table-dark">
                                 <tr>
                                     <th width="5%" class="text-center">#</th>
                                     <th width="20%">Kode Gedung</th>
@@ -91,19 +56,19 @@
                                     <td>{{ $item->kode_gedung }}</td>
                                     <td>{{ $item->nama_gedung }}</td>
                                     <td class="text-center">
-                                        <button class="btn btn-link text-warning p-0 me-2" 
+                                        <button class="btn btn-warning btn-md " 
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#editModal{{ $item->kode_gedung }}"
                                                 title="Edit">
-                                            <i class="fas fa-edit"></i>
+                                            <i class="fas fa-edit text-white"></i>
                                         </button>
                                         
                                         @if($item->ruangan_count > 0)
                                             <button type="button" 
-                                                    class="btn btn-link text-secondary p-0" 
+                                                    class="btn btn-secondary btn-md" 
                                                     disabled
                                                     title="Gedung memiliki {{ $item->ruangan_count }} ruangan">
-                                                <i class="fas fa-trash"></i>
+                                                <i class="fas fa-trash text-white"></i>
                                             </button>
                                         @else
                                             <form action="{{ route('gedung.destroy', $item->kode_gedung) }}" 
@@ -111,10 +76,10 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" 
-                                                        class="btn btn-link text-danger p-0" 
+                                                        class="btn btn-danger btn-md" 
                                                         onclick="return confirm('Apakah Anda yakin ingin menghapus gedung ini?')"
                                                         title="Hapus">
-                                                    <i class="fas fa-trash"></i>
+                                                    <i class="fas fa-trash text-white"></i>
                                                 </button>
                                             </form>
                                         @endif
@@ -132,7 +97,70 @@
                         </table>
                     </div>
                 </div>
+                </div>
             </div>
+
+            <!-- Search Card -->
+            <!-- <div class="card shadow-sm mb-4 border-0 rounded-3">
+                
+            </div> -->
+
+            <!-- Table Card -->
+            <!-- <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body">
+                    
+                </div>
+            </div> -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tambah Gedung -->
+<div class="modal fade" id="tambahGedungModal" tabindex="-1" aria-labelledby="tambahGedungModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="tambahGedungModalLabel">
+                    <i class="fas fa-plus me-2"></i>Tambah Gedung
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('gedung.store') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="kode_gedung" class="form-label">Kode Gedung</label>
+                        <input type="text" class="form-control @error('kode_gedung') is-invalid @enderror" 
+                               id="kode_gedung" 
+                               name="kode_gedung" 
+                               required 
+                               maxlength="1"
+                               pattern="[A-Za-z]{1}"
+                               placeholder="Contoh: A"
+                               style="text-transform: uppercase;"
+                               value="{{ old('kode_gedung') }}">
+                        @error('kode_gedung')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="nama_gedung" class="form-label">Nama Gedung</label>
+                        <input type="text" class="form-control" id="nama_gedung" 
+                               name="nama_gedung" required
+                               placeholder="Masukkan nama gedung">
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                        Tutup
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        Simpan
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
