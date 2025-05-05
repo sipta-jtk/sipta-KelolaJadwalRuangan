@@ -348,7 +348,11 @@
                                 <tr>
                                     <td class="px-4 py-3">{{ $key + 1 }}</td>
                                     <td class="px-4 py-3">{{ $room->kode_ruangan }}</td>
-                                    <td class="px-4 py-3">{{ $room->nama_ruangan }}</td>
+                                    <td class="px-4 py-3">
+                                        <a href="#" class="room-name-link" data-id="{{ $room->id_ruangan }}">
+                                            {{ $room->nama_ruangan }}
+                                        </a>
+                                    </td>
                                     <td class="px-4 py-3">
                                         @if ($room->status_ruangan == 'tersedia')
                                             <span class="status-badge bg-success text-white rounded p-1">Tersedia</span>
@@ -385,4 +389,5 @@
         </div>
     </div>
 </div>
+@include('ruangan.detail')
 @endsection
