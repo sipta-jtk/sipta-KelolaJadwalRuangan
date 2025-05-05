@@ -201,7 +201,6 @@
         /* Empty state */
         .text-center {
             padding: 25px;
-            font-style: italic;
             color: #6c757d;
         }
         
