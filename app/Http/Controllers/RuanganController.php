@@ -121,7 +121,7 @@ class RuanganController extends Controller
             
             // Generate nama file dengan UUID
             $imageName = Str::uuid() . '.' . $request->foto->extension();
-            $path = public_path('image/ruangan');
+            $path = storage_path('app/public/image/ruangan');
             
             // Pastikan direktori ada
             if (!File::exists($path)) {
