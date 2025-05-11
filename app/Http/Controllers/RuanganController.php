@@ -121,7 +121,7 @@ class RuanganController extends Controller
             
             // Generate nama file dengan UUID
             $imageName = Str::uuid() . '.' . $request->foto->extension();
-            $path = public_path('image/ruangan');
+            $path = storage_path('app/public/image/ruangan');
             
             // Pastikan direktori ada
             if (!File::exists($path)) {
@@ -227,7 +227,7 @@ class RuanganController extends Controller
                 // Handle foto
                 if ($request->remove_foto == '1' && $ruangan->link_ruangan) {
                     // Hapus foto lama jika diminta
-                    $oldImagePath = public_path('image/ruangan/' . $ruangan->link_ruangan);
+                    $oldImagePath = storage_path('app/public/image/ruangan/' . $ruangan->link_ruangan);
                     if (File::exists($oldImagePath)) {
                         File::delete($oldImagePath);
                         \Log::info('Foto lama dihapus: ' . $oldImagePath);
@@ -237,7 +237,7 @@ class RuanganController extends Controller
                 elseif ($request->hasFile('foto')) {
                     // Upload foto baru
                     $imageName = Str::uuid() . '.' . $request->foto->extension();
-                    $path = public_path('image/ruangan');
+                    $path = storage_path('app/public/image/ruangan');
 
                     // Pastikan direktori ada
                     if (!File::exists($path)) {
@@ -329,7 +329,7 @@ class RuanganController extends Controller
                     ->with('error', 'Ruangan tidak dapat dihapus karena sedang digunakan dalam penjadwalan.');
             }
             
-            $path = public_path('image/ruangan');
+            $path = storage_path('app/public/image/ruangan');
             
             // Hapus foto jika ada
             if ($ruangan->link_ruangan) {
@@ -390,5 +390,11 @@ class RuanganController extends Controller
         ->get();
 
         return response()->json($availableRooms);
+    }
+
+    public function show($id)
+    {
+        $ruangan = Ruangan::with(['fasilitas', 'gedung'])->findOrFail($id);
+        return response()->json($ruangan);
     }
 }
