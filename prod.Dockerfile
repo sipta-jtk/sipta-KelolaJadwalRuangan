@@ -16,6 +16,7 @@ WORKDIR /var/www
 COPY . .
 
 RUN chown -R www-data:www-data /var/www
+RUN chmod -R 775 /var/www
 # Create necessary directories and set permissions
 RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views \
     && chmod -R 775 storage bootstrap/cache \

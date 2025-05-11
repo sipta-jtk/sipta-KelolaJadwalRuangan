@@ -28,7 +28,7 @@ class RuanganController extends Controller
             $fileName = time() . '_' . Str::random(10) . '.' . $foto->getClientOriginalExtension();
             
             // Pindahkan file ke folder public/ruangan
-            $foto->move(public_path('ruangan'), $fileName);
+            $foto->move(public_path('image/ruangan'), $fileName);
             
             // Log to file
             \Log::info('File successfully uploaded: ' . $fileName);
@@ -56,8 +56,8 @@ class RuanganController extends Controller
      */
     private function deleteFoto($fileName)
     {
-        if ($fileName && file_exists(public_path('ruangan/' . $fileName))) {
-            unlink(public_path('ruangan/' . $fileName));
+        if ($fileName && file_exists(public_path('image/ruangan/' . $fileName))) {
+            unlink(public_path('image/ruangan/' . $fileName));
         }
     }
 
@@ -112,7 +112,7 @@ class RuanganController extends Controller
             'kode_ruangan' => 'required|string|max:6',
             'status_ruangan' => 'required|in:tersedia,tidak_tersedia',
             'kode_gedung' => 'required|exists:gedung,kode_gedung',
-            'fasilitas' => 'required|array',
+            'fasilitas' => 'nullable|array',
             'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 

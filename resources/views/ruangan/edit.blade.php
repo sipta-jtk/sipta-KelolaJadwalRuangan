@@ -99,13 +99,6 @@
         padding: 0.75rem 2rem;
     }
 
-    .btn-cancel {
-        background: #dc3545;
-        color: white;
-        border-radius: 8px;
-        padding: 0.75rem 2rem;
-    }
-
     .action-buttons {
         display: flex;
         justify-content: flex-end;
@@ -271,7 +264,12 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-body p-4">
-            <h2 class="text-center mb-4">Edit Ruangan</h2>
+            <div class="d-flex align-items-center mb-4">
+                <a href="{{ route('ruangan.index') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Kembali
+                </a>
+                <h2 class="text-center flex-grow-1 mb-0">Edit Ruangan</h2>
+            </div>
             
             <form action="{{ route('ruangan.update', $ruangan->id_ruangan) }}" 
                 method="POST" 
@@ -441,8 +439,8 @@
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <a href="{{ route('ruangan.index') }}" class="btn btn-cancel">Cancel</a>
-                    <button type="submit" class="btn btn-submit">Update</button>
+                    <a href="{{ route('ruangan.index') }}" class="btn btn-danger">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Update</button>
                 </div>
             </form>
         </div>

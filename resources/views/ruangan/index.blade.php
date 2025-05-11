@@ -201,7 +201,6 @@
         /* Empty state */
         .text-center {
             padding: 25px;
-            font-style: italic;
             color: #6c757d;
         }
         
@@ -277,6 +276,9 @@
 
                 <div class="d-flex justify-content-end align-items-center mb-4">
                     <div class="d-flex gap-3">
+                        <a href="{{ route('fasilitas.index') }}" class="btn btn-success btn-action">
+                            <i class="fas fa-plus me-2"></i> Fasilitas
+                        </a>
                         <a href="{{ route('ruangan.create') }}" class="btn btn-primary btn-action">
                             <i class="fas fa-plus me-2"></i> Ruangan
                         </a>
