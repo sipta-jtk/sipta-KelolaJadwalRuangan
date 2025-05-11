@@ -24,7 +24,7 @@ RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framewor
 # Install PHP dependencies
 RUN composer install --no-interaction --no-progress --optimize-autoloader
 
-RUN php artisan storage:link
+# RUN php artisan storage:link
 
 # Install frontend dependencies
 RUN npm install
