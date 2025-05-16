@@ -468,7 +468,7 @@
             search: "Cari: ",
             lengthMenu: "",
             zeroRecords: "Data tidak ditemukan",
-            info: "Menampilkan START sampai END dari total TOTAL data",
+            info: " ",
             infoEmpty: "Tidak ada data tersedia",
             infoFiltered: "(difilter dari total MAX data)",
             paginate: {
