@@ -13,16 +13,17 @@ use App\Helpers\FileHelper;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use Cloudinary\Cloudinary as CloudinarySDK;
-use Cloudinary\Configuration\Configuration;
+// use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+// use Cloudinary\Cloudinary as CloudinarySDK;
+// use Cloudinary\Configuration\Configuration;
+use Illuminate\Support\Facades\Storage;
 
 
 class RuanganController extends Controller
 {
 
     /**
-     * Menyimpan foto dan mengembalikan path relatifnya
+     * Menyimpan foto ke storage lokal
      */
     private function uploadFoto($foto, $fileName)
     {
@@ -30,56 +31,30 @@ class RuanganController extends Controller
             // Convert UUID object to string if needed
             $fileName = (string) $fileName;
             
-            // Log Cloudinary configuration
-            \Log::info('Cloudinary Configuration:', [
-                'cloud_name' => config('cloudinary.cloud_name'),
-                'api_key' => config('cloudinary.api_key'),
-                'api_secret' => config('cloudinary.api_secret'),
-                'cloud_url' => config('cloudinary.cloud_url')
-            ]);
-
-            \Log::info('Starting file upload to Cloudinary', [
+            \Log::info('Starting file upload to local storage', [
                 'file_name' => $fileName,
                 'original_name' => $foto->getClientOriginalName(),
                 'mime_type' => $foto->getMimeType(),
-                'size' => $foto->getSize(),
-                'real_path' => $foto->getRealPath()
+                'size' => $foto->getSize()
             ]);
 
-            // Initialize Cloudinary
-            Configuration::instance([
-                'cloud' => [
-                    'cloud_name' => config('cloudinary.cloud_name'),
-                    'api_key'    => config('cloudinary.api_key'),
-                    'api_secret' => config('cloudinary.api_secret'),
-                    'secure'     => true
-                ]
-            ]);
+            // Generate nama file dengan ekstensi
+            $extension = $foto->getClientOriginalExtension();
+            $fullFileName = $fileName . '.' . $extension;
 
-            // Upload directly to Cloudinary using the SDK
-            $cloudinary = new CloudinarySDK();
-            $result = $cloudinary->uploadApi()->upload($foto->getRealPath(), [
-                'resource_type' => 'image',
-                'folder' => env('CLOUDINARY_FOLDER'),
-                'public_id' => $fileName,
-                'use_filename' => true,
-                'unique_filename' => true
-            ]);
+            // Simpan file ke storage
+            $path = $foto->storeAs('ruangan', $fullFileName, 'public');
 
-            \Log::info('Raw Cloudinary response:', ['response' => $result]);
-
-            // Response dari Cloudinary sudah dalam format yang benar
-            if (!isset($result['public_id'])) {
-                throw new \Exception('Invalid response from Cloudinary: ' . json_encode($result));
+            if (!$path) {
+                throw new \Exception('Failed to store file in local storage');
             }
 
-            $publicId = $result['public_id'];
             \Log::info('Upload successful:', [
-                'cloudinary_id' => $publicId,
-                'secure_url' => $result['secure_url'] ?? null
+                'file_path' => $path,
+                'full_file_name' => $fullFileName
             ]);
             
-            return $publicId;
+            return $fullFileName;
             
         } catch (\Exception $e) {
             \Log::error('Upload failed with error:', [
@@ -94,50 +69,37 @@ class RuanganController extends Controller
         }
     }
 
-
     /**
-     * Menghapus foto dari Cloudinary
+     * Menghapus foto dari storage lokal
      */
-    private function deleteFoto($publicId)
+    private function deleteFoto($fileName)
     {
-        if ($publicId) {
+        if ($fileName) {
             try {
-                // Initialize Cloudinary
-                Configuration::instance([
-                    'cloud' => [
-                        'cloud_name' => config('cloudinary.cloud_name'),
-                        'api_key'    => config('cloudinary.api_key'),
-                        'api_secret' => config('cloudinary.api_secret'),
-                        'secure'     => true
-                    ]
+                $path = 'ruangan/' . $fileName;
+                
+                \Log::info('Deleting file from local storage:', [
+                    'file_path' => $path
                 ]);
 
-                // Remove file extension from public_id
-                // Example: SIPTAJTK/4adb748e-95e1-4435-9482-457591a9f37a.jpeg -> SIPTAJTK/4adb748e-95e1-4435-9482-457591a9f37a
-                $publicIdWithoutExt = preg_replace('/\.[^.]*$/', '', $publicId);
-                
-                \Log::info('Deleting file from Cloudinary:', [
-                    'original_public_id' => $publicId,
-                    'public_id_without_ext' => $publicIdWithoutExt
-                ]);
-                
-                // Delete using the SDK
-                $cloudinary = new CloudinarySDK();
-                $result = $cloudinary->uploadApi()->destroy($publicIdWithoutExt, [
-                    'resource_type' => 'image'
-                ]);
-
-                \Log::info('File successfully deleted from Cloudinary:', [
-                    'public_id' => $publicIdWithoutExt,
-                    'result' => $result
-                ]);
+                // Hapus file dari storage
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                    \Log::info('File successfully deleted from local storage:', [
+                        'file_path' => $path
+                    ]);
+                } else {
+                    \Log::warning('File not found in storage:', [
+                        'file_path' => $path
+                    ]);
+                }
             } catch (\Exception $e) {
-                \Log::error('Failed to delete file from Cloudinary:', [
-                    'public_id' => $publicId,
+                \Log::error('Failed to delete file from local storage:', [
+                    'file_path' => $path ?? null,
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
                 ]);
-                throw new \Exception('Failed to delete file from Cloudinary: ' . $e->getMessage());
+                throw new \Exception('Failed to delete file from local storage: ' . $e->getMessage());
             }
         }
     }
@@ -190,7 +152,7 @@ class RuanganController extends Controller
         ]);
 
         DB::beginTransaction();
-        $cloudinaryId = null;
+        $fileName = null;
         $ruangan = null;
 
         try {
@@ -198,11 +160,9 @@ class RuanganController extends Controller
             $imageName = Str::uuid();
             \Log::info('Generated image name', ['image_name' => $imageName]);
             
-            // Upload foto ke Cloudinary
-            $cloudinaryId = $this->uploadFoto($request->foto, $imageName);
-            \Log::info('File uploaded to Cloudinary', ['cloudinary_id' => $cloudinaryId]);
-
-            $link_ruangan = $cloudinaryId . '.' . $request->foto->getClientOriginalExtension();
+            // Upload foto ke storage lokal
+            $fileName = $this->uploadFoto($request->foto, $imageName);
+            \Log::info('File uploaded to local storage', ['file_name' => $fileName]);
             
             // Buat ruangan baru dan simpan ID-nya
             $ruanganData = [
@@ -210,7 +170,7 @@ class RuanganController extends Controller
                 'kode_ruangan' => $request->kode_ruangan,
                 'status_ruangan' => $request->status_ruangan,
                 'kode_gedung' => $request->kode_gedung,
-                'link_ruangan' => $link_ruangan
+                'link_ruangan' => $fileName
             ];
 
             $ruangan = Ruangan::create($ruanganData);
@@ -242,17 +202,17 @@ class RuanganController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             
-            // Jika upload ke Cloudinary berhasil tapi operasi database gagal,
-            // hapus file dari Cloudinary
-            if ($cloudinaryId) {
+            // Jika upload ke storage lokal berhasil tapi operasi database gagal,
+            // hapus file dari storage lokal
+            if ($fileName) {
                 try {
-                    $this->deleteFoto($cloudinaryId);
-                    \Log::info('Cleaned up Cloudinary file after failed transaction', [
-                        'cloudinary_id' => $cloudinaryId
+                    $this->deleteFoto($fileName);
+                    \Log::info('Cleaned up local file after failed transaction', [
+                        'file_name' => $fileName
                     ]);
                 } catch (\Exception $deleteError) {
-                    \Log::error('Failed to cleanup Cloudinary file:', [
-                        'cloudinary_id' => $cloudinaryId,
+                    \Log::error('Failed to cleanup local file:', [
+                        'file_name' => $fileName,
                         'error' => $deleteError->getMessage()
                     ]);
                 }
@@ -300,13 +260,13 @@ class RuanganController extends Controller
     public function update(Request $request, $id)
     {
         DB::beginTransaction();
-        $oldCloudinaryId = null;
-        $newCloudinaryId = null;
+        $oldFileName = null;
+        $newFileName = null;
         $ruangan = null;
 
         try {
             $ruangan = Ruangan::findOrFail($id);
-            $oldCloudinaryId = $ruangan->link_ruangan;
+            $oldFileName = $ruangan->link_ruangan;
             
             // Validasi input
             $request->validate([
@@ -321,25 +281,24 @@ class RuanganController extends Controller
             \Log::info('Updating ruangan: ' . $ruangan->nama_ruangan);
 
             // Handle foto
-            if ($request->remove_foto == '1' && $oldCloudinaryId) {
-                $this->deleteFoto($oldCloudinaryId);
+            if ($request->remove_foto == '1' && $oldFileName) {
+                $this->deleteFoto($oldFileName);
                 $ruangan->link_ruangan = null;
-                \Log::info('Foto lama dihapus dari Cloudinary');
+                \Log::info('Foto lama dihapus dari local storage');
             } 
             elseif ($request->hasFile('foto')) {
-                // Upload foto baru ke Cloudinary
+                // Upload foto baru ke storage lokal
                 $imageName = Str::uuid();
-                $newCloudinaryId = $this->uploadFoto($request->foto, $imageName);
-                $link_ruangan = $newCloudinaryId . '.' . $request->foto->getClientOriginalExtension();
+                $newFileName = $this->uploadFoto($request->foto, $imageName);
                 
-                // Hapus foto lama dari Cloudinary jika ada
-                if ($oldCloudinaryId) {
-                    $this->deleteFoto($oldCloudinaryId);
-                    \Log::info('Foto lama dihapus dari Cloudinary');
+                // Hapus foto lama dari storage lokal jika ada
+                if ($oldFileName) {
+                    $this->deleteFoto($oldFileName);
+                    \Log::info('Foto lama dihapus dari local storage');
                 }
 
-                $ruangan->link_ruangan = $link_ruangan;
-                \Log::info('Foto baru diupload ke Cloudinary');
+                $ruangan->link_ruangan = $newFileName;
+                \Log::info('Foto baru diupload ke local storage');
             }
 
             // Update data ruangan
@@ -377,16 +336,16 @@ class RuanganController extends Controller
             DB::rollback();
             
             // Jika upload foto baru berhasil tapi operasi database gagal,
-            // hapus file baru dari Cloudinary
-            if ($newCloudinaryId) {
+            // hapus file baru dari storage lokal
+            if ($newFileName) {
                 try {
-                    $this->deleteFoto($newCloudinaryId);
-                    \Log::info('Cleaned up new Cloudinary file after failed transaction', [
-                        'cloudinary_id' => $newCloudinaryId
+                    $this->deleteFoto($newFileName);
+                    \Log::info('Cleaned up new local file after failed transaction', [
+                        'file_name' => $newFileName
                     ]);
                 } catch (\Exception $deleteError) {
-                    \Log::error('Failed to cleanup new Cloudinary file:', [
-                        'cloudinary_id' => $newCloudinaryId,
+                    \Log::error('Failed to cleanup new local file:', [
+                        'file_name' => $newFileName,
                         'error' => $deleteError->getMessage()
                     ]);
                 }
@@ -412,11 +371,11 @@ class RuanganController extends Controller
     {
         DB::beginTransaction();
         $ruangan = null;
-        $cloudinaryId = null;
+        $fileName = null;
 
         try {
             $ruangan = Ruangan::findOrFail($id);
-            $cloudinaryId = $ruangan->link_ruangan;
+            $fileName = $ruangan->link_ruangan;
             
             // Check if ruangan is used in penjadwalan
             $isUsedInSchedule = Penjadwalan::where('id_ruangan', $id)->exists();
@@ -430,9 +389,9 @@ class RuanganController extends Controller
             // Hapus ruangan
             $ruangan->delete();
             
-            // Hapus foto dari Cloudinary
-            if ($cloudinaryId) {
-                $this->deleteFoto($cloudinaryId);
+            // Hapus foto dari storage lokal
+            if ($fileName) {
+                $this->deleteFoto($fileName);
             }
             
             DB::commit();

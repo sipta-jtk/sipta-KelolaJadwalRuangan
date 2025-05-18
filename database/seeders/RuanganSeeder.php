@@ -22,11 +22,11 @@ class RuanganSeeder extends Seeder
 
         // Custom room data with kode_ruangan and nama_ruangan defined manually
         $ruanganData = [
-            ['kode_ruangan' => 'D-101', 'nama_ruangan' => 'Ruang Kelas 1', 'link_ruangan' => 'SIPTAJTK/86f94b77-10d2-44e7-a5df-ae1d4c714255.jpg'],
-            ['kode_ruangan' => 'D-102', 'nama_ruangan' => 'Lab Multi Media', 'link_ruangan' => 'SIPTAJTK/69e951d3-3d30-4610-8230-f9d07f08fde9.jpg'],
-            ['kode_ruangan' => 'D-104', 'nama_ruangan' => 'Lab Database', 'link_ruangan' => 'SIPTAJTK/e18cbc20-8a7a-4f43-b04c-eec31b3f8b23.jpg'],
-            ['kode_ruangan' => 'D-217', 'nama_ruangan' => 'Ruang Serba Guna', 'link_ruangan' => 'SIPTAJTK/f0674dcc-d6bc-4b11-a9f8-871061c9e341.jpg'],
-            ['kode_ruangan' => 'D-225', 'nama_ruangan' => 'Ruang Rapat', 'link_ruangan' => 'SIPTAJTK/f278d878-a08c-4a21-9cb2-3040da111f58.jpg'],
+            ['kode_ruangan' => 'D-101', 'nama_ruangan' => 'Ruang Kelas 1', 'link_ruangan' => '2ce3c719-eef9-4722-a144-d871f260c9ef.jpeg'],
+            ['kode_ruangan' => 'D-102', 'nama_ruangan' => 'Lab Multi Media', 'link_ruangan' => '85349a4a-91ff-4dbb-adf8-2ff07dfc4f74.jpg'],
+            ['kode_ruangan' => 'D-104', 'nama_ruangan' => 'Lab Database', 'link_ruangan' => 'db9c0dad-3547-4247-b4bd-4fb3b72817ed.jpeg'],
+            ['kode_ruangan' => 'D-217', 'nama_ruangan' => 'Ruang Serba Guna', 'link_ruangan' => '0803a4ee-0255-4374-ac7e-7d45cf383977.jpg'],
+            ['kode_ruangan' => 'D-225', 'nama_ruangan' => 'Ruang Rapat', 'link_ruangan' => '7cc2f718-d731-4a28-8d1d-0ba2cc0138ba.jpg'],
         ];
 
         foreach ($ruanganData as $ruangan) {
