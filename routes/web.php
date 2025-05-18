@@ -63,4 +63,3 @@ Route::resource('gedung', GedungController::class);
 Route::group(['prefix' => ''], function () {
     Route::get('penjadwalan-ruangan', [PenjadwalanController::class, 'index'])->name('penjadwalan.index'); //bisa di postman
 });
-

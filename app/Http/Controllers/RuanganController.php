@@ -6,39 +6,101 @@ use App\Models\Ruangan;
 use App\Models\Gedung;
 use App\Models\Fasilitas;
 use App\Models\RuangFasilitas;
+use App\Models\Penjadwalan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\FileHelper;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+// use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+// use Cloudinary\Cloudinary as CloudinarySDK;
+// use Cloudinary\Configuration\Configuration;
+use Illuminate\Support\Facades\Storage;
+
 
 class RuanganController extends Controller
 {
-    private $uploadPath = 'image/ruangan';
 
     /**
-     * Menyimpan foto dan mengembalikan path relatifnya
+     * Menyimpan foto ke storage lokal
      */
-    private function uploadFoto($foto)
+    private function uploadFoto($foto, $fileName)
     {
-        // Generate nama file yang unik
-        $fileName = time() . '_' . Str::random(10) . '.' . $foto->getClientOriginalExtension();
-        
-        // Pindahkan file ke folder public/ruangan
-        $foto->move(public_path('ruangan'), $fileName);
-        
-        // Return hanya nama filenya saja
-        return $fileName; // Ini akan menyimpan hanya nama file di database
+        try {
+            // Convert UUID object to string if needed
+            $fileName = (string) $fileName;
+            
+            \Log::info('Starting file upload to local storage', [
+                'file_name' => $fileName,
+                'original_name' => $foto->getClientOriginalName(),
+                'mime_type' => $foto->getMimeType(),
+                'size' => $foto->getSize()
+            ]);
+
+            // Generate nama file dengan ekstensi
+            $extension = $foto->getClientOriginalExtension();
+            $fullFileName = $fileName . '.' . $extension;
+
+            // Simpan file ke storage
+            $path = $foto->storeAs('ruangan', $fullFileName, 'public');
+
+            if (!$path) {
+                throw new \Exception('Failed to store file in local storage');
+            }
+
+            \Log::info('Upload successful:', [
+                'file_path' => $path,
+                'full_file_name' => $fullFileName
+            ]);
+            
+            return $fullFileName;
+            
+        } catch (\Exception $e) {
+            \Log::error('Upload failed with error:', [
+                'message' => $e->getMessage(),
+                'file' => $fileName,
+                'trace' => $e->getTraceAsString(),
+                'line' => $e->getLine(),
+                'file_path' => $e->getFile()
+            ]);
+            
+            throw new \Exception('Failed to upload file: ' . $e->getMessage());
+        }
     }
 
     /**
-     * Menghapus foto dari storage
+     * Menghapus foto dari storage lokal
      */
     private function deleteFoto($fileName)
     {
-        if ($fileName && file_exists(public_path('ruangan/' . $fileName))) {
-            unlink(public_path('ruangan/' . $fileName));
+        if ($fileName) {
+            try {
+                $path = 'ruangan/' . $fileName;
+                
+                \Log::info('Deleting file from local storage:', [
+                    'file_path' => $path
+                ]);
+
+                // Hapus file dari storage
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                    \Log::info('File successfully deleted from local storage:', [
+                        'file_path' => $path
+                    ]);
+                } else {
+                    \Log::warning('File not found in storage:', [
+                        'file_path' => $path
+                    ]);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Failed to delete file from local storage:', [
+                    'file_path' => $path ?? null,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                throw new \Exception('Failed to delete file from local storage: ' . $e->getMessage());
+            }
         }
     }
 
@@ -49,19 +111,13 @@ class RuanganController extends Controller
     {
         $query = Ruangan::query();
         
-        // Pencarian berdasarkan tipe
-        if ($request->filled('search_type') && $request->filled('keyword')) {
-            $searchType = $request->search_type;
-            $keyword = $request->keyword;
-            
-            if ($searchType === 'nama_ruangan') {
-                $query->where('nama_ruangan', 'like', "%{$keyword}%");
-            } elseif ($searchType === 'kode_ruangan') {
-                $query->where('kode_ruangan', 'like', "%{$keyword}%");
-            }
-        }
-        
-        $ruangan = $query->with('gedung')->get();
+        // Get rooms with their gedung and check if they are used in penjadwalan
+        $ruangan = $query->with('gedung')
+            ->select('ruangan.*')
+            ->leftJoin('penjadwalan', 'ruangan.id_ruangan', '=', 'penjadwalan.id_ruangan')
+            ->selectRaw('CASE WHEN COUNT(penjadwalan.id_ruangan) > 0 THEN true ELSE false END as is_used')
+            ->groupBy('ruangan.id_ruangan')
+            ->get();
         
         return view('ruangan.index', compact('ruangan'));
     }
@@ -81,71 +137,94 @@ class RuanganController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
+        \Log::info('Starting ruangan store process', [
+            'request_data' => $request->except(['foto']),
+            'has_file' => $request->hasFile('foto')
+        ]);
+
         $request->validate([
             'nama_ruangan' => 'required|string|max:127|unique:ruangan,nama_ruangan',
             'kode_ruangan' => 'required|string|max:6',
             'status_ruangan' => 'required|in:tersedia,tidak_tersedia',
             'kode_gedung' => 'required|exists:gedung,kode_gedung',
-            'fasilitas' => 'required|array',
+            'fasilitas' => 'nullable|array',
             'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        try {
-            DB::beginTransaction();
-            
-            // Generate nama file dengan UUID
-            $imageName = Str::uuid() . '.' . $request->foto->extension();
-            $path = public_path('image/ruangan');
-            
-            // Pastikan direktori ada
-            if (!File::exists($path)) {
-                File::makeDirectory($path, 0777, true);
-            }
-            
-            // Upload file
-            $request->foto->move($path, $imageName);
-            try {
-                // Buat ruangan baru dan simpan ID-nya
-                $ruanganData = [
-                    'nama_ruangan' => $request->nama_ruangan,
-                    'kode_ruangan' => $request->kode_ruangan,
-                    'status_ruangan' => $request->status_ruangan,
-                    'kode_gedung' => $request->kode_gedung,
-                    'link_ruangan' => $imageName
-                ];
+        DB::beginTransaction();
+        $fileName = null;
+        $ruangan = null;
 
-                $ruangan = Ruangan::create($ruanganData);
-                
-                // Tambahkan fasilitas ke ruangan
-                if ($request->has('fasilitas')) {
-                    foreach ($request->fasilitas as $idFasilitas => $jumlah) {
-                        if ($jumlah > 0) {
-                            RuangFasilitas::create([
-                                'id_ruangan' => $ruangan->id_ruangan,
-                                'id_fasilitas' => $idFasilitas,
-                                'jumlah_fasilitas' => $jumlah
-                            ]);
-                        }
+        try {
+            // Generate a unique filename for the image
+            $imageName = Str::uuid();
+            \Log::info('Generated image name', ['image_name' => $imageName]);
+            
+            // Upload foto ke storage lokal
+            $fileName = $this->uploadFoto($request->foto, $imageName);
+            \Log::info('File uploaded to local storage', ['file_name' => $fileName]);
+            
+            // Buat ruangan baru dan simpan ID-nya
+            $ruanganData = [
+                'nama_ruangan' => $request->nama_ruangan,
+                'kode_ruangan' => $request->kode_ruangan,
+                'status_ruangan' => $request->status_ruangan,
+                'kode_gedung' => $request->kode_gedung,
+                'link_ruangan' => $fileName
+            ];
+
+            $ruangan = Ruangan::create($ruanganData);
+            \Log::info('Ruangan created', ['ruangan_id' => $ruangan->id_ruangan]);
+            
+            // Tambahkan fasilitas ke ruangan
+            if ($request->has('fasilitas')) {
+                foreach ($request->fasilitas as $idFasilitas => $jumlah) {
+                    if ($jumlah > 0) {
+                        RuangFasilitas::create([
+                            'id_ruangan' => $ruangan->id_ruangan,
+                            'id_fasilitas' => $idFasilitas,
+                            'jumlah_fasilitas' => $jumlah
+                        ]);
+                        \Log::info('Fasilitas added', [
+                            'ruangan_id' => $ruangan->id_ruangan,
+                            'fasilitas_id' => $idFasilitas,
+                            'jumlah' => $jumlah
+                        ]);
                     }
                 }
-                
-                DB::commit();
-                return redirect()->route('ruangan.index')
-                    ->with('success', 'Ruangan berhasil ditambahkan!');
-
-            } catch (\Exception $e) {
-                dd($e);
-                // Jika terjadi error saat menyimpan data, hapus file yang sudah diupload
-                if (File::exists($path . '/' . $imageName)) {
-                    File::delete($path . '/' . $imageName);
-                }
-                DB::rollback();
-                throw $e;
             }
+            
+            DB::commit();
+            \Log::info('Ruangan creation completed successfully');
+            return redirect()->route('ruangan.index')
+                ->with('success', 'Ruangan berhasil ditambahkan!');
 
         } catch (\Exception $e) {
-            dd($e);
+            DB::rollback();
+            
+            // Jika upload ke storage lokal berhasil tapi operasi database gagal,
+            // hapus file dari storage lokal
+            if ($fileName) {
+                try {
+                    $this->deleteFoto($fileName);
+                    \Log::info('Cleaned up local file after failed transaction', [
+                        'file_name' => $fileName
+                    ]);
+                } catch (\Exception $deleteError) {
+                    \Log::error('Failed to cleanup local file:', [
+                        'file_name' => $fileName,
+                        'error' => $deleteError->getMessage()
+                    ]);
+                }
+            }
+
+            \Log::error('Error in store method:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ]);
+            
             return redirect()->back()
                 ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])
                 ->withInput();
@@ -180,10 +259,14 @@ class RuanganController extends Controller
      */
     public function update(Request $request, $id)
     {
+        DB::beginTransaction();
+        $oldFileName = null;
+        $newFileName = null;
+        $ruangan = null;
+
         try {
-            DB::beginTransaction();
-            
             $ruangan = Ruangan::findOrFail($id);
+            $oldFileName = $ruangan->link_ruangan;
             
             // Validasi input
             $request->validate([
@@ -191,96 +274,90 @@ class RuanganController extends Controller
                 'kode_ruangan' => 'required|string|max:6',
                 'status_ruangan' => 'required|in:tersedia,tidak_tersedia',
                 'kode_gedung' => 'required|exists:gedung,kode_gedung',
-                'fasilitas' => 'nullable|array', // Ubah menjadi nullable karena mungkin tidak ada fasilitas
+                'fasilitas' => 'nullable|array',
                 'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
             \Log::info('Updating ruangan: ' . $ruangan->nama_ruangan);
-            \Log::info('Request data: ', $request->all());
 
-            try {
-                // Handle foto
-                if ($request->remove_foto == '1' && $ruangan->link_ruangan) {
-                    // Hapus foto lama jika diminta
-                    $oldImagePath = public_path('image/ruangan/' . $ruangan->link_ruangan);
-                    if (File::exists($oldImagePath)) {
-                        File::delete($oldImagePath);
-                        \Log::info('Foto lama dihapus: ' . $oldImagePath);
-                    }
-                    $ruangan->link_ruangan = null;
-                } 
-                elseif ($request->hasFile('foto')) {
-                    // Upload foto baru
-                    $imageName = Str::uuid() . '.' . $request->foto->extension();
-                    $path = public_path('image/ruangan');
-
-                    // Pastikan direktori ada
-                    if (!File::exists($path)) {
-                        File::makeDirectory($path, 0777, true);
-                    }
-
-                    // Hapus foto lama jika ada
-                    if ($ruangan->link_ruangan) {
-                        $oldImagePath = $path . '/' . $ruangan->link_ruangan;
-                        if (File::exists($oldImagePath)) {
-                            File::delete($oldImagePath);
-                            \Log::info('Foto lama diganti: ' . $oldImagePath);
-                        }
-                    }
-
-                    // Upload foto baru
-                    $request->foto->move($path, $imageName);
-                    $ruangan->link_ruangan = $imageName;
-                    \Log::info('Foto baru diupload: ' . $imageName);
+            // Handle foto
+            if ($request->remove_foto == '1' && $oldFileName) {
+                $this->deleteFoto($oldFileName);
+                $ruangan->link_ruangan = null;
+                \Log::info('Foto lama dihapus dari local storage');
+            } 
+            elseif ($request->hasFile('foto')) {
+                // Upload foto baru ke storage lokal
+                $imageName = Str::uuid();
+                $newFileName = $this->uploadFoto($request->foto, $imageName);
+                
+                // Hapus foto lama dari storage lokal jika ada
+                if ($oldFileName) {
+                    $this->deleteFoto($oldFileName);
+                    \Log::info('Foto lama dihapus dari local storage');
                 }
 
-                // Update data ruangan
-                $ruangan->update([
-                    'nama_ruangan' => $request->nama_ruangan,
-                    'kode_ruangan' => $request->kode_ruangan,
-                    'status_ruangan' => $request->status_ruangan,
-                    'kode_gedung' => $request->kode_gedung,
-                    'link_ruangan' => $ruangan->link_ruangan
-                ]);
-                \Log::info('Data ruangan diupdate');
-
-                // Update fasilitas
-                // Hapus semua fasilitas yang ada
-                RuangFasilitas::where('id_ruangan', $ruangan->id_ruangan)->delete();
-                \Log::info('Fasilitas lama dihapus');
-
-                // Tambahkan fasilitas baru
-                if ($request->has('fasilitas')) {
-                    foreach ($request->fasilitas as $idFasilitas => $jumlah) {
-                        if ($jumlah > 0) {
-                            RuangFasilitas::create([
-                                'id_ruangan' => $ruangan->id_ruangan,
-                                'id_fasilitas' => $idFasilitas,
-                                'jumlah_fasilitas' => $jumlah
-                            ]);
-                            \Log::info('Fasilitas ditambahkan: ' . $idFasilitas . ' dengan jumlah ' . $jumlah);
-                        }
-                    }
-                }
-
-                DB::commit();
-                \Log::info('Update ruangan berhasil');
-                return redirect()->route('ruangan.index')
-                    ->with('success', 'Ruangan berhasil diperbarui!');
-
-            } catch (\Exception $e) {
-                // Jika ada foto yang baru diupload, hapus
-                if (isset($imageName) && isset($path) && File::exists($path . '/' . $imageName)) {
-                    File::delete($path . '/' . $imageName);
-                }
-                DB::rollback();
-                \Log::error('Error saat update ruangan: ' . $e->getMessage());
-                \Log::error($e->getTraceAsString());
-                throw $e;
+                $ruangan->link_ruangan = $newFileName;
+                \Log::info('Foto baru diupload ke local storage');
             }
 
+            // Update data ruangan
+            $ruangan->update([
+                'nama_ruangan' => $request->nama_ruangan,
+                'kode_ruangan' => $request->kode_ruangan,
+                'status_ruangan' => $request->status_ruangan,
+                'kode_gedung' => $request->kode_gedung
+            ]);
+            \Log::info('Data ruangan diupdate');
+
+            // Update fasilitas
+            RuangFasilitas::where('id_ruangan', $ruangan->id_ruangan)->delete();
+            \Log::info('Fasilitas lama dihapus');
+
+            if ($request->has('fasilitas')) {
+                foreach ($request->fasilitas as $idFasilitas => $jumlah) {
+                    if ($jumlah > 0) {
+                        RuangFasilitas::create([
+                            'id_ruangan' => $ruangan->id_ruangan,
+                            'id_fasilitas' => $idFasilitas,
+                            'jumlah_fasilitas' => $jumlah
+                        ]);
+                        \Log::info('Fasilitas ditambahkan: ' . $idFasilitas . ' dengan jumlah ' . $jumlah);
+                    }
+                }
+            }
+
+            DB::commit();
+            \Log::info('Update ruangan berhasil');
+            return redirect()->route('ruangan.index')
+                ->with('success', 'Ruangan berhasil diperbarui!');
+
         } catch (\Exception $e) {
-            \Log::error('Error saat update ruangan: ' . $e->getMessage());
+            DB::rollback();
+            
+            // Jika upload foto baru berhasil tapi operasi database gagal,
+            // hapus file baru dari storage lokal
+            if ($newFileName) {
+                try {
+                    $this->deleteFoto($newFileName);
+                    \Log::info('Cleaned up new local file after failed transaction', [
+                        'file_name' => $newFileName
+                    ]);
+                } catch (\Exception $deleteError) {
+                    \Log::error('Failed to cleanup new local file:', [
+                        'file_name' => $newFileName,
+                        'error' => $deleteError->getMessage()
+                    ]);
+                }
+            }
+
+            \Log::error('Error in update method:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ]);
+            
             return redirect()->back()
                 ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])
                 ->withInput();
@@ -292,37 +369,45 @@ class RuanganController extends Controller
      */
     public function destroy($id)
     {
-        try {
-            DB::beginTransaction();
-            
-            $ruangan = Ruangan::findOrFail($id);
-            $path = public_path('image/ruangan');
-            
-            // Hapus foto jika ada
-            if ($ruangan->link_ruangan) {
-                $imagePath = $path . '/' . $ruangan->link_ruangan;
-                if (File::exists($imagePath)) {
-                    File::delete($imagePath);
-                }
-            }
-            
-            try {
-                // Hapus relasi fasilitas
-                $ruangan->fasilitas()->detach();
-                
-                // Hapus ruangan
-                $ruangan->delete();
-                
-                DB::commit();
-                return redirect()->route('ruangan.index')
-                    ->with('success', 'Ruangan berhasil dihapus!');
-                
-            } catch (\Exception $e) {
-                DB::rollback();
-                throw $e;
-            }
+        DB::beginTransaction();
+        $ruangan = null;
+        $fileName = null;
 
+        try {
+            $ruangan = Ruangan::findOrFail($id);
+            $fileName = $ruangan->link_ruangan;
+            
+            // Check if ruangan is used in penjadwalan
+            $isUsedInSchedule = Penjadwalan::where('id_ruangan', $id)->exists();
+            if ($isUsedInSchedule) {
+                throw new \Exception('Ruangan tidak dapat dihapus karena sedang digunakan dalam penjadwalan.');
+            }
+            
+            // Hapus relasi fasilitas
+            $ruangan->fasilitas()->detach();
+            
+            // Hapus ruangan
+            $ruangan->delete();
+            
+            // Hapus foto dari storage lokal
+            if ($fileName) {
+                $this->deleteFoto($fileName);
+            }
+            
+            DB::commit();
+            return redirect()->route('ruangan.index')
+                ->with('success', 'Ruangan berhasil dihapus!');
+            
         } catch (\Exception $e) {
+            DB::rollback();
+            
+            \Log::error('Error in destroy method:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ]);
+            
             return redirect()->back()
                 ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
@@ -357,5 +442,11 @@ class RuanganController extends Controller
         ->get();
 
         return response()->json($availableRooms);
+    }
+
+    public function show($id)
+    {
+        $ruangan = Ruangan::with(['fasilitas', 'gedung'])->findOrFail($id);
+        return response()->json($ruangan);
     }
 }

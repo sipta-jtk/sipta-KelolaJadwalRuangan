@@ -170,11 +170,6 @@
             border-bottom: 1px solid #f2f2f2;
         }
         
-        .table tbody tr:hover {
-            background-color: rgba(0,123,255,0.05);
-            transition: all 0.2s ease;
-        }
-        
         /* Status badge */
         .status-badge {
             padding: 8px 15px;
@@ -183,11 +178,6 @@
             font-weight: 500;
             display: inline-block;
             transition: all 0.3s ease;
-        }
-        
-        .status-badge:hover {
-            transform: scale(1.05);
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
         }
         
         /* Action buttons in table */
@@ -211,7 +201,6 @@
         /* Empty state */
         .text-center {
             padding: 25px;
-            font-style: italic;
             color: #6c757d;
         }
         
@@ -299,7 +288,7 @@
             <!-- Page Header with Buttons -->
 
             <!-- Search Box -->
-            <div class="search-box mb-4">
+            {{-- <div class="search-box mb-4">
                 <form action="{{ route('ruangan.index') }}" method="GET">
                     <div class="row g-2">
                         <div class="col-md-4">
@@ -319,7 +308,7 @@
                         </div>
                     </div>
                 </form>
-            </div>
+            </div> --}}
 
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
@@ -328,30 +317,93 @@
                 </div>
             @endif
 
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                    {{ $errors->first('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             <!-- Table Card -->
             <div class="card">
-                <div class="card-header py-3">
-                    <h5 class="mb-0">Daftar Ruangan</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="px-4 py-3">No</th>
-                                    <th class="px-4 py-3">Kode Ruangan</th>
-                                    <th class="px-4 py-3">Nama Ruangan</th>
-                                    <th class="px-4 py-3">Status</th>
-                                    <th class="px-4 py-3">Kode Gedung</th>
-                                    <th class="px-4 py-3 text-center">Action</th>
+                <div class="card-body">
+                    {{-- <div class="table-container">
+                        <table id="formulirTable" class="table table-striped text-center">
+                            <thead class="sticky-header">
+                                <tr class="bg-dark text-white">
+                                    <th style="width: 3%;">No</th>
+                                    <th style="width: 12%;">Kode Formulir</th>
+                                    <th style="width: 19%;">Nama Formulir</th>
+                                    <th style="width: 12%;">Program Studi</th>
+                                    <th style="width: 19%;">Jenis Formulir</th>
+                                    <th style="width: 15%;">Tanggal Tenggat Pengisian</th>
+                                    <th style="width: 15%;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($ruangan as $key => $room)
+                                @foreach ($data as $index => $row)
+                                    <tr>
+                                        <td class="align-middle"></td>
+                                        <td class="align-middle">{{ $row->kode_fta }}</td>
+                                        <td class="align-middle">{{ $row->nama_fta }}</td>
+                                        <td class="align-middle">{{ $row->id_prodi }}</td>
+                                        <td class="align-middle">{{ $row->jenis_form }}</td>
+                                        <td class="align-middle">{{ date('d-m-Y', strtotime($row->tanggal_tenggat_pengisian)) }}</td>
+                                        <td class="align-middle">
+                                            @if ($row->nama_fta == 'Dosen Pembimbing')
+                                                <a href="{{ route('detail.dosen-pembimbing', ['idFta' => $row->id_fta, 'idProdi' => $row->id_prodi]) }}" 
+                                                class="btn btn-primary btn-md my-1 w-30" title="Lihat Detail">
+                                                    Lihat Detail
+                                                </a>
+                                            @elseif ($row->jenis_form == 'penilaian')
+                                                <a href="{{ route('detail.penilaian', ['idFta' => $row->id_fta, 'idProdi' => $row->id_prodi]) }}" 
+                                                class="btn btn-primary btn-md my-1 w-30" title="Lihat Detail">
+                                                    Lihat Detail
+                                                </a>
+                                            @elseif ($row->jenis_form == 'feedback')
+                                                <a href="{{ route('detail.feedback', ['idFta' => $row->id_fta, 'idProdi' => $row->id_prodi]) }}" 
+                                                class="btn btn-primary btn-md my-1 w-30" title="Lihat Detail">
+                                                    Lihat Detail
+                                                </a>
+                                            @endif
+                                                <a href="{{ route('aspek-penilaian.edit', $row->id_fta) }}" class="btn btn-warning btn-md my-1 w-20" title="Ubah Formulir">
+                                                    <i class="mx-1 fas fa-edit"></i>
+                                                </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>                
+                        </table>
+                    </div> --}}
+                    <div class="table-container">
+                        <table id="ruanganTable" class="table table-striped text-center mb-0">
+                            <thead class="sticky-header">
+                                <tr class="bg-dark text-white">
+                                    <th style="width: 3%;">No</th>
+                                    <th style="width: 15%;">Kode Ruangan</th>
+                                    <th style="width: 37%;">Nama Ruangan</th>
+                                    <th style="width: 15%;">Status</th>
+                                    <th style="width: 15%;">Kode Gedung</th>
+                                    <th style="width: 15%;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($ruangan as $key => $room)
                                 <tr>
                                     <td class="px-4 py-3">{{ $key + 1 }}</td>
                                     <td class="px-4 py-3">{{ $room->kode_ruangan }}</td>
-                                    <td class="px-4 py-3">{{ $room->nama_ruangan }}</td>
+                                    <td class="px-4 py-3">
+                                        <a href="#" class="room-name-link" data-id="{{ $room->id_ruangan }}">
+                                            {{ $room->nama_ruangan }}
+                                        </a>
+                                    </td>
                                     <td class="px-4 py-3">
                                         @if ($room->status_ruangan == 'tersedia')
                                             <span class="status-badge bg-success text-white rounded p-1">Tersedia</span>
@@ -359,8 +411,8 @@
                                             <span class="status-badge bg-danger text-white rounded p-1">Tidak Tersedia</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3">{{ $room->kode_gedung }}</td>
-                                    <td class="px-4 py-3">
+                                    <td class="align-middle">{{ $room->kode_gedung }}</td>
+                                    <td class="align-middle">
                                         <div class="action-buttons justify-content-center">
                                             <a href="{{ route('ruangan.edit', $room->id_ruangan) }}" class="btn btn-warning btn-sm" title="Edit">
                                                 <i class="fas fa-edit"></i>
@@ -368,18 +420,22 @@
                                             <form action="{{ route('ruangan.destroy', $room->id_ruangan) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Apakah Anda yakin ingin menghapus ruangan ini?')">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
+                                                <div data-bs-toggle="tooltip" 
+                                                    data-bs-placement="top"
+                                                    data-bs-title="{{ $room->is_used ? 'Tidak dapat menghapus ruangan karena sedang digunakan dalam penjadwalan' : 'Delete' }}">
+                                                    <button type="submit" 
+                                                        class="btn btn-danger btn-sm" 
+                                                        onclick="return confirm('Apakah Anda yakin ingin menghapus ruangan ini?')" 
+                                                        {{$room->is_used ? 'disabled' : ''}}
+                                                        >
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
                                             </form>
                                         </div>
                                     </td>
                                 </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="7" class="text-center py-4">Tidak ada data ruangan</td>
-                                </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -387,5 +443,64 @@
             </div>
         </div>
     </div>
+</div>
+@include('ruangan.detail')
+
+<script>
+    $(document).ready(function () {
+    var table = $('#ruanganTable').DataTable({
+        columnDefs: [
+            {
+                targets: 0,
+                searchable: false,
+                orderable: false,
+            },
+        ],
+        order: [[1, "asc"]],
+        paging: true,
+        lengthMenu: [10, 25, 50, 100],
+        pageLength: 5,
+        searching: true,
+        ordering: true,
+        info: true,
+        autoWidth: false,
+        language: {
+            search: "Cari: ",
+            lengthMenu: "",
+            zeroRecords: "Data tidak ditemukan",
+            info: " ",
+            infoEmpty: "Tidak ada data tersedia",
+            infoFiltered: "(difilter dari total MAX data)",
+            paginate: {
+                first: "<<",
+                last: ">>",
+                next: ">",
+                previous: "<"
+            }
+        }
+    });
+
+    // Gunakan variabel table untuk menambahkan nomor urut
+    table
+        .on("order.dt search.dt draw.dt", function () {
+            table
+                .column(0, { search: "applied", order: "applied" })
+                .nodes()
+                .each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+        })
+        .draw();
+});
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+</script>
 </div>
 @endsection
