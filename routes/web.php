@@ -55,7 +55,6 @@ Route::middleware(\App\Http\Middleware\VerifySiptaToken::class.':admin')
         Route::post('/admin/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
         Route::put('/admin/fasilitas/{id_fasilitas}', [FasilitasController::class, 'update'])->name('fasilitas.update');
         Route::delete('/admin/fasilitas/{id_fasilitas}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
-});
 
         // Route untuk gedung
         Route::get('/admin/gedung', [GedungController::class, 'index'])->name('gedung.index');
