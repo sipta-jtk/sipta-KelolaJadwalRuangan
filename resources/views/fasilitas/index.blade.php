@@ -48,8 +48,8 @@
                                 <i class="fas fa-search text-success"></i>
                             </span>
                             <input type="text" class="form-control border-start-0 ps-0" 
-                                   placeholder="Cari fasilitas..." name="search" 
-                                   value="{{ request('search') }}">
+                                    placeholder="Cari fasilitas..." name="search" 
+                                    value="{{ request('search') }}">
                         </div>
                     </form>
                 </div>
