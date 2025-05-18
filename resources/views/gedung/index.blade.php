@@ -99,18 +99,6 @@
                 </div>
                 </div>
             </div>
-
-            <!-- Search Card -->
-            <!-- <div class="card shadow-sm mb-4 border-0 rounded-3">
-                
-            </div> -->
-
-            <!-- Table Card -->
-            <!-- <div class="card shadow-sm border-0 rounded-3">
-                <div class="card-body">
-                    
-                </div>
-            </div> -->
         </div>
     </div>
 </div>
@@ -192,10 +180,10 @@
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i>Batal
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Tutup
                     </button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-success">
                         <i class="fas fa-save me-2"></i>Simpan
                     </button>
                 </div>
