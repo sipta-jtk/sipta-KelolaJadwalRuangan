@@ -5,62 +5,45 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
             <!-- Header Section with Shadow -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <a href="{{ route('ruangan.index') }}" class="btn btn-outline-success">
-                    <i class="fas fa-arrow-left me-2"></i>Kembali
-                </a>
-                <h2 class="mb-0 text-center flex-grow-1">Tambah Fasilitas</h2>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h1 class="mb-0">Manajemen Fasilitas</h1>
                 <div style="width: 85px;"></div><!-- Spacer untuk menyeimbangkan layout -->
             </div>
 
-            <!-- Form Input Card with Soft Shadow -->
-            <div class="card shadow-sm mb-4 border-0 rounded-3">
-                <div class="card-header bg-white py-3">
-                    <h5 class="card-title mb-0 text-success">
-                        <i class="fas fa-plus-circle me-2"></i>Tambah Fasilitas
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('fasilitas.store') }}" method="POST">
-                        @csrf
-                        <div class="row align-items-center">
-                            <div class="col-md-9">
-                                <input type="text" class="form-control form-control-lg" 
-                                    id="nama_fasilitas" name="nama_fasilitas" 
-                                    placeholder="Masukkan nama fasilitas" required>
-                            </div>
-                            <div class="col-md-3">
-                                <button type="submit" class="btn btn-success w-100 btn-lg">
-                                    <i class="fas fa-plus me-2"></i>Tambah
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('ruangan.index') }}" class="text-decoration-none text-primary">
+                            Ruangan
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Manajemen Fasilitas</li>
+                </ol>
+            </nav>
 
-            <!-- Search Card -->
-            <div class="card shadow-sm mb-4 border-0 rounded-3">
-                <div class="card-body">
+            <!-- Form Input Card with Soft Shadow -->
+            <div class="card shadow-sm mb-4 border-0 rounded-1">
+                <div class="card-header bg-white py-3 text-end">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahFasilitasModal">
+                        <i class="fas fa-plus me-1"></i>Tambah Fasilitas
+                    </button>
+                </div>
+                <div class="card-body d-flex justify-content-end align-items-center mb-3">
+                    <label for="search" class="me-2">Cari:</label>
                     <form action="{{ route('fasilitas.index') }}" method="GET">
                         <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0">
-                                <i class="fas fa-search text-success"></i>
-                            </span>
-                            <input type="text" class="form-control border-start-0 ps-0" 
-                                    placeholder="Cari fasilitas..." name="search" 
-                                    value="{{ request('search') }}">
+                            <input type="text" class="form-control" 
+                                   placeholder="Cari fasilitas..." name="search" 
+                                   value="{{ request('search') }}">
                         </div>
                     </form>
                 </div>
-            </div>
 
-            <!-- Table Card -->
-            <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
-                            <thead class="table-light">
+                            <thead class="table-dark">
                                 <tr>
                                     <th width="5%" class="text-center">#</th>
                                     <th>Nama Fasilitas</th>
@@ -73,27 +56,27 @@
                                     <td class="text-center">{{ $index + 1 }}</td>
                                     <td>{{ $item->nama_fasilitas }}</td>
                                     <td class="text-center">
-                                        <button class="btn btn-link text-warning p-0 me-2" 
+                                        <button class="btn btn-warning btn-md " 
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#editModal{{ $item->id_fasilitas }}" 
                                                 title="Edit">
-                                            <i class="fas fa-edit"></i>
+                                            <i class="fas fa-edit text-white"></i>
                                         </button>
                                         <form action="{{ route('fasilitas.destroy', $item->id_fasilitas) }}" 
                                               method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-link text-danger p-0" 
-                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus?')"
+                                            <button type="submit" class="btn btn-danger btn-md" 
+                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus fasilitas ini?')"
                                                     title="Hapus">
-                                                <i class="fas fa-trash"></i>
+                                                <i class="fas fa-trash text-white"></i>
                                             </button>
                                         </form>
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="3" class="text-center py-4 text-muted">
+                                    <td colspan="4" class="text-center py-4 text-muted">
                                         <i class="fas fa-inbox fa-2x mb-3 d-block"></i>
                                         Tidak ada data fasilitas
                                     </td>
@@ -104,6 +87,38 @@
                     </div>
                 </div>
             </div>
+    </div>
+</div>
+
+<!-- Modal Tambah Fasilitas -->
+<div class="modal fade" id="tambahFasilitasModal" tabindex="-1" aria-labelledby="tambahFasilitasModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="tambahFasilitasModalLabel">
+                    <i class="fas fa-plus me-2"></i>Tambah Fasilitas
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('fasilitas.store') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nama_fasilitas" class="form-label">Nama Fasilitas</label>
+                        <input type="text" class="form-control" id="nama_fasilitas" 
+                               name="nama_fasilitas" required
+                               placeholder="Masukkan nama fasilitas">
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                        Tutup
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        Simpan
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -131,10 +146,10 @@
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i>Batal
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Tutup
                     </button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-success">
                         <i class="fas fa-save me-2"></i>Simpan
                     </button>
                 </div>
