@@ -140,9 +140,10 @@
             
             // Set room image
             const imageElement = document.getElementById('roomImage');
+            const ruanganBaseUrl = "{{ Storage::url('ruangan/') }}";
 
             if (room.link_ruangan) {
-                imageElement.src = 'penjadwalan-ruangan/'+"{{ Storage::url('ruangan/') }}"+room.link_ruangan; ;
+                imageElement.src = ruanganBaseUrl + room.link_ruangan; 
                 imageElement.parentElement.classList.remove('d-none');
             } else {
                 imageElement.src = "{{asset('images/default-ruangan.jpg')}}";
