@@ -89,7 +89,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Add click event to all room names
+        // tambahkan event listener untuk semua link nama ruangan
         const setupRoomDetailLinks = function() {
             const roomNameLinks = document.querySelectorAll('.room-name-link');
             roomNameLinks.forEach(link => {
@@ -101,7 +101,7 @@
             });
         };
         
-        // Function to fetch room details
+        // Fungsi untuk mengambil detail ruangan dari server
         function fetchRoomDetails(roomId) {
             fetch(`/penjadwalan-ruangan/api/v1/rooms/${roomId}`)
                 .then(response => {
@@ -121,13 +121,13 @@
                 });
         }
         
-        // Function to populate modal with room details
+        // Fungsi untuk mengisi modal dengan data ruangan
         function populateModal(room) {
             document.getElementById('roomDetailModalLabel').textContent = `Detail Ruangan: ${room.nama_ruangan}`;
             document.getElementById('roomCode').textContent = room.kode_ruangan;
             document.getElementById('roomName').textContent = room.nama_ruangan;
             
-            // Set status with badge
+            // Set status dengan badge
             const statusElement = document.getElementById('roomStatus');
             if (room.status_ruangan === 'tersedia') {
                 statusElement.innerHTML = '<span class="status-badge bg-success text-white rounded p-1">Tersedia</span>';
@@ -138,7 +138,7 @@
             document.getElementById('buildingCode').textContent = room.gedung ? 
                 `${room.gedung.nama_gedung} (${room.kode_gedung})` : room.kode_gedung;
             
-            // Set room image
+            // buat image ruangan
             const imageElement = document.getElementById('roomImage');
             // const ruanganBaseUrl = "{{ Storage::url('ruangan/') }}";
 
@@ -149,7 +149,7 @@
                 imageElement.src = "{{asset('images/default-ruangan.jpg')}}";
             }
             
-            // Populate facilities
+            // isikan fasilitas ruangan
             const facilityListElement = document.getElementById('facilityList');
             facilityListElement.innerHTML = '';
             
@@ -172,10 +172,10 @@
             }
         }
         
-        // Initialize room links if they already exist on the page
+        // Inisialisasi fungsi untuk menambahkan event listener pada semua nama ruangan
         setupRoomDetailLinks();
         
-        // Export function for external use
+        // eksport fungsi ke global scope untuk akses di luar
         window.setupRoomDetailLinks = setupRoomDetailLinks;
     });
 </script>
