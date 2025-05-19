@@ -143,7 +143,7 @@
             // const ruanganBaseUrl = "{{ Storage::url('ruangan/') }}";
 
             if (room.link_ruangan) {
-                imageElement.src = `/penjadwalan-ruangan/storage/${room.link_ruangan}`; 
+                imageElement.src = `/penjadwalan-ruangan/storage/ruangan/${room.link_ruangan}`; 
                 imageElement.parentElement.classList.remove('d-none');
             } else {
                 imageElement.src = "{{asset('images/default-ruangan.jpg')}}";
