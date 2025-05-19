@@ -140,11 +140,13 @@
             
             // buat image ruangan
             const imageElement = document.getElementById('roomImage');
+            // const ruanganBaseUrl = "{{ Storage::url('ruangan/') }}";
+
             if (room.link_ruangan) {
-                imageElement.src = `/image/ruangan/${room.link_ruangan}`;
+                imageElement.src = `/penjadwalan-ruangan/storage/ruangan/${room.link_ruangan}`; 
                 imageElement.parentElement.classList.remove('d-none');
             } else {
-                imageElement.src = '/image/ruangan/default-room.jpg';
+                imageElement.src = "{{asset('images/default-ruangan.jpg')}}";
             }
             
             // isikan fasilitas ruangan

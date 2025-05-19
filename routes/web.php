@@ -8,6 +8,7 @@ use App\Http\Controllers\PenjadwalanController;
 use App\Http\Middleware\VerifySiptaToken; 
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FasilitasController;
 
 // Redirect root to penjadwalan-ruangan
 Route::get('/', function () {
@@ -50,12 +51,18 @@ Route::middleware(\App\Http\Middleware\VerifySiptaToken::class.':admin')
             return response()->file($path);
         })->where('filename', '.*');
         Route::get('/download-schedule-pdf', [PdfController::class, 'downloadSchedulePdf'])->name('schedule.pdf.download');
-});
+        Route::get('/admin/fasilitas', [FasilitasController::class, 'index'])->name('fasilitas.index');
+        Route::post('/admin/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
+        Route::put('/admin/fasilitas/{id_fasilitas}', [FasilitasController::class, 'update'])->name('fasilitas.update');
+        Route::delete('/admin/fasilitas/{id_fasilitas}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
 
-// Route untuk manajemen gedung
-Route::resource('gedung', GedungController::class);
+        // Route untuk gedung
+        Route::get('/admin/gedung', [GedungController::class, 'index'])->name('gedung.index');
+        Route::post('/admin/gedung', [GedungController::class, 'store'])->name('gedung.store');
+        Route::put('/admin/gedung/{kode_gedung}', [GedungController::class, 'update'])->name('gedung.update');
+        Route::delete('/admin/gedung/{kode_gedung}', [GedungController::class, 'destroy'])->name('gedung.destroy');
+});
 
 Route::group(['prefix' => ''], function () {
     Route::get('penjadwalan-ruangan', [PenjadwalanController::class, 'index'])->name('penjadwalan.index'); //bisa di postman
 });
-

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('nama_ruangan', 127)->unique();
             $table->enum('status_ruangan', ['tersedia', 'tidak_tersedia']);
             $table->string('kode_gedung', 1);
-            $table->string('link_ruangan', 45);
+            $table->string('link_ruangan', 60);
             
             $table->foreign('kode_gedung')->references('kode_gedung')->on('gedung');
         });

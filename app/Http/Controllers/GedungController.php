@@ -1,0 +1,130 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Gedung;
+
+class GedungController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        $query = Gedung::query();
+
+        // Implement search functionality
+        if ($request->has('search')) {
+            $query->where('nama_gedung', 'LIKE', '%' . $request->search . '%')
+                  ->orWhere('kode_gedung', 'LIKE', '%' . $request->search . '%');
+        }
+
+        // Eager load ruangan relation untuk menghindari N+1 problem
+        $gedung = $query->withCount('ruangan')->orderBy('kode_gedung')->get();
+        return view('gedung.index', compact('gedung'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'kode_gedung' => 'required|string|size:1|unique:gedung,kode_gedung|alpha',
+            'nama_gedung' => 'required|string|max:255',
+        ], [
+            'kode_gedung.size' => 'Kode gedung harus 1 karakter.',
+            'kode_gedung.alpha' => 'Kode gedung harus berupa huruf.',
+            'kode_gedung.unique' => 'Kode gedung sudah digunakan.',
+        ]);
+
+        try {
+            Gedung::create([
+                'kode_gedung' => strtoupper($request->kode_gedung),
+                'nama_gedung' => $request->nama_gedung,
+            ]);
+
+            return redirect()->route('gedung.index')
+                ->with('success', 'Gedung berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            // Tambahkan logging untuk melihat error detail
+            \Log::error('Error saat menambah gedung: ' . $e->getMessage());
+            \Log::error($e->getTraceAsString());
+
+            return redirect()->route('gedung.index')
+                ->with('error', 'Terjadi kesalahan saat menambahkan gedung: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $kode_gedung)
+    {
+        $request->validate([
+            'nama_gedung' => 'required|string|max:255',
+        ]);
+
+        try {
+            $gedung = Gedung::findOrFail($kode_gedung);
+            $gedung->update([
+                'nama_gedung' => $request->nama_gedung,
+            ]);
+
+            return redirect()->route('gedung.index')
+                ->with('success', 'Gedung berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->route('gedung.index')
+                ->with('error', 'Terjadi kesalahan saat memperbarui gedung.');
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $kode_gedung)
+    {
+        try {
+            $gedung = Gedung::findOrFail($kode_gedung);
+            
+            // Check if gedung has any ruangan
+            if ($gedung->ruangan()->count() > 0) {
+                return redirect()->route('gedung.index')
+                    ->with('error', 'Gedung tidak dapat dihapus karena masih memiliki ruangan.');
+            }
+
+            $gedung->delete();
+            return redirect()->route('gedung.index')
+                ->with('success', 'Gedung berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('gedung.index')
+                ->with('error', 'Terjadi kesalahan saat menghapus gedung.');
+        }
+    }
+}

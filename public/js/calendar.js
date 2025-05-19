@@ -1,6 +1,6 @@
 $(document).ready(function() {
     function fetchSchedules(selectedDate) {  
-        $.getJSON("penjadwalan-ruangan/api/v1/rooms/names", function(roomsData) {
+        $.getJSON("api/v1/rooms/names", function(roomsData) {
             let rooms = {};
             let roomIds = {}; // menyimpan ID ruangan map ke nama ruangan
             
@@ -15,7 +15,7 @@ $(document).ready(function() {
             });
     
             // Ambil data jadwal dan gabungkan dengan ruangan
-            $.getJSON("penjadwalan-ruangan/api/v1/schedules", function(schedulesData) {
+            $.getJSON("api/v1/schedules", function(schedulesData) {
                 let warnaAgenda = {};
                 const agendaMapping = {
                     seminar_1: "Seminar 1",
