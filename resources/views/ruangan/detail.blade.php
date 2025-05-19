@@ -140,11 +140,12 @@
             
             // Set room image
             const imageElement = document.getElementById('roomImage');
+
             if (room.link_ruangan) {
-                imageElement.src = "{{ asset('storage/image/ruangan') }}/" + room.link_ruangan;
+                imageElement.src = "/penjadwalan-ruangan/storage/" + room.link_ruangan;
                 imageElement.parentElement.classList.remove('d-none');
             } else {
-                imageElement.src = '/penjadwalan-ruangan/storage/image/ruangan/default-room.jpg';
+                imageElement.src = "{{asset('images/default-ruangan.jpg')}}";
             }
             
             // Populate facilities
