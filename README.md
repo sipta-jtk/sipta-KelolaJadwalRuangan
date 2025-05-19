@@ -35,9 +35,6 @@ Repositori ini merupakan bagian dari proyek SIPTA.
 - Aplikasi akan tersedia di `http://localhost:8005`.
 - Anda dapat mengakses database MySQL di `localhost:3309`.
 
-## PENTING!
-Port for accessing sipta service can be changed via .env, default is 8000
-
 ## Jika menggunakan docker image dockerhub:
 
 1. Pull image dari dockerhub repositori:
