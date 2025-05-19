@@ -101,7 +101,7 @@ class GedungController extends Controller
                 ->with('success', 'Gedung berhasil diperbarui.');
         } catch (\Exception $e) {
             return redirect()->route('gedung.index')
-                ->with('error', 'Terjadi kesalahan saat memperbarui gedung.');
+                ->with('error', 'Nama gedung sudah ada, silakan coba lagi.');
         }
     }
 
