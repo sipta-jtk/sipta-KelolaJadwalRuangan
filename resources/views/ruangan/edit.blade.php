@@ -368,7 +368,7 @@
                                     <div class="ratio ratio-1x1" style="max-width: 200px; margin: 0 auto;">
                                         <img id="imagePreview" 
                                             class="img-fluid rounded object-fit-cover" 
-                                            src="{{ $ruangan->link_ruangan ? `/penjadwalan-ruangan/storage/ . $ruangan->link_ruangan` : '#' }}"
+                                            src="{{ $ruangan->link_ruangan ? `/penjadwalan-ruangan/storage/ruangan/$ruangan->link_ruangan` : '#' }}"
                                             style="border-radius: 8px;">
                                     </div>
                                 </div>
