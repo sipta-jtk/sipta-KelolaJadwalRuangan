@@ -3,7 +3,6 @@
 # Export environment variables from .env file
 export $(grep -v '^#' .env | xargs)
 
-
 echo "Linking storage..."
 php artisan storage:link
 
