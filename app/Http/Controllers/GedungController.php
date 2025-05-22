@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Gedung;
+use Illuminate\Support\Facades\Validator;
 
 class GedungController extends Controller
 {
@@ -39,7 +40,7 @@ class GedungController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'kode_gedung' => 'required|string|size:1|unique:gedung,kode_gedung|alpha',
             'nama_gedung' => 'required|string|max:255',
         ], [
@@ -47,6 +48,13 @@ class GedungController extends Controller
             'kode_gedung.alpha' => 'Kode gedung harus berupa huruf.',
             'kode_gedung.unique' => 'Kode gedung sudah digunakan.',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('gedung.index')
+                ->withErrors($validator, 'tambahGedung')  // Use a named error bag
+                ->withInput()
+                ->with('showTambahGedungModal', true);  // Flag to show modal
+        }
 
         try {
             Gedung::create([
