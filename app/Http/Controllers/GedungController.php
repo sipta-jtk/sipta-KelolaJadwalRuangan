@@ -40,6 +40,15 @@ class GedungController extends Controller
      */
     public function store(Request $request)
     {
+        // First, check for name uniqueness before running the other validations
+        $existingName = Gedung::where('nama_gedung', $request->nama_gedung)->exists();
+        if ($existingName) {
+            return redirect()->route('gedung.index')
+                ->withErrors(['nama_gedung' => 'Nama gedung sudah digunakan.'], 'tambahGedung')
+                ->withInput()
+                ->with('showTambahGedungModal', true);
+        }
+
         $validator = Validator::make($request->all(), [
             'kode_gedung' => 'required|string|size:1|unique:gedung,kode_gedung|alpha',
             'nama_gedung' => 'required|string|max:255',
@@ -47,6 +56,7 @@ class GedungController extends Controller
             'kode_gedung.size' => 'Kode gedung harus 1 karakter.',
             'kode_gedung.alpha' => 'Kode gedung harus berupa huruf.',
             'kode_gedung.unique' => 'Kode gedung sudah digunakan.',
+            'nama_gedung.unique' => 'Nama gedung sudah digunakan.',
         ]);
 
         if ($validator->fails()) {
@@ -95,9 +105,32 @@ class GedungController extends Controller
      */
     public function update(Request $request, string $kode_gedung)
     {
-        $request->validate([
-            'nama_gedung' => 'required|string|max:255',
+        // Check for name uniqueness, excluding the current gedung
+        $existingName = Gedung::where('nama_gedung', $request->nama_gedung)
+            ->where('kode_gedung', '!=', $kode_gedung)
+            ->exists();
+            
+        if ($existingName) {
+            return redirect()->route('gedung.index')
+                ->withErrors(['nama_gedung' => 'Nama gedung sudah digunakan.'], 'editGedung_' . $kode_gedung)
+                ->withInput()
+                ->with('showEditGedungModal', $kode_gedung);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'nama_gedung' => 'required|string|max:255|unique:gedung,nama_gedung,' . $kode_gedung . ',kode_gedung',
+        ], [
+            'nama_gedung.required' => 'Nama gedung harus diisi.',
+            'nama_gedung.max' => 'Nama gedung maksimal 255 karakter.',
+            'nama_gedung.unique' => 'Nama gedung sudah digunakan.',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('gedung.index')
+                ->withErrors($validator, 'editGedung_' . $kode_gedung)  // Use a named error bag
+                ->withInput()
+                ->with('showEditGedungModal', $kode_gedung);  // Flag to show modal
+        }
 
         try {
             $gedung = Gedung::findOrFail($kode_gedung);

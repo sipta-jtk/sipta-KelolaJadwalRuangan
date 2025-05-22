@@ -103,11 +103,29 @@
             <form action="{{ route('fasilitas.store') }}" method="POST">
                 @csrf
                 <div class="modal-body">
+                    @if($errors->tambahFasilitas->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->tambahFasilitas->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    
                     <div class="mb-3">
                         <label for="nama_fasilitas" class="form-label">Nama Fasilitas</label>
-                        <input type="text" class="form-control" id="nama_fasilitas" 
-                               name="nama_fasilitas" required
-                               placeholder="Masukkan nama fasilitas">
+                        <input type="text" class="form-control {{ $errors->tambahFasilitas->has('nama_fasilitas') ? 'is-invalid' : '' }}" 
+                               id="nama_fasilitas" 
+                               name="nama_fasilitas" 
+                               required
+                               placeholder="Masukkan nama fasilitas"
+                               value="{{ old('nama_fasilitas') }}">
+                        @if($errors->tambahFasilitas->has('nama_fasilitas'))
+                            <div class="invalid-feedback">
+                                {{ $errors->tambahFasilitas->first('nama_fasilitas') }}
+                            </div>
+                        @endif
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
@@ -138,11 +156,28 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
+                    @if($errors->{'editFasilitas_'.$item->id_fasilitas}->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->{'editFasilitas_'.$item->id_fasilitas}->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    
                     <div class="mb-3">
                         <label for="edit_nama_fasilitas" class="form-label">Nama Fasilitas</label>
-                        <input type="text" class="form-control" 
-                               id="edit_nama_fasilitas" name="nama_fasilitas" 
-                               value="{{ $item->nama_fasilitas }}" required>
+                        <input type="text" class="form-control {{ $errors->{'editFasilitas_'.$item->id_fasilitas}->has('nama_fasilitas') ? 'is-invalid' : '' }}" 
+                               id="edit_nama_fasilitas" 
+                               name="nama_fasilitas" 
+                               value="{{ old('nama_fasilitas', $item->nama_fasilitas) }}" 
+                               required>
+                        @if($errors->{'editFasilitas_'.$item->id_fasilitas}->has('nama_fasilitas'))
+                            <div class="invalid-feedback">
+                                {{ $errors->{'editFasilitas_'.$item->id_fasilitas}->first('nama_fasilitas') }}
+                            </div>
+                        @endif
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
@@ -196,5 +231,21 @@
     setTimeout(function() {
         $('.toast').toast('hide');
     }, 3000);
+    
+    // Show tambah fasilitas modal if there are validation errors
+    @if($errors->tambahFasilitas->any() || session('showTambahFasilitasModal'))
+        document.addEventListener('DOMContentLoaded', function() {
+            var tambahModal = new bootstrap.Modal(document.getElementById('tambahFasilitasModal'));
+            tambahModal.show();
+        });
+    @endif
+    
+    // Show edit modal for specific fasilitas if there are validation errors
+    @if(session('showEditFasilitasModal'))
+        document.addEventListener('DOMContentLoaded', function() {
+            var editModal = new bootstrap.Modal(document.getElementById('editModal{{ session('showEditFasilitasModal') }}'));
+            editModal.show();
+        });
+    @endif
 </script>
 @endsection

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Fasilitas;
 use App\Models\RuangFasilitas;
+use Illuminate\Support\Facades\Validator;
 
 class FasilitasController extends Controller
 {
@@ -38,9 +39,20 @@ class FasilitasController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'nama_fasilitas' => 'required|string|max:255|unique:fasilitas,nama_fasilitas',
+        ], [
+            'nama_fasilitas.required' => 'Nama fasilitas harus diisi.',
+            'nama_fasilitas.max' => 'Nama fasilitas maksimal 255 karakter.',
+            'nama_fasilitas.unique' => 'Nama fasilitas sudah digunakan.',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('fasilitas.index')
+                ->withErrors($validator, 'tambahFasilitas')  // Use a named error bag
+                ->withInput()
+                ->with('showTambahFasilitasModal', true);  // Flag to show modal
+        }
 
         try {
             Fasilitas::create([
@@ -76,9 +88,20 @@ class FasilitasController extends Controller
      */
     public function update(Request $request, string $id_fasilitas)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'nama_fasilitas' => 'required|string|max:255|unique:fasilitas,nama_fasilitas,' . $id_fasilitas . ',id_fasilitas',
+        ], [
+            'nama_fasilitas.required' => 'Nama fasilitas harus diisi.',
+            'nama_fasilitas.max' => 'Nama fasilitas maksimal 255 karakter.',
+            'nama_fasilitas.unique' => 'Nama fasilitas sudah digunakan.',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('fasilitas.index')
+                ->withErrors($validator, 'editFasilitas_' . $id_fasilitas)  // Use a dynamic named error bag
+                ->withInput()
+                ->with('showEditFasilitasModal', $id_fasilitas);  // Flag to show specific edit modal
+        }
 
         try {
             $fasilitas = Fasilitas::findOrFail($id_fasilitas);

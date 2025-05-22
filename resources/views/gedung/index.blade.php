@@ -186,15 +186,28 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Kode Gedung</label>
-                        <input type="text" class="form-control" value="{{ $item->kode_gedung }}" 
-                               disabled readonly>
-                    </div>
+                    @if($errors->{'editGedung_'.$item->kode_gedung}->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->{'editGedung_'.$item->kode_gedung}->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    
                     <div class="mb-3">
                         <label for="edit_nama_gedung" class="form-label">Nama Gedung</label>
-                        <input type="text" class="form-control" id="edit_nama_gedung" 
-                               name="nama_gedung" value="{{ $item->nama_gedung }}" required>
+                        <input type="text" class="form-control {{ $errors->{'editGedung_'.$item->kode_gedung}->has('nama_gedung') ? 'is-invalid' : '' }}" 
+                               id="edit_nama_gedung" 
+                               name="nama_gedung" 
+                               value="{{ old('nama_gedung', $item->nama_gedung) }}" 
+                               required>
+                        @if($errors->{'editGedung_'.$item->kode_gedung}->has('nama_gedung'))
+                            <div class="invalid-feedback">
+                                {{ $errors->{'editGedung_'.$item->kode_gedung}->first('nama_gedung') }}
+                            </div>
+                        @endif
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
