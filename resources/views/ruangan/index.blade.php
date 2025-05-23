@@ -157,7 +157,9 @@
         .table th {
             font-weight: 600;
             padding: 15px 20px;
-            background-color: #f8f9fa;
+            background-color: #212529;
+            color: #fff;
+            border: none;
             border-bottom: 2px solid #dee2e6;
         }
         

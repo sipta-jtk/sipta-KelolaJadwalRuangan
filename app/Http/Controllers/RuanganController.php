@@ -143,7 +143,7 @@ class RuanganController extends Controller
         ]);
 
         $request->validate([
-            'nama_ruangan' => 'required|string|max:127',
+            'nama_ruangan' => 'required|string|max:127|unique:ruangan,nama_ruangan',
             'kode_ruangan' => 'required|string|max:6|unique:ruangan,kode_ruangan',
             'status_ruangan' => 'required|in:tersedia,tidak_tersedia',
             'kode_gedung' => 'required|exists:gedung,kode_gedung',
@@ -271,7 +271,7 @@ class RuanganController extends Controller
             // Validasi input
             $request->validate([
                 'kode_ruangan' => 'required|string|max:6|unique:ruangan,kode_ruangan',
-                'nama_ruangan' => 'required|string|max:127|unique:ruangan,nama_ruangan,'.$id.',id_ruangan',
+                'nama_ruangan' => 'required|string|max:127|unique:ruangan,nama_ruangan',
                 'status_ruangan' => 'required|in:tersedia,tidak_tersedia',
                 'kode_gedung' => 'required|exists:gedung,kode_gedung',
                 'fasilitas' => 'nullable|array',
