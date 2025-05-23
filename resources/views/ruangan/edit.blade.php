@@ -283,12 +283,13 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Code Ruangan</label>
+                                <label class="form-label">Kode Ruangan</label>
                                 <input type="text" 
                                     class="form-control @error('kode_ruangan') is-invalid @enderror" 
                                     name="kode_ruangan"
                                     value="{{ old('kode_ruangan', $ruangan->kode_ruangan) }}"
                                     placeholder="Masukan Code Ruangan Anda"
+                                    minlength="3"
                                     maxlength="6"
                                     required>
                                 @error('kode_ruangan')
@@ -313,7 +314,7 @@
 
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Code Gedung</label>
+                                <label class="form-label">Kode Gedung</label>
                                 <select class="form-select @error('kode_gedung') is-invalid @enderror" 
                                         name="kode_gedung" 
                                         required>
