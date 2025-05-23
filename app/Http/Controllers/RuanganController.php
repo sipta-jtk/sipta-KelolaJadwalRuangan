@@ -143,8 +143,8 @@ class RuanganController extends Controller
         ]);
 
         $request->validate([
-            'nama_ruangan' => 'required|string|max:127|unique:ruangan,nama_ruangan',
-            'kode_ruangan' => 'required|string|max:6',
+            'nama_ruangan' => 'required|string|max:127',
+            'kode_ruangan' => 'required|string|max:6|unique:ruangan,kode_ruangan',
             'status_ruangan' => 'required|in:tersedia,tidak_tersedia',
             'kode_gedung' => 'required|exists:gedung,kode_gedung',
             'fasilitas' => 'nullable|array',
@@ -270,14 +270,14 @@ class RuanganController extends Controller
             
             // Validasi input
             $request->validate([
+                'kode_ruangan' => 'required|string|max:6|unique:ruangan,kode_ruangan',
                 'nama_ruangan' => 'required|string|max:127|unique:ruangan,nama_ruangan,'.$id.',id_ruangan',
-                'kode_ruangan' => 'required|string|max:6',
                 'status_ruangan' => 'required|in:tersedia,tidak_tersedia',
                 'kode_gedung' => 'required|exists:gedung,kode_gedung',
                 'fasilitas' => 'nullable|array',
-                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+                'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
-
+            
             \Log::info('Updating ruangan: ' . $ruangan->nama_ruangan);
 
             // Handle foto

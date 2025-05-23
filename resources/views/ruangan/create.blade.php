@@ -261,7 +261,7 @@
                 <a href="{{ route('ruangan.index') }}" class="btn btn-outline-primary">
                     <i class="fas fa-arrow-left me-2"></i>Kembali
                 </a>
-                <h2 class="text-center flex-grow-1 mb-0">Create Ruangan</h2>
+                <h2 class="text-center flex-grow-1 mb-0">Tambah Ruangan</h2>
             </div>
             
             <form action="{{ route('ruangan.store') }}" 
@@ -278,12 +278,12 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Code Ruangan</label>
+                                <label class="form-label">Kode Ruangan</label>
                                 <input type="text" 
                                     class="form-control @error('kode_ruangan') is-invalid @enderror" 
                                     name="kode_ruangan"
                                     value="{{ old('kode_ruangan', $ruangan->kode_ruangan ?? '') }}"
-                                    placeholder="Masukan Code Ruangan Anda"
+                                    placeholder="Masukan Kode Ruangan Anda"
                                     minlength="3"
                                     maxlength="6"
                                     required>
@@ -310,11 +310,11 @@
 
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Code Gedung</label>
+                                <label class="form-label">Kode Gedung</label>
                                 <select class="form-select @error('kode_gedung') is-invalid @enderror" 
                                         name="kode_gedung" 
                                         required>
-                                    <option value="" selected disabled>Pilih Code Gedung</option>
+                                    <option value="" selected disabled>Pilih Kode Gedung</option>
                                     @foreach($gedung as $g)
                                         <option value="{{ $g->kode_gedung }}" 
                                             {{ old('kode_gedung', $ruangan->kode_gedung ?? '') == $g->kode_gedung ? 'selected' : '' }}>
