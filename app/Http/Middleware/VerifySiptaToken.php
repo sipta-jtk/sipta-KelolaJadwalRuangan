@@ -25,7 +25,23 @@ class VerifySiptaToken
             }
         }
 
-        // Check #2: If the token is in bearer format, extract it
+        // Check #2: See if we already have a valid token in the session
+        if (Session::has('sipta_token') && Session::get('token_authenticated')) {
+            $token = Session::get('sipta_token');
+            $userRole = Session::get('token_user_role');
+            
+            // Check if user has required role (if roles are specified)
+            if (!empty($allowedRoles) && !in_array($userRole, $allowedRoles)) {
+                return response()->json(['message' => 'Forbidden - Insufficient permissions'], 403);
+            }
+            
+            // Add the role to the request for controllers to use
+            $request->merge(['user_role' => $userRole]);
+            
+            return $next($request);
+        }
+
+        // Check #3: If the token is in bearer format, extract it
         if ($request->bearerToken()) {
             $token = $request->bearerToken();
         } else {
@@ -43,12 +59,6 @@ class VerifySiptaToken
         }
         
         try {
-            $siptaPort = env('SIPTA_SERVICE_PORT', '8000');
-
-            // check if siptaPort is set
-            if (!$siptaPort) {
-                return response()->json(['message' => 'Service unavailable - SIPTA service port not set'], 503);
-            }
 
             $url = "https://polban-space.cloudias79.com/sipta/usermanagement/v1/role?token=" . urlencode($token);
             $response = file_get_contents($url);
@@ -69,6 +79,7 @@ class VerifySiptaToken
             // Add the role to the request for controllers to use
             $request->merge(['user_role' => $userRole]);
 
+            Session::put('sipta_token', $token);
             Session::put('token_authenticated', true);
             Session::put('token_user_role', $userRole);
             Session::put('token_user_name', $data['name'] ?? 'SIPTA User');

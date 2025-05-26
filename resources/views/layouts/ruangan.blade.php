@@ -15,6 +15,12 @@
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <!-- SIPTA Token Helper -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @if(Session::has('sipta_token'))
+    <meta name="sipta-token" content="{{ Session::get('sipta_token') }}">
+    @endif
+    <script src="{{ asset('js/sipta-token.js') }}"></script>
 </head>
 <body>
     <div class="main-content">
