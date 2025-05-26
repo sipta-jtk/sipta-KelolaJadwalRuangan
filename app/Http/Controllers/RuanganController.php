@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 // use Cloudinary\Cloudinary as CloudinarySDK;
 // use Cloudinary\Configuration\Configuration;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 
 class RuanganController extends Controller
@@ -142,20 +143,32 @@ class RuanganController extends Controller
             'has_file' => $request->hasFile('foto')
         ]);
 
-        $request->validate([
-            'nama_ruangan' => 'required|string|max:127|unique:ruangan,nama_ruangan',
-            'kode_ruangan' => 'required|string|max:6|unique:ruangan,kode_ruangan',
-            'status_ruangan' => 'required|in:tersedia,tidak_tersedia',
-            'kode_gedung' => 'required|exists:gedung,kode_gedung',
-            'fasilitas' => 'nullable|array',
-            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
-
-        DB::beginTransaction();
-        $fileName = null;
-        $ruangan = null;
-
         try {
+            $validator = Validator::make($request->all(), [
+                'nama_ruangan' => 'required|string|max:127|unique:ruangan,nama_ruangan',
+                'kode_ruangan' => 'required|string|max:6|unique:ruangan,kode_ruangan',
+                'status_ruangan' => 'required|in:tersedia,tidak_tersedia',
+                'kode_gedung' => 'required|exists:gedung,kode_gedung',
+                'fasilitas' => 'nullable|array',
+                'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            ]);
+
+            if ($validator->fails()) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'errors' => $validator->errors()
+                    ]);
+                }
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            DB::beginTransaction();
+            $fileName = null;
+            $ruangan = null;
+
             // Generate a unique filename for the image
             $imageName = Str::uuid();
             \Log::info('Generated image name', ['image_name' => $imageName]);
@@ -196,6 +209,15 @@ class RuanganController extends Controller
             
             DB::commit();
             \Log::info('Ruangan creation completed successfully');
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Ruangan berhasil ditambahkan!',
+                    'redirect' => route('ruangan.index')
+                ]);
+            }
+
             return redirect()->route('ruangan.index')
                 ->with('success', 'Ruangan berhasil ditambahkan!');
 
@@ -225,6 +247,13 @@ class RuanganController extends Controller
                 'file' => $e->getFile()
             ]);
             
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                ]);
+            }
+
             return redirect()->back()
                 ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])
                 ->withInput();
@@ -269,14 +298,30 @@ class RuanganController extends Controller
             $oldFileName = $ruangan->link_ruangan;
             
             // Validasi input
-            $request->validate([
-                'kode_ruangan' => 'required|string|max:6|unique:ruangan,kode_ruangan',
-                'nama_ruangan' => 'required|string|max:127|unique:ruangan,nama_ruangan',
+            $validator = Validator::make($request->all(), [
+                'kode_ruangan' => [
+                    'required',
+                    'string',
+                    'max:6',
+                    Rule::unique('ruangan', 'kode_ruangan')->ignore($id, 'id_ruangan')
+                ],
+                'nama_ruangan' => [
+                    'required',
+                    'string',
+                    'max:127',
+                    Rule::unique('ruangan', 'nama_ruangan')->ignore($id, 'id_ruangan')
+                ],
                 'status_ruangan' => 'required|in:tersedia,tidak_tersedia',
                 'kode_gedung' => 'required|exists:gedung,kode_gedung',
                 'fasilitas' => 'nullable|array',
-                'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
             
             \Log::info('Updating ruangan: ' . $ruangan->nama_ruangan);
 
@@ -329,6 +374,7 @@ class RuanganController extends Controller
 
             DB::commit();
             \Log::info('Update ruangan berhasil');
+
             return redirect()->route('ruangan.index')
                 ->with('success', 'Ruangan berhasil diperbarui!');
 
