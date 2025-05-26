@@ -521,7 +521,10 @@
                 <!-- Action Buttons -->
                 <div class="action-buttons">
                     <a href="{{ route('ruangan.index') }}" class="btn btn-danger">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary" id="submitButton">
+                        <span class="button-text">Submit</span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -577,6 +580,12 @@
             photoInput.addEventListener('change', function() {
                 if (this.files.length) {
                     const file = this.files[0];
+                    // Check file size (2MB = 2 * 1024 * 1024 bytes)
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert('Ukuran file terlalu besar. Maksimal ukuran file adalah 2MB.');
+                        this.value = '';
+                        return;
+                    }
                     if (file.type.startsWith('image/')) {
                         const reader = new FileReader();
                         reader.onload = function(e) {
@@ -625,6 +634,15 @@
                 event.preventDefault();
                 let isValid = true;
 
+                // Show loading state
+                const submitButton = document.getElementById('submitButton');
+                const buttonText = submitButton.querySelector('.button-text');
+                const spinner = submitButton.querySelector('.spinner-border');
+                
+                submitButton.disabled = true;
+                buttonText.textContent = 'Loading...';
+                spinner.classList.remove('d-none');
+
                 // Check all required fields
                 requiredFields.forEach(field => {
                     if (!field.value) {
@@ -651,6 +669,11 @@
                 }
 
                 if (!isValid) {
+                    // Reset button state
+                    submitButton.disabled = false;
+                    buttonText.textContent = 'Submit';
+                    spinner.classList.add('d-none');
+                    
                     // Scroll to first invalid element
                     const firstInvalid = form.querySelector('.is-invalid');
                     if (firstInvalid) {
@@ -670,33 +693,50 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                        return;
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    if (data.success) {
-                        // Redirect to index page with success message
-                        window.location.href = data.redirect + '?success=' + encodeURIComponent(data.message);
-                    } else {
-                        // Handle validation errors
-                        if (data.errors) {
-                            Object.keys(data.errors).forEach(field => {
-                                const input = form.querySelector(`[name="${field}"]`);
-                                if (input) {
-                                    input.classList.add('is-invalid');
-                                    const feedback = input.nextElementSibling;
-                                    if (feedback && feedback.classList.contains('invalid-feedback')) {
-                                        feedback.textContent = data.errors[field][0];
+                    if (data) {
+                        if (data.success) {
+                            window.location.href = data.redirect + '?success=' + encodeURIComponent(data.message);
+                        } else {
+                            // Reset button state
+                            submitButton.disabled = false;
+                            buttonText.textContent = 'Submit';
+                            spinner.classList.add('d-none');
+                            
+                            // Handle validation errors
+                            if (data.errors) {
+                                Object.keys(data.errors).forEach(field => {
+                                    const input = form.querySelector(`[name="${field}"]`);
+                                    if (input) {
+                                        input.classList.add('is-invalid');
+                                        const feedback = input.nextElementSibling;
+                                        if (feedback && feedback.classList.contains('invalid-feedback')) {
+                                            feedback.textContent = data.errors[field][0];
+                                        }
                                     }
-                                }
-                            });
-                        }
-                        // Scroll to first error
-                        const firstInvalid = form.querySelector('.is-invalid');
-                        if (firstInvalid) {
-                            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                });
+                            }
+                            // Scroll to first error
+                            const firstInvalid = form.querySelector('.is-invalid');
+                            if (firstInvalid) {
+                                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
                         }
                     }
                 })
                 .catch(error => {
+                    // Reset button state
+                    submitButton.disabled = false;
+                    buttonText.textContent = 'Submit';
+                    spinner.classList.add('d-none');
+                    
                     console.error('Error:', error);
                     alert('Terjadi kesalahan. Silakan coba lagi.');
                 });

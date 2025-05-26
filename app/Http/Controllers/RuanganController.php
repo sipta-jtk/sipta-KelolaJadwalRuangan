@@ -313,11 +313,19 @@ class RuanganController extends Controller
                 ],
                 'status_ruangan' => 'required|in:tersedia,tidak_tersedia',
                 'kode_gedung' => 'required|exists:gedung,kode_gedung',
-                'fasilitas' => 'nullable|array',
-                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+                'fasilitas' => 'required|array|min:1',
+                'fasilitas.*' => 'required|integer|min:1',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'remove_foto' => 'nullable|boolean'
             ]);
 
             if ($validator->fails()) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'errors' => $validator->errors()
+                    ]);
+                }
                 return redirect()->back()
                     ->withErrors($validator)
                     ->withInput();
@@ -326,12 +334,19 @@ class RuanganController extends Controller
             \Log::info('Updating ruangan: ' . $ruangan->nama_ruangan);
 
             // Handle foto
-            if ($request->remove_foto == '1' && $oldFileName) {
-                $this->deleteFoto($oldFileName);
-                $ruangan->link_ruangan = null;
-                \Log::info('Foto lama dihapus dari local storage');
+            if ($request->has('remove_foto') && $request->remove_foto == '1') {
+                if ($oldFileName) {
+                    $this->deleteFoto($oldFileName);
+                    $ruangan->link_ruangan = null;
+                    \Log::info('Foto lama dihapus dari local storage');
+                }
             } 
             elseif ($request->hasFile('foto')) {
+                // Validasi file foto
+                if (!$request->file('foto')->isValid()) {
+                    throw new \Exception('File foto tidak valid');
+                }
+
                 // Upload foto baru ke storage lokal
                 $imageName = Str::uuid();
                 $newFileName = $this->uploadFoto($request->foto, $imageName);
@@ -345,6 +360,7 @@ class RuanganController extends Controller
                 $ruangan->link_ruangan = $newFileName;
                 \Log::info('Foto baru diupload ke local storage');
             }
+            // Jika tidak ada perubahan foto, biarkan foto lama tetap ada
 
             // Update data ruangan
             $ruangan->update([
@@ -375,6 +391,14 @@ class RuanganController extends Controller
             DB::commit();
             \Log::info('Update ruangan berhasil');
 
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Ruangan berhasil diperbarui!',
+                    'redirect' => route('ruangan.index')
+                ]);
+            }
+
             return redirect()->route('ruangan.index')
                 ->with('success', 'Ruangan berhasil diperbarui!');
 
@@ -404,6 +428,13 @@ class RuanganController extends Controller
                 'file' => $e->getFile()
             ]);
             
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                ]);
+            }
+
             return redirect()->back()
                 ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])
                 ->withInput();
