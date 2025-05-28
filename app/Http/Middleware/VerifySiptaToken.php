@@ -60,17 +60,31 @@ class VerifySiptaToken
         
         try {
 
-            $url = "https://polban-space.cloudias79.com/sipta/usermanagement/v1/role?token=" . urlencode($token);
-            $response = file_get_contents($url);
-            $data = json_decode($response, true);
-            $userRole = $data['role'] ?? null;
+            // Try the primary URL first
+            $primaryUrl = "https://polban-space.cloudias79.com/sipta/usermanagement/v1/role?token=" . urlencode($token);
+            $data = null;
+            $userRole = null;
             
-            // $response = Http::get("https://polban-space.cloudias79.com/sipta-dev/usermanagement/v1/role", [
-            //     'token' => $token
-            // ]);
-            // $data = $response->json();
-            // $userRole = $data['role'];
-            
+            try {
+                $response = file_get_contents($primaryUrl);
+                $data = json_decode($response, true);
+                $userRole = $data['role'] ?? null;
+            } catch (\Exception $primaryError) {
+                // If primary URL fails, log the error and try the fallback URL
+                Log::warning('Primary SIPTA service unavailable: ' . $primaryError->getMessage());
+                
+                // Try the fallback URL
+                $fallbackUrl = "https://polban-space.cloudias79.com/sipta-dev/usermanagement/v1/role?token=" . urlencode($token);
+                $response = file_get_contents($fallbackUrl);
+                $data = json_decode($response, true);
+                $userRole = $data['role'] ?? null;
+            }
+
+            // $url = "https://polban-space.cloudias79.com/sipta/usermanagement/v1/role?token=" . urlencode($token);
+            // $response = file_get_contents($url);
+            // $data = json_decode($response, true);
+            // $userRole = $data['role'] ?? null;
+
             // Check if user has required role (if roles are specified)
             if (!empty($allowedRoles) && !in_array($userRole, $allowedRoles)) {
                 return response()->json(['message' => 'Forbidden - Insufficient permissions'], 403);
