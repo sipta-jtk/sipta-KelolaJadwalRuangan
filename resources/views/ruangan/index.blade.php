@@ -346,54 +346,6 @@
             <!-- Table Card -->
             <div class="card">
                 <div class="card-body">
-                    {{-- <div class="table-container">
-                        <table id="formulirTable" class="table table-striped text-center">
-                            <thead class="sticky-header">
-                                <tr class="bg-dark text-white">
-                                    <th style="width: 3%;">No</th>
-                                    <th style="width: 12%;">Kode Formulir</th>
-                                    <th style="width: 19%;">Nama Formulir</th>
-                                    <th style="width: 12%;">Program Studi</th>
-                                    <th style="width: 19%;">Jenis Formulir</th>
-                                    <th style="width: 15%;">Tanggal Tenggat Pengisian</th>
-                                    <th style="width: 15%;">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($data as $index => $row)
-                                    <tr>
-                                        <td class="align-middle"></td>
-                                        <td class="align-middle">{{ $row->kode_fta }}</td>
-                                        <td class="align-middle">{{ $row->nama_fta }}</td>
-                                        <td class="align-middle">{{ $row->id_prodi }}</td>
-                                        <td class="align-middle">{{ $row->jenis_form }}</td>
-                                        <td class="align-middle">{{ date('d-m-Y', strtotime($row->tanggal_tenggat_pengisian)) }}</td>
-                                        <td class="align-middle">
-                                            @if ($row->nama_fta == 'Dosen Pembimbing')
-                                                <a href="{{ route('detail.dosen-pembimbing', ['idFta' => $row->id_fta, 'idProdi' => $row->id_prodi]) }}" 
-                                                class="btn btn-primary btn-md my-1 w-30" title="Lihat Detail">
-                                                    Lihat Detail
-                                                </a>
-                                            @elseif ($row->jenis_form == 'penilaian')
-                                                <a href="{{ route('detail.penilaian', ['idFta' => $row->id_fta, 'idProdi' => $row->id_prodi]) }}" 
-                                                class="btn btn-primary btn-md my-1 w-30" title="Lihat Detail">
-                                                    Lihat Detail
-                                                </a>
-                                            @elseif ($row->jenis_form == 'feedback')
-                                                <a href="{{ route('detail.feedback', ['idFta' => $row->id_fta, 'idProdi' => $row->id_prodi]) }}" 
-                                                class="btn btn-primary btn-md my-1 w-30" title="Lihat Detail">
-                                                    Lihat Detail
-                                                </a>
-                                            @endif
-                                                <a href="{{ route('aspek-penilaian.edit', $row->id_fta) }}" class="btn btn-warning btn-md my-1 w-20" title="Ubah Formulir">
-                                                    <i class="mx-1 fas fa-edit"></i>
-                                                </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>                
-                        </table>
-                    </div> --}}
                     <div class="table-container">
                         <table id="ruanganTable" class="table table-striped text-center mb-0">
                             <thead class="sticky-header">
@@ -403,7 +355,7 @@
                                     <th style="width: 37%;">Nama Ruangan</th>
                                     <th style="width: 15%;">Status</th>
                                     <th style="width: 15%;">Kode Gedung</th>
-                                    <th style="width: 15%;">Action</th>
+                                    <th style="width: 15%;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
