@@ -150,7 +150,7 @@ class RuanganController extends Controller
                 'status_ruangan' => 'required|in:tersedia,tidak_tersedia',
                 'kode_gedung' => 'required|exists:gedung,kode_gedung',
                 'fasilitas' => 'nullable|array',
-                'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+                'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:3072'
             ]);
 
             if ($validator->fails()) {
@@ -315,7 +315,7 @@ class RuanganController extends Controller
                 'kode_gedung' => 'required|exists:gedung,kode_gedung',
                 'fasilitas' => 'required|array|min:1',
                 'fasilitas.*' => 'required|integer|min:1',
-                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:3072',
                 'remove_foto' => 'nullable|boolean'
             ]);
 
