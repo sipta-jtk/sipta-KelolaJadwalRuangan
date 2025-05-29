@@ -29,29 +29,19 @@
                         <i class="fas fa-plus me-1"></i>Tambah Fasilitas
                     </button>
                 </div>
-                <div class="card-body d-flex justify-content-end align-items-center mb-3">
-                    <label for="search" class="me-2">Cari:</label>
-                    <form action="{{ route('fasilitas.index') }}" method="GET">
-                        <div class="input-group">
-                            <input type="text" class="form-control" 
-                                   placeholder="Cari fasilitas..." name="search" 
-                                   value="{{ request('search') }}">
-                        </div>
-                    </form>
-                </div>
 
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th width="5%" class="text-center">#</th>
+                        <table id="fasilitasTable" class="table table-hover align-middle">
+                            <thead class="sticky-header">
+                                <tr class="table-dark" >
+                                    <th width="5%" class="text-center">No</th>
                                     <th>Nama Fasilitas</th>
                                     <th width="15%" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($fasilitas as $index => $item)
+                                @foreach($fasilitas as $index => $item)
                                 <tr>
                                     <td class="text-center">{{ $index + 1 }}</td>
                                     <td>{{ $item->nama_fasilitas }}</td>
@@ -63,25 +53,36 @@
                                             <i class="fas fa-edit text-white"></i>
                                         </button>
                                         <form action="{{ route('fasilitas.destroy', $item->id_fasilitas) }}" 
-                                              method="POST" class="d-inline">
+                                                method="POST" class="d-inline delete-form">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-md" 
-                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus fasilitas ini?')"
-                                                    title="Hapus">
-                                                <i class="fas fa-trash text-white"></i>
-                                            </button>
+                                            @if($item->tersedia)
+                                                <span data-bs-toggle="tooltip" 
+                                                        data-bs-placement="top"
+                                                        title="Tidak dapat dihapus karena fasilitas sedang digunakan ruangan">
+                                                    <button type="submit" 
+                                                            class="btn btn-danger btn-md" 
+                                                            disabled>
+                                                        <i class="fas fa-trash text-white"></i>
+                                                    </button>
+                                                </span>
+                                            @else
+                                                <button type="submit" 
+                                                        class="btn btn-danger btn-md delete-btn"
+                                                        data-id="{{ $item->id_fasilitas }}"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
+                                                        title="Hapus">
+                                                    <span class="button-text">
+                                                        <i class="fas fa-trash text-white"></i>
+                                                    </span>
+                                                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                                </button>
+                                            @endif
                                         </form>
                                     </td>
                                 </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="4" class="text-center py-4 text-muted">
-                                        <i class="fas fa-inbox fa-2x mb-3 d-block"></i>
-                                        Tidak ada data fasilitas
-                                    </td>
-                                </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -104,23 +105,28 @@
                 @csrf
                 <div class="modal-body">
                     @if($errors->tambahFasilitas->any())
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <ul class="mb-0">
                                 @foreach ($errors->tambahFasilitas->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
                     
                     <div class="mb-3">
                         <label for="nama_fasilitas" class="form-label">Nama Fasilitas</label>
                         <input type="text" class="form-control {{ $errors->tambahFasilitas->has('nama_fasilitas') ? 'is-invalid' : '' }}" 
-                               id="nama_fasilitas" 
-                               name="nama_fasilitas" 
-                               required
-                               placeholder="Masukkan nama fasilitas"
-                               value="{{ old('nama_fasilitas') }}">
+                                id="nama_fasilitas" 
+                                name="nama_fasilitas" 
+                                required
+                                minlength="2"
+                                maxlength="100"
+                                pattern="[A-Za-z0-9\s]+"
+                                title="Nama fasilitas tidak boleh mengandung simbol"
+                                placeholder="Masukkan nama fasilitas"
+                                value="{{ old('nama_fasilitas') }}">
                         @if($errors->tambahFasilitas->has('nama_fasilitas'))
                             <div class="invalid-feedback">
                                 {{ $errors->tambahFasilitas->first('nama_fasilitas') }}
@@ -132,8 +138,9 @@
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
                         Tutup
                     </button>
-                    <button type="submit" class="btn btn-success">
-                        Simpan
+                    <button type="submit" class="btn btn-success" id="submitCreate">
+                        <span class="button-text">Simpan</span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     </button>
                 </div>
             </form>
@@ -157,22 +164,27 @@
                 @method('PUT')
                 <div class="modal-body">
                     @if($errors->{'editFasilitas_'.$item->id_fasilitas}->any())
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <ul class="mb-0">
                                 @foreach ($errors->{'editFasilitas_'.$item->id_fasilitas}->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
                     
                     <div class="mb-3">
                         <label for="edit_nama_fasilitas" class="form-label">Nama Fasilitas</label>
                         <input type="text" class="form-control {{ $errors->{'editFasilitas_'.$item->id_fasilitas}->has('nama_fasilitas') ? 'is-invalid' : '' }}" 
-                               id="edit_nama_fasilitas" 
-                               name="nama_fasilitas" 
-                               value="{{ old('nama_fasilitas', $item->nama_fasilitas) }}" 
-                               required>
+                                id="edit_nama_fasilitas" 
+                                name="nama_fasilitas" 
+                                value="{{ old('nama_fasilitas', $item->nama_fasilitas) }}" 
+                                required
+                                minlength="2"
+                                maxlength="100"
+                                pattern="[A-Za-z0-9\s]+"
+                                title="Nama fasilitas tidak boleh mengandung simbol">
                         @if($errors->{'editFasilitas_'.$item->id_fasilitas}->has('nama_fasilitas'))
                             <div class="invalid-feedback">
                                 {{ $errors->{'editFasilitas_'.$item->id_fasilitas}->first('nama_fasilitas') }}
@@ -184,8 +196,11 @@
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
                         <i class="fas fa-times me-2"></i>Tutup
                     </button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-save me-2"></i>Simpan
+                    <button type="submit" class="btn btn-success" id="submitEdit{{ $item->id_fasilitas }}">
+                        <span class="button-text">
+                            <i class="fas fa-save me-2"></i>Simpan
+                        </span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     </button>
                 </div>
             </form>
@@ -227,6 +242,99 @@
 
 @section('scripts')
 <script>
+    // Initialize Bootstrap tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    });
+
+    // Function to show loading state
+    function showLoading(button) {
+        const buttonText = button.querySelector('.button-text');
+        const spinner = button.querySelector('.spinner-border');
+        
+        button.disabled = true;
+        buttonText.style.display = 'none';
+        spinner.classList.remove('d-none');
+    }
+
+    // Handle create form submission
+    document.querySelector('form[action="{{ route('fasilitas.store') }}"]').addEventListener('submit', function(e) {
+        const submitButton = document.getElementById('submitCreate');
+        showLoading(submitButton);
+    });
+
+    // Handle edit form submissions
+    document.querySelectorAll('form[action^="{{ route('fasilitas.update', '') }}"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const id = this.action.split('/').pop();
+            const submitButton = document.getElementById('submitEdit' + id);
+            showLoading(submitButton);
+        });
+    });
+
+    // Handle delete form submissions
+    document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const deleteButton = this.querySelector('.delete-btn');
+            
+            if (confirm('Apakah Anda yakin ingin menghapus fasilitas ini?')) {
+                showLoading(deleteButton);
+                this.submit();
+            }
+        });
+    });
+
+    // Initialize DataTable
+    jQuery(document).ready(function($) {
+        var table = $('#fasilitasTable').DataTable({
+            columnDefs: [
+                {
+                    targets: 0,
+                    searchable: false,
+                    orderable: false,
+                },
+            ],
+            order: [[1, "asc"]],
+            paging: true,
+            lengthMenu: [10, 25, 50, 100],
+            pageLength: 5,
+            searching: true,
+            ordering: true,
+            info: true,
+            autoWidth: false,
+            language: {
+                search: "Cari: ",
+                lengthMenu: "",
+                zeroRecords: "Data tidak ditemukan",
+                info: " ",
+                infoEmpty: "",
+                infoFiltered: "",
+                paginate: {
+                    first: "<<",
+                    last: ">>",
+                    next: ">",
+                    previous: "<"
+                }
+            }
+        });
+
+        // Update row numbers
+        table
+            .on("order.dt search.dt draw.dt", function () {
+                table
+                    .column(0, { search: "applied", order: "applied" })
+                    .nodes()
+                    .each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+            })
+            .draw();
+    });
+
     // Auto-hide toast after 3 seconds
     setTimeout(function() {
         $('.toast').toast('hide');

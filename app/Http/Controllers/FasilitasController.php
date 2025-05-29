@@ -23,6 +23,12 @@ class FasilitasController extends Controller
         }
 
         $fasilitas = $query->orderBy('nama_fasilitas')->get();
+        
+        // Add availability check for each facility
+        $fasilitas->each(function ($item) {
+            $item->tersedia = RuangFasilitas::where('id_fasilitas', $item->id_fasilitas)->exists();
+        });
+
         return view('fasilitas.index', compact('fasilitas'));
     }
 
@@ -40,18 +46,19 @@ class FasilitasController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama_fasilitas' => 'required|string|max:255|unique:fasilitas,nama_fasilitas',
+            'nama_fasilitas' => 'required|string|max:255|unique:fasilitas,nama_fasilitas|regex:/^[A-Za-z0-9\s]+$/',
         ], [
             'nama_fasilitas.required' => 'Nama fasilitas harus diisi.',
             'nama_fasilitas.max' => 'Nama fasilitas maksimal 255 karakter.',
             'nama_fasilitas.unique' => 'Nama fasilitas sudah digunakan.',
+            'nama_fasilitas.regex' => 'Nama fasilitas tidak boleh mengandung simbol.',
         ]);
 
         if ($validator->fails()) {
             return redirect()->route('fasilitas.index')
-                ->withErrors($validator, 'tambahFasilitas')  // Use a named error bag
+                ->withErrors($validator, 'tambahFasilitas')
                 ->withInput()
-                ->with('showTambahFasilitasModal', true);  // Flag to show modal
+                ->with('showTambahFasilitasModal', true);
         }
 
         try {
@@ -89,18 +96,19 @@ class FasilitasController extends Controller
     public function update(Request $request, string $id_fasilitas)
     {
         $validator = Validator::make($request->all(), [
-            'nama_fasilitas' => 'required|string|max:255|unique:fasilitas,nama_fasilitas,' . $id_fasilitas . ',id_fasilitas',
+            'nama_fasilitas' => 'required|string|max:255|unique:fasilitas,nama_fasilitas,' . $id_fasilitas . ',id_fasilitas|regex:/^[A-Za-z0-9\s]+$/',
         ], [
             'nama_fasilitas.required' => 'Nama fasilitas harus diisi.',
             'nama_fasilitas.max' => 'Nama fasilitas maksimal 255 karakter.',
             'nama_fasilitas.unique' => 'Nama fasilitas sudah digunakan.',
+            'nama_fasilitas.regex' => 'Nama fasilitas tidak boleh mengandung simbol.',
         ]);
 
         if ($validator->fails()) {
             return redirect()->route('fasilitas.index')
-                ->withErrors($validator, 'editFasilitas_' . $id_fasilitas)  // Use a dynamic named error bag
+                ->withErrors($validator, 'editFasilitas_' . $id_fasilitas)
                 ->withInput()
-                ->with('showEditFasilitasModal', $id_fasilitas);  // Flag to show specific edit modal
+                ->with('showEditFasilitasModal', $id_fasilitas);
         }
 
         try {
