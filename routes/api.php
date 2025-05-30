@@ -34,7 +34,7 @@ Route::prefix('v1')->group(function () {
     Route::get("schedules", [PenjadwalanController::class, "agenda"]); //bisa di postman
     // untuk melakukan add, update, dan delete terhadap jadwal
     Route::post('schedule/action', [UnggahPenjadwalanController::class, 'aksiKalender'])
-        ->middleware(\App\Http\Middleware\VerifySiptaToken::class.':admin'); // Apply middleware here
+        ->middleware(\App\Http\Middleware\VerifySiptaToken::class.':admin,koordinator_ta'); // Apply middleware here
     
     // Add this new route for room details
     Route::get('rooms/{id}', [RuanganController::class, 'show']);

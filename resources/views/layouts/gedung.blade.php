@@ -8,6 +8,12 @@
     <!-- Tambahkan FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     @yield('css')
+    <!-- SIPTA Token Helper -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @if(Session::has('sipta_token'))
+    <meta name="sipta-token" content="{{ Session::get('sipta_token') }}">
+    @endif
+    <script src="{{ asset('js/sipta-token.js') }}"></script>
 </head>
 <body>
     <div class="main-content">

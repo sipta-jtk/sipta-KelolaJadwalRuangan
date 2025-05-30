@@ -116,9 +116,19 @@
             <form action="{{ route('gedung.store') }}" method="POST">
                 @csrf
                 <div class="modal-body">
+                    @if($errors->tambahGedung->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->tambahGedung->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    
                     <div class="mb-3">
                         <label for="kode_gedung" class="form-label">Kode Gedung</label>
-                        <input type="text" class="form-control @error('kode_gedung') is-invalid @enderror" 
+                        <input type="text" class="form-control {{ $errors->tambahGedung->has('kode_gedung') ? 'is-invalid' : '' }}" 
                                id="kode_gedung" 
                                name="kode_gedung" 
                                required 
@@ -127,17 +137,25 @@
                                placeholder="Contoh: A"
                                style="text-transform: uppercase;"
                                value="{{ old('kode_gedung') }}">
-                        @error('kode_gedung')
+                        @if($errors->tambahGedung->has('kode_gedung'))
                             <div class="invalid-feedback">
-                                {{ $message }}
+                                {{ $errors->tambahGedung->first('kode_gedung') }}
                             </div>
-                        @enderror
+                        @endif
                     </div>
                     <div class="mb-3">
                         <label for="nama_gedung" class="form-label">Nama Gedung</label>
-                        <input type="text" class="form-control" id="nama_gedung" 
-                               name="nama_gedung" required
-                               placeholder="Masukkan nama gedung">
+                        <input type="text" class="form-control {{ $errors->tambahGedung->has('nama_gedung') ? 'is-invalid' : '' }}" 
+                               id="nama_gedung" 
+                               name="nama_gedung" 
+                               required
+                               placeholder="Masukkan nama gedung"
+                               value="{{ old('nama_gedung') }}">
+                        @if($errors->tambahGedung->has('nama_gedung'))
+                            <div class="invalid-feedback">
+                                {{ $errors->tambahGedung->first('nama_gedung') }}
+                            </div>
+                        @endif
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
@@ -168,15 +186,28 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Kode Gedung</label>
-                        <input type="text" class="form-control" value="{{ $item->kode_gedung }}" 
-                               disabled readonly>
-                    </div>
+                    @if($errors->{'editGedung_'.$item->kode_gedung}->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->{'editGedung_'.$item->kode_gedung}->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    
                     <div class="mb-3">
                         <label for="edit_nama_gedung" class="form-label">Nama Gedung</label>
-                        <input type="text" class="form-control" id="edit_nama_gedung" 
-                               name="nama_gedung" value="{{ $item->nama_gedung }}" required>
+                        <input type="text" class="form-control {{ $errors->{'editGedung_'.$item->kode_gedung}->has('nama_gedung') ? 'is-invalid' : '' }}" 
+                               id="edit_nama_gedung" 
+                               name="nama_gedung" 
+                               value="{{ old('nama_gedung', $item->nama_gedung) }}" 
+                               required>
+                        @if($errors->{'editGedung_'.$item->kode_gedung}->has('nama_gedung'))
+                            <div class="invalid-feedback">
+                                {{ $errors->{'editGedung_'.$item->kode_gedung}->first('nama_gedung') }}
+                            </div>
+                        @endif
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
@@ -235,5 +266,13 @@
     document.getElementById('kode_gedung').addEventListener('input', function() {
         this.value = this.value.toUpperCase();
     });
+
+    // Show modal if there are validation errors
+    @if(session('showTambahGedungModal') || $errors->tambahGedung->any())
+        document.addEventListener('DOMContentLoaded', function() {
+            var tambahModal = new bootstrap.Modal(document.getElementById('tambahGedungModal'));
+            tambahModal.show();
+        });
+    @endif
 </script>
 @endsection

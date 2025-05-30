@@ -250,6 +250,45 @@
     .facility-error.removing {
         animation: fadeOut 0.3s ease-in-out;
     }
+
+    /* Add new validation styles */
+    .form-control.is-invalid,
+    .form-select.is-invalid {
+        border-color: #dc3545;
+        padding-right: calc(1.5em + 0.75rem);
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+
+    .form-control.is-invalid:focus,
+    .form-select.is-invalid:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+    }
+
+    .invalid-feedback {
+        display: none;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #dc3545;
+    }
+
+    .form-control.is-invalid ~ .invalid-feedback,
+    .form-select.is-invalid ~ .invalid-feedback {
+        display: block;
+    }
+
+    .upload-area.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .upload-area.is-invalid .invalid-feedback {
+        display: block;
+        margin-top: 0.5rem;
+    }
 </style>
 @endsection
 
@@ -261,12 +300,14 @@
                 <a href="{{ route('ruangan.index') }}" class="btn btn-outline-primary">
                     <i class="fas fa-arrow-left me-2"></i>Kembali
                 </a>
-                <h2 class="text-center flex-grow-1 mb-0">Create Ruangan</h2>
+                <h2 class="text-center flex-grow-1 mb-0">Tambah Ruangan</h2>
             </div>
             
             <form action="{{ route('ruangan.store') }}" 
                 method="POST" 
-                enctype="multipart/form-data">
+                enctype="multipart/form-data"
+                id="ruanganForm"
+                novalidate>
                 @csrf
                 @if(isset($ruangan))
                     @method('PUT')
@@ -278,15 +319,19 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Code Ruangan</label>
+                                <label class="form-label">Kode Ruangan</label>
                                 <input type="text" 
                                     class="form-control @error('kode_ruangan') is-invalid @enderror" 
                                     name="kode_ruangan"
+                                    id="kode_ruangan"
                                     value="{{ old('kode_ruangan', $ruangan->kode_ruangan ?? '') }}"
-                                    placeholder="Masukan Code Ruangan Anda"
+                                    placeholder="Masukan Kode Ruangan Anda"
                                     minlength="3"
                                     maxlength="6"
                                     required>
+                                <div class="invalid-feedback">
+                                    Kode ruangan harus diisi (3-6 karakter)
+                                </div>
                                 @error('kode_ruangan')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -297,11 +342,15 @@
                                 <input type="text" 
                                     class="form-control @error('nama_ruangan') is-invalid @enderror" 
                                     name="nama_ruangan"
+                                    id="nama_ruangan"
                                     value="{{ old('nama_ruangan', $ruangan->nama_ruangan ?? '') }}"
                                     placeholder="Masukan Nama Ruangan Anda"
                                     minlength="3"
                                     maxlength="127"
                                     required>
+                                <div class="invalid-feedback">
+                                    Nama ruangan harus diisi (3-127 karakter)
+                                </div>
                                 @error('nama_ruangan')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -310,11 +359,12 @@
 
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Code Gedung</label>
+                                <label class="form-label">Kode Gedung</label>
                                 <select class="form-select @error('kode_gedung') is-invalid @enderror" 
                                         name="kode_gedung" 
+                                        id="kode_gedung"
                                         required>
-                                    <option value="" selected disabled>Pilih Code Gedung</option>
+                                    <option value="" selected disabled>Pilih Kode Gedung</option>
                                     @foreach($gedung as $g)
                                         <option value="{{ $g->kode_gedung }}" 
                                             {{ old('kode_gedung', $ruangan->kode_gedung ?? '') == $g->kode_gedung ? 'selected' : '' }}>
@@ -322,6 +372,9 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                <div class="invalid-feedback">
+                                    Silakan pilih kode gedung
+                                </div>
                                 @error('kode_gedung')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -331,6 +384,7 @@
                                 <label class="form-label">Status</label>
                                 <select class="form-select @error('status_ruangan') is-invalid @enderror" 
                                         name="status_ruangan" 
+                                        id="status_ruangan"
                                         required>
                                     <option value="" selected disabled>Pilih Status Ruangan</option>
                                     <option value="tersedia" {{ old('status_ruangan', $ruangan->status_ruangan ?? '') == 'tersedia' ? 'selected' : '' }}>
@@ -340,6 +394,9 @@
                                         Tidak Tersedia
                                     </option>
                                 </select>
+                                <div class="invalid-feedback">
+                                    Silakan pilih status ruangan
+                                </div>
                                 @error('status_ruangan')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -353,19 +410,19 @@
                     <div class="col-md-6 h-200">
                         <div class="form-section">
                             <h5 class="section-title">Foto Ruangan</h5>
-                            <div class="upload-area" id="uploadArea">
-                                <div id="uploadPrompt">
+                            <div class="upload-area @error('foto') is-invalid @enderror" id="uploadArea">
+                                <div id="uploadPrompt" class="{{ old('foto') || isset($ruangan) ? 'd-none' : '' }}">
                                     <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
                                     <p class="mb-0">Klik untuk upload foto</p>
                                     <small class="text-muted">atau drag and drop file di sini</small>
                                 </div>
-                                <div id="imageContainer" class="position-relative d-none">
+                                <div id="imageContainer" class="position-relative {{ old('foto') || isset($ruangan) ? '' : 'd-none' }}">
                                     <button type="button" class="btn-close position-absolute top-0 end-0 m-2" id="removeImage" style="background-color: #fff; padding: 8px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                     </button>
                                     <div class="ratio ratio-1x1" style="max-width: 200px; margin: 0 auto;">
                                         <img id="imagePreview" 
                                             class="img-fluid rounded object-fit-cover" 
-                                            src="#"
+                                            src="{{ old('foto') ? asset('storage/' . old('foto')) : (isset($ruangan) ? asset('storage/' . $ruangan->foto) : '#') }}"
                                             style="border-radius: 8px;">
                                     </div>
                                 </div>
@@ -373,10 +430,15 @@
                                     class="d-none" 
                                     id="photoInput" 
                                     name="foto" 
-                                    accept="image/*">
+                                    accept="image/*"
+                                    required>
+                                <input type="hidden" name="old_foto" value="{{ old('foto', isset($ruangan) ? $ruangan->foto : '') }}">
+                                <div class="invalid-feedback">
+                                    Foto ruangan harus diunggah
+                                </div>
                             </div>
                             @error('foto')
-                                <div class="text-danger mt-2">{{ $message }}</div>
+                                <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
@@ -409,14 +471,37 @@
                             </div>
                             
                             <div id="facilityList" class="facility-list mt-3">
-                                @if(isset($ruangan))
+                                @if(old('fasilitas'))
+                                    @foreach(old('fasilitas') as $id => $jumlah)
+                                        @php
+                                            $fasilitasItem = $fasilitas->firstWhere('id_fasilitas', $id);
+                                        @endphp
+                                        @if($fasilitasItem)
+                                            <div class="facility-item" data-id="{{ $id }}">
+                                                <div class="facility-info">
+                                                    <strong>{{ $fasilitasItem->nama_fasilitas }}</strong>
+                                                    <div class="text-muted">Jumlah: {{ $jumlah }}</div>
+                                                </div>
+                                                <input type="hidden" name="fasilitas[{{ $id }}]" value="{{ $jumlah }}">
+                                                <div class="facility-controls">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary edit-facility">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger remove-facility">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                @elseif(isset($ruangan))
                                     @foreach($ruangan->fasilitas as $f)
-                                        <div class="facility-item">
+                                        <div class="facility-item" data-id="{{ $f->id_fasilitas }}">
                                             <div class="facility-info">
                                                 <strong>{{ $f->nama_fasilitas }}</strong>
                                                 <div class="text-muted">Jumlah: {{ $f->pivot->jumlah_fasilitas }}</div>
                                             </div>
-                                            <input type="hidden" name="fasilitas[{{ $f->id_fasililtas }}]" value="{{ $f->pivot->jumlah_fasilitas }}">
+                                            <input type="hidden" name="fasilitas[{{ $f->id_fasilitas }}]" value="{{ $f->pivot->jumlah_fasilitas }}">
                                             <div class="facility-controls">
                                                 <button type="button" class="btn btn-sm btn-outline-primary edit-facility">
                                                     <i class="fas fa-edit"></i>
@@ -436,7 +521,10 @@
                 <!-- Action Buttons -->
                 <div class="action-buttons">
                     <a href="{{ route('ruangan.index') }}" class="btn btn-danger">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary" id="submitButton">
+                        <span class="button-text">Submit</span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -447,13 +535,17 @@
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const uploadArea = document.getElementById('uploadArea');
+            // Form validation
+            const form = document.getElementById('ruanganForm');
+            const requiredFields = form.querySelectorAll('[required]');
             const photoInput = document.getElementById('photoInput');
+            const uploadArea = document.getElementById('uploadArea');
             const uploadPrompt = document.getElementById('uploadPrompt');
             const imageContainer = document.getElementById('imageContainer');
             const imagePreview = document.getElementById('imagePreview');
             const removeImage = document.getElementById('removeImage');
-            
+            const oldFotoInput = document.querySelector('input[name="old_foto"]');
+
             // Click on upload area to trigger file input
             uploadArea.addEventListener('click', function(e) {
                 if (e.target !== removeImage && !removeImage.contains(e.target)) {
@@ -487,7 +579,28 @@
             // Handle file selection
             photoInput.addEventListener('change', function() {
                 if (this.files.length) {
-                    handleFileSelect(this.files[0]);
+                    const file = this.files[0];
+                    // Check file size (2MB = 2 * 1024 * 1024 bytes)
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert('Ukuran file terlalu besar. Maksimal ukuran file adalah 2MB.');
+                        this.value = '';
+                        return;
+                    }
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            imagePreview.src = e.target.result;
+                            uploadPrompt.classList.add('d-none');
+                            imageContainer.classList.remove('d-none');
+                        };
+                        reader.readAsDataURL(file);
+                        uploadArea.classList.remove('is-invalid');
+                    } else {
+                        alert('Mohon pilih file gambar (JPG, PNG, GIF, dll)');
+                        this.value = '';
+                    }
+                } else {
+                    uploadArea.classList.add('is-invalid');
                 }
             });
             
@@ -498,6 +611,8 @@
                 imagePreview.src = '#';
                 uploadPrompt.classList.remove('d-none');
                 imageContainer.classList.add('d-none');
+                uploadArea.classList.add('is-invalid');
+                oldFotoInput.value = '';
             });
             
             function handleFileSelect(file) {
@@ -514,18 +629,143 @@
                 }
             }
 
+            // Form submission
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                let isValid = true;
+
+                // Show loading state
+                const submitButton = document.getElementById('submitButton');
+                const buttonText = submitButton.querySelector('.button-text');
+                const spinner = submitButton.querySelector('.spinner-border');
+                
+                submitButton.disabled = true;
+                buttonText.textContent = 'Loading...';
+                spinner.classList.remove('d-none');
+
+                // Check all required fields
+                requiredFields.forEach(field => {
+                    if (!field.value) {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                });
+
+                // Check if image is uploaded or has old image
+                if (!photoInput.files.length && !oldFotoInput.value) {
+                    uploadArea.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                // Check if at least one facility is added
+                const facilityList = document.getElementById('facilityList');
+                if (facilityList.children.length === 0) {
+                    const facilityError = document.getElementById('facilityError');
+                    facilityError.textContent = 'Minimal satu fasilitas harus ditambahkan';
+                    facilityError.classList.add('facility-error');
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    // Reset button state
+                    submitButton.disabled = false;
+                    buttonText.textContent = 'Submit';
+                    spinner.classList.add('d-none');
+                    
+                    // Scroll to first invalid element
+                    const firstInvalid = form.querySelector('.is-invalid');
+                    if (firstInvalid) {
+                        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    return;
+                }
+
+                // Create FormData object
+                const formData = new FormData(form);
+
+                // Submit form using fetch
+                fetch(form.action, {
+                    method: form.method,
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                        return;
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data) {
+                        if (data.success) {
+                            window.location.href = data.redirect + '?success=' + encodeURIComponent(data.message);
+                        } else {
+                            // Reset button state
+                            submitButton.disabled = false;
+                            buttonText.textContent = 'Submit';
+                            spinner.classList.add('d-none');
+                            
+                            // Handle validation errors
+                            if (data.errors) {
+                                Object.keys(data.errors).forEach(field => {
+                                    const input = form.querySelector(`[name="${field}"]`);
+                                    if (input) {
+                                        input.classList.add('is-invalid');
+                                        const feedback = input.nextElementSibling;
+                                        if (feedback && feedback.classList.contains('invalid-feedback')) {
+                                            feedback.textContent = data.errors[field][0];
+                                        }
+                                    }
+                                });
+                            }
+                            // Scroll to first error
+                            const firstInvalid = form.querySelector('.is-invalid');
+                            if (firstInvalid) {
+                                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        }
+                    }
+                })
+                .catch(error => {
+                    // Reset button state
+                    submitButton.disabled = false;
+                    buttonText.textContent = 'Submit';
+                    spinner.classList.add('d-none');
+                    
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan. Silakan coba lagi.');
+                });
+            });
+
+            // Real-time validation on input
+            requiredFields.forEach(field => {
+                field.addEventListener('input', function() {
+                    if (this.value) {
+                        this.classList.remove('is-invalid');
+                    } else {
+                        this.classList.add('is-invalid');
+                    }
+                });
+            });
+
+            // Facility management code
             const facilityInput = document.getElementById('facilityInput');
             const facilityQuantity = document.getElementById('facilityQuantity');
             const addFacilityButton = document.getElementById('addFacility');
             const facilityList = document.getElementById('facilityList');
             const facilityError = document.getElementById('facilityError');
 
-            let editingFacility = null; // Untuk menyimpan fasilitas yang sedang diedit
-            let originalOptions = []; // Untuk menyimpan semua opsi fasilitas asli
+            let editingFacility = null;
+            let originalOptions = [];
 
             // Simpan semua opsi fasilitas asli
             Array.from(facilityInput.options).forEach(option => {
-                if (option.value) { // Skip opsi default "Pilih Fasilitas"
+                if (option.value) {
                     originalOptions.push({
                         value: option.value,
                         text: option.text,
@@ -557,17 +797,14 @@
                     return;
                 }
 
-                clearError(); // Reset error
+                clearError();
 
                 // Jika sedang dalam mode edit
                 if (editingFacility) {
                     const existingItem = document.querySelector(`.facility-item[data-id="${editingFacility.id}"]`);
                     
-                    // Jika fasilitas yang diedit berbeda dengan yang dipilih sekarang
                     if (editingFacility.id !== selectedFacilityId) {
-                        // Tambahkan kembali fasilitas lama ke dropdown
                         addOptionToDropdown(editingFacility.id, editingFacility.name);
-                        // Hapus fasilitas baru dari dropdown
                         removeOptionFromDropdown(selectedFacilityId);
                     }
                     
@@ -577,11 +814,9 @@
                     existingItem.setAttribute('data-id', selectedFacilityId);
                     existingItem.querySelector('input[type="hidden"]').name = `fasilitas[${selectedFacilityId}]`;
 
-                    // Reset editing
                     editingFacility = null;
                     addFacilityButton.innerHTML = '<i class="fas fa-plus"></i>';
                 } else {
-                    // Tambah fasilitas baru
                     const facilityItem = document.createElement('div');
                     facilityItem.className = 'facility-item';
                     facilityItem.setAttribute('data-id', selectedFacilityId);
@@ -603,29 +838,23 @@
                     `;
 
                     facilityList.appendChild(facilityItem);
-                    
-                    // Hapus fasilitas dari dropdown
                     removeOptionFromDropdown(selectedFacilityId);
                 }
 
-                // Reset input
                 facilityInput.value = '';
                 facilityQuantity.value = '';
             });
 
-            // Fungsi untuk menampilkan error
             function showError(message) {
                 facilityError.textContent = message;
                 facilityError.classList.add('facility-error');
             }
 
-            // Fungsi untuk menghapus error
             function clearError() {
                 facilityError.textContent = '';
                 facilityError.classList.remove('facility-error');
             }
 
-            // Fungsi untuk menghapus opsi dari dropdown
             function removeOptionFromDropdown(facilityId) {
                 for (let i = 0; i < facilityInput.options.length; i++) {
                     if (facilityInput.options[i].value === facilityId) {
@@ -635,9 +864,7 @@
                 }
             }
 
-            // Fungsi untuk menambahkan opsi ke dropdown
             function addOptionToDropdown(facilityId, facilityName) {
-                // Cari data fasilitas dari originalOptions
                 const originalOption = originalOptions.find(opt => opt.value === facilityId);
                 if (originalOption) {
                     const option = document.createElement('option');
@@ -645,9 +872,8 @@
                     option.text = originalOption.text;
                     option.dataset.nama = originalOption.dataNama;
                     
-                    // Tambahkan opsi ke dropdown dengan urutan yang benar (abjad)
                     let inserted = false;
-                    for (let i = 1; i < facilityInput.options.length; i++) { // Mulai dari 1 untuk melewati opsi default
+                    for (let i = 1; i < facilityInput.options.length; i++) {
                         if (facilityInput.options[i].text > originalOption.text) {
                             facilityInput.add(option, facilityInput.options[i]);
                             inserted = true;
@@ -655,14 +881,12 @@
                         }
                     }
                     
-                    // Jika belum dimasukkan (karena harus di akhir)
                     if (!inserted) {
                         facilityInput.add(option);
                     }
                 }
             }
 
-            // Event delegation untuk edit dan hapus fasilitas
             facilityList.addEventListener('click', function(event) {
                 if (event.target.closest('.edit-facility')) {
                     const facilityItem = event.target.closest('.facility-item');
@@ -670,14 +894,11 @@
                     const facilityName = facilityItem.querySelector('.facility-info strong').textContent;
                     const quantity = facilityItem.querySelector('input[type="hidden"]').value;
 
-                    // Tambahkan kembali fasilitas yang sedang diedit ke dropdown
                     addOptionToDropdown(facilityId, facilityName);
                     
-                    // Set input untuk edit
                     facilityInput.value = facilityId;
                     facilityQuantity.value = quantity;
 
-                    // Set mode edit
                     editingFacility = { id: facilityId, name: facilityName };
                     addFacilityButton.innerHTML = '<i class="fas fa-save"></i>';
                 }
@@ -687,13 +908,9 @@
                     const facilityId = facilityItem.getAttribute('data-id');
                     const facilityName = facilityItem.querySelector('.facility-info strong').textContent;
                     
-                    // Tambahkan kembali fasilitas ke dropdown
                     addOptionToDropdown(facilityId, facilityName);
-                    
-                    // Hapus item dari daftar
                     facilityList.removeChild(facilityItem);
                     
-                    // Jika sedang dalam mode edit fasilitas yang dihapus, reset mode edit
                     if (editingFacility && editingFacility.id === facilityId) {
                         editingFacility = null;
                         addFacilityButton.innerHTML = '<i class="fas fa-plus"></i>';
