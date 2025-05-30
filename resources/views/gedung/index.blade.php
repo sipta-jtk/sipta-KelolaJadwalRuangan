@@ -204,6 +204,8 @@
                         <input type="text" class="form-control {{ $errors->{'editGedung_'.$item->kode_gedung}->has('nama_gedung') ? 'is-invalid' : '' }}" 
                                id="edit_nama_gedung" 
                                name="nama_gedung" 
+                               maxlength="100"
+                               minlength="3"
                                value="{{ old('nama_gedung', $item->nama_gedung) }}" 
                                required>
                         @if($errors->{'editGedung_'.$item->kode_gedung}->has('nama_gedung'))
