@@ -29,21 +29,12 @@
                         <i class="fas fa-plus me-1"></i>Tambah Gedung
                     </button>
                 </div>
-                <div class="card-body d-flex justify-content-end align-items-center mb-3">
-                <label for="search" class="me-2">Cari:</label>
-                    <form action="{{ route('gedung.index') }}" method="GET">
-                        <div class="input-group">
-                            <input type="text" class="form-control"  name="search" 
-                                value="{{ request('search') }}">
-                        </div>
-                    </form>
-                </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th width="5%" class="text-center">#</th>
+                        <table id="gedungTable" class="table table-hover align-middle">
+                            <thead class="sticky-header">
+                                <tr class="table-dark">
+                                    <th width="5%" class="text-center">No</th>
                                     <th width="20%">Kode Gedung</th>
                                     <th>Nama Gedung</th>
                                     <th width="15%" class="text-center">Aksi</th>
@@ -63,26 +54,34 @@
                                             <i class="fas fa-edit text-white"></i>
                                         </button>
                                         
-                                        @if($item->ruangan_count > 0)
-                                            <button type="button" 
-                                                    class="btn btn-secondary btn-md" 
-                                                    disabled
-                                                    title="Gedung memiliki {{ $item->ruangan_count }} ruangan">
-                                                <i class="fas fa-trash text-white"></i>
-                                            </button>
-                                        @else
-                                            <form action="{{ route('gedung.destroy', $item->kode_gedung) }}" 
-                                                  method="POST" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
+                                        <form action="{{ route('gedung.destroy', $item->kode_gedung) }}" 
+                                                method="POST" class="d-inline delete-form">
+                                            @csrf
+                                            @method('DELETE')
+                                            @if($item->ruangan_count > 0)
+                                                <span data-bs-toggle="tooltip" 
+                                                        data-bs-placement="top"
+                                                        title="Tidak dapat dihapus karena gedung sedang digunakan ruangan">
+                                                    <button type="submit" 
+                                                            class="btn btn-danger btn-md" 
+                                                            disabled>
+                                                        <i class="fas fa-trash text-white"></i>
+                                                    </button>
+                                                </span>
+                                            @else
                                                 <button type="submit" 
-                                                        class="btn btn-danger btn-md" 
-                                                        onclick="return confirm('Apakah Anda yakin ingin menghapus gedung ini?')"
+                                                        class="btn btn-danger btn-md delete-btn"
+                                                        data-id="{{ $item->kode_gedung }}"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
                                                         title="Hapus">
-                                                    <i class="fas fa-trash text-white"></i>
+                                                    <span class="button-text">
+                                                        <i class="fas fa-trash text-white"></i>
+                                                    </span>
+                                                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                                                 </button>
-                                            </form>
-                                        @endif
+                                            @endif
+                                        </form>
                                     </td>
                                 </tr>
                                 @empty
@@ -96,7 +95,6 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
                 </div>
             </div>
         </div>
@@ -117,12 +115,13 @@
                 @csrf
                 <div class="modal-body">
                     @if($errors->tambahGedung->any())
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <ul class="mb-0">
                                 @foreach ($errors->tambahGedung->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
                     
@@ -149,6 +148,8 @@
                                id="nama_gedung" 
                                name="nama_gedung" 
                                required
+                               minlength="3"
+                               maxlength="100"
                                placeholder="Masukkan nama gedung"
                                value="{{ old('nama_gedung') }}">
                         @if($errors->tambahGedung->has('nama_gedung'))
@@ -162,8 +163,9 @@
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
                         Tutup
                     </button>
-                    <button type="submit" class="btn btn-success">
-                        Simpan
+                    <button type="submit" class="btn btn-success" id="submitCreate">
+                        <span class="button-text">Simpan</span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     </button>
                 </div>
             </form>
@@ -187,12 +189,13 @@
                 @method('PUT')
                 <div class="modal-body">
                     @if($errors->{'editGedung_'.$item->kode_gedung}->any())
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <ul class="mb-0">
                                 @foreach ($errors->{'editGedung_'.$item->kode_gedung}->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
                     
@@ -214,8 +217,11 @@
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
                         <i class="fas fa-times me-2"></i>Tutup
                     </button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-save me-2"></i>Simpan
+                    <button type="submit" class="btn btn-success" id="submitEdit{{ $item->kode_gedung }}">
+                        <span class="button-text">
+                            <i class="fas fa-save me-2"></i>Simpan
+                        </span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     </button>
                 </div>
             </form>
@@ -257,6 +263,99 @@
 
 @section('scripts')
 <script>
+    // Initialize Bootstrap tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    });
+
+    // Function to show loading state
+    function showLoading(button) {
+        const buttonText = button.querySelector('.button-text');
+        const spinner = button.querySelector('.spinner-border');
+        
+        button.disabled = true;
+        buttonText.style.display = 'none';
+        spinner.classList.remove('d-none');
+    }
+
+    // Handle create form submission
+    document.querySelector('form[action="{{ route('gedung.store') }}"]').addEventListener('submit', function(e) {
+        const submitButton = document.getElementById('submitCreate');
+        showLoading(submitButton);
+    });
+
+    // Handle edit form submissions
+    document.querySelectorAll('form[action^="{{ route('gedung.update', '') }}"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const id = this.action.split('/').pop();
+            const submitButton = document.getElementById('submitEdit' + id);
+            showLoading(submitButton);
+        });
+    });
+
+    // Handle delete form submissions
+    document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const deleteButton = this.querySelector('.delete-btn');
+            
+            if (confirm('Apakah Anda yakin ingin menghapus gedung ini?')) {
+                showLoading(deleteButton);
+                this.submit();
+            }
+        });
+    });
+
+    // Initialize DataTable
+    jQuery(document).ready(function($) {
+        var table = $('#gedungTable').DataTable({
+            columnDefs: [
+                {
+                    targets: 0,
+                    searchable: false,
+                    orderable: false,
+                },
+            ],
+            order: [[1, "asc"]],
+            paging: true,
+            lengthMenu: [10, 25, 50, 100],
+            pageLength: 5,
+            searching: true,
+            ordering: true,
+            info: true,
+            autoWidth: false,
+            language: {
+                search: "Cari: ",
+                lengthMenu: "",
+                zeroRecords: "Data tidak ditemukan",
+                info: " ",
+                infoEmpty: "",
+                infoFiltered: "",
+                paginate: {
+                    first: "<<",
+                    last: ">>",
+                    next: ">",
+                    previous: "<"
+                }
+            }
+        });
+
+        // Update row numbers
+        table
+            .on("order.dt search.dt draw.dt", function () {
+                table
+                    .column(0, { search: "applied", order: "applied" })
+                    .nodes()
+                    .each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+            })
+            .draw();
+    });
+
     // Auto-hide toast after 3 seconds
     setTimeout(function() {
         $('.toast').toast('hide');
@@ -267,11 +366,19 @@
         this.value = this.value.toUpperCase();
     });
 
-    // Show modal if there are validation errors
-    @if(session('showTambahGedungModal') || $errors->tambahGedung->any())
+    // Show tambah gedung modal if there are validation errors
+    @if($errors->tambahGedung->any() || session('showTambahGedungModal'))
         document.addEventListener('DOMContentLoaded', function() {
             var tambahModal = new bootstrap.Modal(document.getElementById('tambahGedungModal'));
             tambahModal.show();
+        });
+    @endif
+
+    // Show edit modal for specific gedung if there are validation errors
+    @if(session('showEditGedungModal'))
+        document.addEventListener('DOMContentLoaded', function() {
+            var editModal = new bootstrap.Modal(document.getElementById('editModal{{ session('showEditGedungModal') }}'));
+            editModal.show();
         });
     @endif
 </script>

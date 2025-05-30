@@ -15,13 +15,6 @@ class GedungController extends Controller
     public function index(Request $request)
     {
         $query = Gedung::query();
-
-        // Implement search functionality
-        if ($request->has('search')) {
-            $query->where('nama_gedung', 'LIKE', '%' . $request->search . '%')
-                  ->orWhere('kode_gedung', 'LIKE', '%' . $request->search . '%');
-        }
-
         // Eager load ruangan relation untuk menghindari N+1 problem
         $gedung = $query->withCount('ruangan')->orderBy('kode_gedung')->get();
         return view('gedung.index', compact('gedung'));
@@ -142,7 +135,7 @@ class GedungController extends Controller
                 ->with('success', 'Gedung berhasil diperbarui.');
         } catch (\Exception $e) {
             return redirect()->route('gedung.index')
-                ->with('error', 'Terjadi kesalahan saat memperbarui gedung.');
+                ->with('error', 'Nama gedung sudah ada, silakan coba lagi.');
         }
     }
 
