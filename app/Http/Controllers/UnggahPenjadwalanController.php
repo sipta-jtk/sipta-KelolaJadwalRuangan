@@ -51,7 +51,7 @@ class UnggahPenjadwalanController extends Controller
                 if($tanggal <= $today){
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'Tanggal penjadwalan tidak valid.'
+                        'message' => 'Tanggal penjadwalan sudah terlewat.'
                     ], 400);                   
                 }
                 
@@ -101,7 +101,7 @@ class UnggahPenjadwalanController extends Controller
                     if($tanggal <= $today){
                         return response()->json([
                             'status' => 'error',
-                            'message' => 'Tanggal penjadwalan tidak valid.'
+                            'message' => 'Tanggal penjadwalan sudah terlewat.'
                         ], 400);                    
                     }
                     // gaboleh ada yang bikin penjadwalan di tanggal, sesi, dan ruangan yg sama
