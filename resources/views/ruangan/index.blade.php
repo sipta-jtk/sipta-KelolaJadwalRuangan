@@ -257,13 +257,14 @@
                                 <a href="{{ route('penjadwalan.index') }}" class="btn btn-success btn-lg me-2">
                                     <i class="fas fa-tools me-2"></i>Kalender Penjadwalan
                                 </a>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="btn btn-danger btn-lg px-4">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                        </button>
-                                    </form>
+                                    
                                 @endif
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger btn-lg px-4">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    </button>
+                                </form>
                             </div>
                         @else
                             <a href="{{ route('login') }}" class="btn btn-primary btn-lg px-4">
