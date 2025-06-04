@@ -23,7 +23,7 @@ Route::middleware('guest')->prefix('penjadwalan-ruangan')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
-Route::middleware('auth')->prefix('penjadwalan-ruangan')->group(function () {
+Route::prefix('penjadwalan-ruangan')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
