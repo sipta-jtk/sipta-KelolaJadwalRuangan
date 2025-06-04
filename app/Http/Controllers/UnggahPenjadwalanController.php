@@ -55,12 +55,12 @@ class UnggahPenjadwalanController extends Controller
                     ], 400);                   
                 }
                 
-                if ($latestScheduleDate &&  $tanggal > $latestScheduleDate && $latestScheduleDate >= $today) {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'Kelompok TA telah membuat penjadwalan.'
-                    ], 400);
-                }
+                // if ($latestScheduleDate &&  $tanggal > $latestScheduleDate && $latestScheduleDate >= $today) {
+                //     return response()->json([
+                //         'status' => 'error',
+                //         'message' => 'Kelompok TA telah membuat penjadwalan.'
+                //     ], 400);
+                // } 
 
                 // gaboleh ada yang bikin penjadwalan di tanggal, sesi, dan ruangan yg sama
                 $duplicateScheduleExists = Penjadwalan::where('tanggal', $tanggal)
