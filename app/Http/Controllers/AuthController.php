@@ -79,6 +79,8 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/penjadwalan-ruangan');
+        return response()->view('auth.logout_redirect', [
+            'redirect_url' => '/penjadwalan-ruangan'
+        ]);
     }
 }

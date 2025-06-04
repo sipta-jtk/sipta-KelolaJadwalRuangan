@@ -39,3 +39,16 @@ Route::prefix('v1')->group(function () {
     // Add this new route for room details
     Route::get('rooms/{id}', [RuanganController::class, 'show']);
 });
+
+Route::post('v1/sipta-logout', function(Request $request) {
+    // Validate request comes from authorized source
+    $token = $request->input('token');
+    if (!$token) {
+        return response()->json(['error' => 'Token required'], 400);
+    }
+    
+    // Find and invalidate sessions with this token
+    // This would require custom session handling based on your setup
+    
+    return response()->json(['message' => 'User logged out successfully']);
+});

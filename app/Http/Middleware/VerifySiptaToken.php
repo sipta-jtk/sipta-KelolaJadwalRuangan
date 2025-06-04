@@ -102,7 +102,7 @@ class VerifySiptaToken
         } catch (\Exception $e) {
             Log::error('SIPTA service error: ' . $e->getMessage());
             
-            return response()->json(['message' => 'Service unavailable - ' . $e->getMessage()], 200);
+            return response()->json(['message' => 'Service unavailable - ' . $e->getMessage()], 503);
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Service unavailable - ' . $e->getMessage()], 503);
             }
