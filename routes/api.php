@@ -46,9 +46,16 @@ Route::post('v1/sipta-logout', function(Request $request) {
     if (!$token) {
         return response()->json(['error' => 'Token required'], 400);
     }
-    
-    // Find and invalidate sessions with this token
-    // This would require custom session handling based on your setup
+
+    // clear session
+    Session::forget('sipta_token');
+    Session::forget('token_authenticated');
+    Session::forget('token_user_role');
+    Session::forget('token_user_id');
+
+    // invalidate request
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
     
     return response()->json(['message' => 'User logged out successfully']);
 });
