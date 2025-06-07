@@ -52,6 +52,8 @@ Route::post('v1/sipta-logout', function(Request $request) {
     Session::forget('token_authenticated');
     Session::forget('token_user_role');
     Session::forget('token_user_id');
+
+    // test
     
     return response()->json(['message' => 'User logged out successfully']);
 });
