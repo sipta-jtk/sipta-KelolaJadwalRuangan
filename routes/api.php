@@ -44,7 +44,7 @@ Route::post('v1/sipta-logout', function(Request $request) {
     // Validate request comes from authorized source
     $token = $request->input('token');
     if (!$token) {
-        return response()->json(['error' => 'Token required'], 400);
+        dd('Token is required for logout');
     }
 
     // clear session
