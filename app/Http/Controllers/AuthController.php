@@ -119,10 +119,10 @@ class AuthController extends Controller
         }
         
         // Also clear the current request's session data
-        Session::forget('sipta_token');
-        Session::forget('token_authenticated');
-        Session::forget('token_user_role');
-        Session::forget('token_user_name');
+        // Session::forget('sipta_token');
+        // Session::forget('token_authenticated');
+        // Session::forget('token_user_role');
+        // Session::forget('token_user_name');
         
         // Create a cookie to trigger client-side cleanup on next page load
         $cookie = cookie('sipta_logout', '1', 5, '/', null, false, false);

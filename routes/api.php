@@ -41,4 +41,4 @@ Route::prefix('v1')->group(function () {
     Route::get('rooms/{id}', [RuanganController::class, 'show']);
 });
 
-Route::post('v1/sipta-logout', [AuthController::class, 'logout']);
+Route::middleware(['api', 'web'])->post('v1/sipta-logout', [App\Http\Controllers\AuthController::class, 'apiLogout']);
