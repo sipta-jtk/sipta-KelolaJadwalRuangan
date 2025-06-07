@@ -55,5 +55,6 @@
             </div>
         </div>
     </div>
+    <script src="{{ asset('js/sipta-logout-detector.js') }}"></script>
 </body>
 </html>

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UnggahPenjadwalanController;
 use App\Http\Controllers\PenjadwalanController;
 use App\Http\Controllers\RuanganController;
+use App\Http\Controllers\AuthController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -40,20 +41,4 @@ Route::prefix('v1')->group(function () {
     Route::get('rooms/{id}', [RuanganController::class, 'show']);
 });
 
-Route::post('v1/sipta-logout', function(Request $request) {
-    // Validate request comes from authorized source
-    $token = $request->input('token');
-    if (!$token) {
-        dd('Token is required for logout');
-    }
-
-    // clear session
-    Session::forget('sipta_token');
-    Session::forget('token_authenticated');
-    Session::forget('token_user_role');
-    Session::forget('token_user_id');
-
-    // test
-    
-    return response()->json(['message' => 'User logged out successfully']);
-});
+Route::post('v1/sipta-logout', [AuthController::class, 'logout']);

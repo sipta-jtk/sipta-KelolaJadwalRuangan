@@ -83,4 +83,54 @@ class AuthController extends Controller
             'redirect_url' => '/penjadwalan-ruangan'
         ]);
     }
+
+    public function apiLogout(Request $request)
+    {
+        // Validate request comes from authorized source
+        $token = $request->input('token');
+        if (!$token) {
+            return response()->json(['error' => 'Token required'], 400);
+        }
+
+        // Get session driver type
+        $driver = config('session.driver');
+        $sessionsCleared = 0;
+        
+        if ($driver === 'file') {
+            // For file-based sessions
+            $sessionPath = storage_path('framework/sessions');
+            $sessionFiles = glob($sessionPath . '/*');
+            
+            foreach ($sessionFiles as $file) {
+                $content = @file_get_contents($file);
+                if ($content && strpos($content, $token) !== false) {
+                    @unlink($file); // Delete the session file
+                    $sessionsCleared++;
+                }
+            }
+        } 
+        elseif ($driver === 'database') {
+            // For database sessions
+            $table = config('session.table', 'sessions');
+            $sessionsCleared = \Illuminate\Support\Facades\DB::table($table)
+                ->where('payload', 'like', '%' . $token . '%')
+                ->delete();
+        }
+        
+        // Also clear the current request's session data
+        Session::forget('sipta_token');
+        Session::forget('token_authenticated');
+        Session::forget('token_user_role');
+        Session::forget('token_user_name');
+        
+        // Create a cookie to trigger client-side cleanup on next page load
+        $cookie = cookie('sipta_logout', '1', 5, '/', null, false, false);
+        
+        return response()
+            ->json([
+                'message' => 'User logged out successfully',
+                'sessions_cleared' => $sessionsCleared
+            ])
+            ->withCookie($cookie);
+    }
 }
