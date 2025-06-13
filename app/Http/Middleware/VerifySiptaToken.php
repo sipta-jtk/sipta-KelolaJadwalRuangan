@@ -79,7 +79,7 @@ class VerifySiptaToken
                 $response = file_get_contents($fallbackUrl);
                 $data = json_decode($response, true);
                 $userRole = $data['role'] ?? null;
-                $environment = 'development'; // Set environment to development for fallback
+                $environment = 'dev'; // Set environment to development for fallback
             }
 
             // $url = "https://polban-space.cloudias79.com/sipta/usermanagement/v1/role?token=" . urlencode($token);
