@@ -85,6 +85,30 @@ class AuthController extends Controller
         ]);
     }
 
+    // create logout that redirect back to sipta
+    public function logoutToSipta(Request $request)
+    {
+        Auth::logout();
+
+        $siptaEnvironment = Session::get('sipta_environment', 'production'); // Get environment from session or default to production
+
+        // Clear SIPTA token authentication
+        Session::forget('sipta_token');
+        Session::forget('token_authenticated');
+        Session::forget('token_user_role');
+        Session::forget('token_user_name');
+        Session::forget('sipta_environment'); // Clear environment session
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        if ($siptaEnvironment === 'dev') {
+            return redirect('https://polban-space.cloudias79.com/sipta-dev/');
+        } else {
+            return redirect('https://polban-space.cloudias79.com/sipta/');
+        }
+    }
+
     public function apiLogout(Request $request)
     {
         // Validate request comes from authorized source

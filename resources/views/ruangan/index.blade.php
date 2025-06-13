@@ -259,12 +259,23 @@
                                 </a>
                                     
                                 @endif
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger btn-lg px-4">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                    </button>
-                                </form>
+                                @if(Session::has('sipta_token'))
+                                    {{-- User is from SIPTA, so use the SIPTA logout route --}}
+                                    <form method="POST" action="{{ route('logout.to.sipta') }}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger btn-lg px-4">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Logout to SIPTA
+                                        </button>
+                                    </form>
+                                @else
+                                    {{-- User is local, use the regular logout route --}}
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger btn-lg px-4">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         @else
                             <a href="{{ route('login') }}" class="btn btn-primary btn-lg px-4">

@@ -27,6 +27,12 @@ Route::prefix('penjadwalan-ruangan')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
+// Route untuk logout ke SIPTA
+Route::prefix('penjadwalan-ruangan')->group(function () {
+    Route::post('/logout-to-sipta', [AuthController::class, 'logoutToSipta'])
+        ->name('logout.to.sipta');
+});
+
 // ==================== Route untuk manajemen ruangan ====================
 // Gunakan salah satu pendekatan saja, jangan keduanya
 // Pendekatan 1: Resource Route (direkomendasikan)

@@ -64,6 +64,7 @@ class VerifySiptaToken
             $primaryUrl = "https://polban-space.cloudias79.com/sipta/usermanagement/v1/role?token=" . urlencode($token);
             $data = null;
             $userRole = null;
+            $environment = 'production'; // or 'development' based on your environment
             
             try {
                 $response = file_get_contents($primaryUrl);
@@ -78,6 +79,7 @@ class VerifySiptaToken
                 $response = file_get_contents($fallbackUrl);
                 $data = json_decode($response, true);
                 $userRole = $data['role'] ?? null;
+                $environment = 'development'; // Set environment to development for fallback
             }
 
             // $url = "https://polban-space.cloudias79.com/sipta/usermanagement/v1/role?token=" . urlencode($token);
@@ -97,6 +99,7 @@ class VerifySiptaToken
             Session::put('token_authenticated', true);
             Session::put('token_user_role', $userRole);
             Session::put('token_user_name', $data['name'] ?? 'SIPTA User');
+            Session::put('sipta_environment', $environment); // Store the environment
             
             return $next($request);
         } catch (\Exception $e) {
